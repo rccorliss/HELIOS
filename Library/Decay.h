@@ -6,7 +6,7 @@
 //
 //     "pi0->gg"       "pi0->gee"
 //     "eta->gg"       "eta->gee"
-//     "etap->gg"      "etap->gee"
+//     "etap->gg"      "etap->gee"        "etap->rho0g"
 //     "omega->pi0g"   "omega->pi0ee"     "omega->ee"
 //     "rho0->ee"
 //     "phi->ee" 
@@ -91,7 +91,7 @@ class Decay {
         or n == "eta->gg" or n == "eta->gee"
         or n == "omega->pi0g"  or n == "omega->pi0ee" or n == "omega->ee"
         or n == "rho0->ee"
-        or n == "etap->gg" or n == "etap->gee"
+        or n == "etap->gg" or n == "etap->gee" or "etap->rho0g"
         or n == "phi->ee") {
       DecayName = n;
     } else {

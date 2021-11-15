@@ -414,6 +414,7 @@ void Particle::DefineDecays(){
 
      DecayBranch[2].SetType("TwoBody");                  // this is a two body decay 
      DecayBranch[2].SetName("etap->rho0g");
+     DecayBranch[2].SetMassDistributions();              // set rho0 mass distribution for decay
      DecayBranch[2].SetNumberOfDecayParticles(2);        // number of daughters  
      DecayBranch[2].SetBR(BR_etap_rho0g);
      daughter[2][0] = rho0;                            // set daughter 1

@@ -69,7 +69,7 @@
 // particle ratios at pt->inft. (can be used as weights for mt-scaled pt distributions)
   Double_t Eta_to_Pi0 = 0.487; // 0.487±0.024 from Yuanjee Ren Thesis
   Double_t Etap_to_Pi0 =  0.25; // 0.25±0.075 from Wenqing Fan Thesis table 4.4
-  Double_t Omega_to_Pi0 =  0.9; // 0.9±0.06
+  Double_t Omega_to_Pi0 =  0.81; // 0.81+/-0.02(stat)+/-0.09(sys) from ppg118 
 //  Double_t Rho_to_Pi0 = ; 
 //  Double_t Phi_to_Pi0 = ; 
 

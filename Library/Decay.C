@@ -181,6 +181,8 @@ void Decay::SetMassDistributions(){
       TF1 *h_Mass = new TF1(DecayName,f_etaDalitz,2.*eMass,etaMass);
   } else if (DecayName == "etap->gee") {
       TF1 *h_Mass = new TF1(DecayName,f_etapDalitz,2.*eMass,etapMass);
+  } else if (DecayName == "etap->rho0g") {
+      TF1 *h_Mass = new TF1(DecayName,f_etapRho0g,2.*eMass,etapMass);
   } else if (DecayName == "omega->pi0ee") {
       TF1 *h_Mass = new TF1(DecayName,f_omegaDalitz,2.*eMass,omegaMass-pi0Mass);
   } else if (DecayName == "omega->ee") {
