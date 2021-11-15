@@ -55,7 +55,7 @@ void DirectGamma(){
   Double_t pt_high = 25.;
   Double_t ecut = 0.5;
   Double_t opacut = 0;
-  Int_t nevt = 1000000;
+  Int_t nevt = 100000;
   Int_t ndecay =0;
   Double_t ww = 0, ww1, ww2; 
   Int_t id = 0;
@@ -132,6 +132,11 @@ void DirectGamma(){
   TH1D *h_gh_sys_11         = new TH1D("h_gh_sys_10","pt_g",100,pt_low,pt_high);
   plot.StyleMe(h_gh_sys_10,   20, kBlack, 1., 2, 2); 
   plot.StyleMe(h_gh_sys_11,   20, kBlack, 1., 2, 2); 
+// omega & eta'
+  TH1D *h_gh_sys_20         = new TH1D("h_gh_sys_20","pt_g",100,0.5,pt_high);
+  TH1D *h_gh_sys_21         = new TH1D("h_gh_sys_20","pt_g",100,0.5,pt_high);
+  plot.StyleMe(h_gh_sys_20,   20, kBlack, 1., 2, 2); 
+  plot.StyleMe(h_gh_sys_21,   20, kBlack, 1., 2, 2); 
 
 // dito reconstructed
   TH1D *h_pt_ghadron_r           = new TH1D("h_pt_ghadron_r","pt_g",100,pt_low,pt_high);
@@ -202,7 +207,9 @@ void DirectGamma(){
         h_pt_ghadron->Fill(temp.Pt(),ww);
         h_gh_sys_10->Fill(temp.Pt(),ww);
         h_gh_sys_11->Fill(temp.Pt(),ww);
-        h_pt_gincl->Fill(temp.Pt(),ww);
+        h_gh_sys_20->Fill(temp.Pt(),ww);
+        h_gh_sys_21->Fill(temp.Pt(),ww);
+         h_pt_gincl->Fill(temp.Pt(),ww);
         VTXconv = (PHENIX.VTXConversion()>0);                     // check if photon will convert 
       }  
 //                                                                 check if decay daughter needs to be reconstrcuted
@@ -279,7 +286,9 @@ void DirectGamma(){
         h_pt_ghadron->Fill(temp.Pt(),ww);
         h_gh_sys_10->Fill(temp.Pt(),ww1);
         h_gh_sys_11->Fill(temp.Pt(),ww2);
-        h_pt_gincl->Fill(temp.Pt(),ww);
+        h_gh_sys_20->Fill(temp.Pt(),ww);
+        h_gh_sys_21->Fill(temp.Pt(),ww);
+         h_pt_gincl->Fill(temp.Pt(),ww);
         VTXconv = (PHENIX.VTXConversion()>0);                     // check if photon will convert 
       }  
                                                                   // check if decay daughter needs to be reconstrcuted
@@ -330,6 +339,8 @@ void DirectGamma(){
        temp = omega.GetDecayDaughter(j);
        if (i<10) temp.Print();
        ww   = omega.GetDaughterWeight(j)*omega.Weight();
+       ww1 = ww*(1+sqrt(0.111*0.111+0.025*0.025+0.026*0.026));   // based on omega/pi = 0.81+/-0.02(stat)+/-0.09(sys)
+       ww2 = ww/(1+sqrt(0.111*0.111+0.025*0.025+0.026*0.026));   // and BR 8.4+/-0.22%
        id   = omega.GetDaughterID(j);
 
       VTXconv = false; 
@@ -338,6 +349,8 @@ void DirectGamma(){
         h_pt_ghadron->Fill(temp.Pt(),ww);
         h_gh_sys_10->Fill(temp.Pt(),ww);
         h_gh_sys_11->Fill(temp.Pt(),ww);
+        h_gh_sys_20->Fill(temp.Pt(),ww1);
+        h_gh_sys_21->Fill(temp.Pt(),ww2);
         h_pt_gincl->Fill(temp.Pt(),ww);
         VTXconv = (PHENIX.VTXConversion()>0);                     // check if photon will convert 
       }  
@@ -388,6 +401,8 @@ void DirectGamma(){
       temp = etap.GetDecayDaughter(j);
       if (i<10) temp.Print();
       ww   = etap.GetDaughterWeight(j)*etap.Weight();
+       ww1 = ww*(1+sqrt(0.3*0.3+0.014*0.014));   // based on etap/pi = 0.25+/-0.075(sys)
+       ww2 = ww/(1+sqrt(0.3*0.3+0.014*0.014));   // and BR 2.37+/-0.033%
       id   = etap.GetDaughterID(j);
 
       VTXconv = false; 
@@ -396,7 +411,9 @@ void DirectGamma(){
         h_pt_ghadron->Fill(temp.Pt(),ww);
         h_gh_sys_10->Fill(temp.Pt(),ww);
         h_gh_sys_11->Fill(temp.Pt(),ww);
-        h_pt_gincl->Fill(temp.Pt(),ww);
+        h_gh_sys_20->Fill(temp.Pt(),ww1);
+        h_gh_sys_21->Fill(temp.Pt(),ww2);
+         h_pt_gincl->Fill(temp.Pt(),ww);
         VTXconv = (PHENIX.VTXConversion()>0);                     // check if photon will convert 
       }  
                                                                   // check if decay daughter needs to be reconstrcuted
@@ -479,6 +496,12 @@ void DirectGamma(){
   TH1D *h_g_htoeta = (TH1D*) h_pt_ghadron->Clone("h_g_htoeta");
   h_g_htoeta->Add(h_pt_gpi,-1.);
   h_g_htoeta->Divide(h_pt_geta);
+  TH1D *h_g_htoeta_20 = (TH1D*) h_gh_sys_20->Clone("h_g_htoeta_20");
+  h_g_htoeta_20->Add(h_pt_gpi,-1.);
+  h_g_htoeta_20->Divide(h_pt_geta);
+  TH1D *h_g_htoeta_21 = (TH1D*) h_gh_sys_21->Clone("h_g_htoeta_21");
+  h_g_htoeta_21->Add(h_pt_gpi,-1.);
+  h_g_htoeta_21->Divide(h_pt_geta);
 
 // direct gamma / pi0
   TH1D *h_gtopi       = (TH1D*) h_ptdirectx->Clone("h_gtopi");
@@ -486,8 +509,12 @@ void DirectGamma(){
 
   TF1 *fhtopi = new TF1("htopi", fitf, 5., 25., 1); 
   h_g_htopi->Fit("htopi","R");
-  TF1 *fhtoeta = new TF1("htoeta", fitf, 5., 23., 1); 
+  TF1 *fhtoeta = new TF1("htoeta", fitf, 8., 23., 1); 
   h_g_htoeta->Fit("htoeta","R");
+  TF1 *fhtoeta1 = new TF1("htoeta1", fitf, 8., 23., 1); 
+  h_g_htoeta_20->Fit("htoeta1","R");
+  TF1 *fhtoeta2 = new TF1("htoeta2", fitf, 8., 23., 1); 
+  h_g_htoeta_21->Fit("htoeta2","R");
 
 //////////////////// plot histograms //////////////////////////////////////////////////////
 // parent pt spectra
@@ -606,13 +633,13 @@ void DirectGamma(){
   TH1D *f7 = plot.Frame("f7","p_{T} [GeV/c]","#gamma_{#eta,#omega,#eta'} / #gamma_{#eta}",pt_low,22.99,0.95,1.359);
   f7->Draw();
   h_g_htoeta->Draw("same Chist");
-  // h_g_htopi_10->Draw("same Chist");
-  // h_g_htopi_11->Draw("same Chist");
+  h_g_htoeta_20->Draw("same Chist");
+  h_g_htoeta_21->Draw("same Chist");
   fhtoeta->Draw("same");
 
   plot.SetLegendSize(0.06);
-  TLegend *L7 = plot.Legend("#gamma_{#eta,#omega,#eta'} / #gamma_{#eta} (p_{T}>5 GeV) = 1.19",0.35,.33,.9,.38);
-  // L6->Draw("same");
+  TLegend *L7 = plot.Legend("#gamma_{#eta,#omega,#eta'} / #gamma_{#eta} (p_{T}>8 GeV) = 1.19#pm0.03",0.33,.33,.9,.38);
+  L7->Draw("same");
 
 }
 
