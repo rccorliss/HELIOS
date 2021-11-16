@@ -7,13 +7,8 @@
 #include <TFile.h>
 #include <TH1.h>
 #include <TLorentzVector.h>
-#include "C:/root_v6.22.06/macros/HELIOS/Library/PDG.h"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/MyPHENIX.h"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/PHENIXSetup.h"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/Particle.C"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/InteractionWithMaterial.h"
-#include "C:/root_v6.22.06/macros/FunctionLib/MyPlot.C"
-#include "C:/root_v6.22.06/macros/FunctionLib/HagedornFunctionYield.C"                       //  
+#include "HELIOSLibrary/HELIOSLibrary.h"
+#include "MyPlotting/MyPlot.C"
 
 using namespace std;
 Double_t f_EcalReso(Double_t *x,Double_t *p);
@@ -66,7 +61,7 @@ void TestElectron(){
 
 
 // this is not the righ tdistribution, need to make an electron distribution
-  TF1 *piHagedorn      = Hagedorn("piHagedorn", pi0Mass, pt_max, pt_min);
+  TF1 *piHagedorn      = HagedornYield("piHagedorn", pi0Mass, pt_max, pt_min);
 
   TF1 *EMCalReso = new TF1("EMCalReso",f_EcalReso,0.,10.,2);
   EMCalReso->SetParameters(sigma_E_PbSc_c1,sigma_E_PbSc_c2); 

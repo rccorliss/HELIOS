@@ -7,11 +7,9 @@
 #include <TFile.h>
 #include <TH1.h>
 #include <TLorentzVector.h>
-#include "C:/root_v6.22.06/macros/HELIOS/Library/PDG.h"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/MyPHENIX.h"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/Particle.C"
-#include "C:/root_v6.22.06/macros/FunctionLib/MyPlot.C"
-#include "C:/root_v6.22.06/macros/FunctionLib/HagedornFunctionYield.C"                       //  
+
+#include "HELIOSLibrary/HELIOSLibrary.h"
+#include "MyPlotting/MyPlot.C"
 
 using namespace std;
 

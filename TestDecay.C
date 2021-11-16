@@ -7,10 +7,9 @@
 #include <TFile.h>
 #include <TH1.h>
 #include <TLorentzVector.h>
-#include "C:/root_v6.22.06/macros/HELIOS/Library/PDG.h"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/Particle.C"
-#include "C:/root_v6.22.06/macros/FunctionLib/MyPlot.C"
-#include "C:/root_v6.22.06/macros/FunctionLib/HagedornFunctionYield.C"                       //  
+#include "HELIOSLibrary/HELIOSLibrary.h"
+#include "MyPlotting/MyPlot.C"
+
 
 using namespace std;
 
@@ -58,12 +57,12 @@ void TestDecay(){
   Double_t weight = 1.;
   Int_t ndecay =0;
 
-  TF1 *piHagedorn      = Hagedorn("piHagedorn", pi0Mass, pt_max, pt_min);
-  TF1 *etaHagedorn     = Hagedorn("etaHagedorn", etaMass, pt_max, pt_min);
-  TF1 *rho0Hagedorn    = Hagedorn("omegaHagedorn", rho0Mass, pt_max, pt_min);
-  TF1 *omegaHagedorn   = Hagedorn("omegaHagedorn", omegaMass, pt_max, pt_min);
-  TF1 *etapHagedorn    = Hagedorn("etapHagedorn", etapMass, pt_max, pt_min);
-  TF1 *phiHagedorn     = Hagedorn("phiHagedorn", phiMass, pt_max, pt_min);
+  TF1 *piHagedorn      = HagedornYield("piHagedorn", pi0Mass, pt_max, pt_min);
+  TF1 *etaHagedorn     = HagedornYield("etaHagedorn", etaMass, pt_max, pt_min);
+  TF1 *rho0Hagedorn    = HagedornYield("omegaHagedorn", rho0Mass, pt_max, pt_min);
+  TF1 *omegaHagedorn   = HagedornYield("omegaHagedorn", omegaMass, pt_max, pt_min);
+  TF1 *etapHagedorn    = HagedornYield("etapHagedorn", etapMass, pt_max, pt_min);
+  TF1 *phiHagedorn     = HagedornYield("phiHagedorn", phiMass, pt_max, pt_min);
 //  TF1 *pi0Phi         = new TF1("pi0Phi","1+[0]*x",-2*pi,2*pi);
 //  TF1 *pi0Rapidity    = new TF1("pi0Rapidity","1+[0]*x",-.5,.5);
 

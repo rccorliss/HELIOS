@@ -9,21 +9,17 @@
 #include <TH1.h>
 #include <TF1.h>
 #include <TLorentzVector.h>
-#include "C:/root_v6.22.06/macros/HELIOS/Library/PDG.h"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/Particle.C"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/MyPHENIX.h"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/PHENIXSetup.h"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/InteractionWithMaterial.h"
-#include "C:/root_v6.22.06/macros/FunctionLib/MyPlot.C"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/KinematicDistributions.h"                       //  
-
-MyPHENIX PHENIX;                       // define PHENIX detector 
 
 using namespace std;
 
+#include "HELIOSLibrary/HELIOSLibrary.h"
+#include "MyPlotting/MyPlot.C"
+
+PHENIXDetector MyPHENIX;                       // define PHENIX detector 
+
 TLorentzVector RecoPhoton(TLorentzVector photon, Int_t id = photonID){        // use fast simulation to reconstruct photon 
-    PHENIX.CharacterizeTrack(photon, 0., id); 
-    TLorentzVector reco = PHENIX.ReconstructShower(photon, id);  
+    MyPHENIX.CharacterizeTrack(photon, 0., id); 
+    TLorentzVector reco = MyPHENIX.ReconstructShower(photon, id);  
 //    reco.Print();
     return reco;
 }
@@ -210,7 +206,7 @@ void DirectGamma(){
         h_gh_sys_20->Fill(temp.Pt(),ww);
         h_gh_sys_21->Fill(temp.Pt(),ww);
          h_pt_gincl->Fill(temp.Pt(),ww);
-        VTXconv = (PHENIX.VTXConversion()>0);                     // check if photon will convert 
+        VTXconv = (MyPHENIX.VTXConversion()>0);                     // check if photon will convert 
       }  
 //                                                                 check if decay daughter needs to be reconstrcuted
       reco = (!VTXconv && id==photonID) or (il && (id == electronID or id == positronID));
@@ -289,7 +285,7 @@ void DirectGamma(){
         h_gh_sys_20->Fill(temp.Pt(),ww);
         h_gh_sys_21->Fill(temp.Pt(),ww);
          h_pt_gincl->Fill(temp.Pt(),ww);
-        VTXconv = (PHENIX.VTXConversion()>0);                     // check if photon will convert 
+        VTXconv = (MyPHENIX.VTXConversion()>0);                     // check if photon will convert 
       }  
                                                                   // check if decay daughter needs to be reconstrcuted
       reco = (!VTXconv && id==photonID) or (il && (id == electronID or id == positronID));
@@ -352,7 +348,7 @@ void DirectGamma(){
         h_gh_sys_20->Fill(temp.Pt(),ww1);
         h_gh_sys_21->Fill(temp.Pt(),ww2);
         h_pt_gincl->Fill(temp.Pt(),ww);
-        VTXconv = (PHENIX.VTXConversion()>0);                     // check if photon will convert 
+        VTXconv = (MyPHENIX.VTXConversion()>0);                     // check if photon will convert 
       }  
                                                                   // check if decay daughter needs to be reconstrcuted
       reco = (!VTXconv && id==photonID) or (il && (id == electronID or id == positronID));
@@ -414,7 +410,7 @@ void DirectGamma(){
         h_gh_sys_20->Fill(temp.Pt(),ww1);
         h_gh_sys_21->Fill(temp.Pt(),ww2);
          h_pt_gincl->Fill(temp.Pt(),ww);
-        VTXconv = (PHENIX.VTXConversion()>0);                     // check if photon will convert 
+        VTXconv = (MyPHENIX.VTXConversion()>0);                     // check if photon will convert 
       }  
                                                                   // check if decay daughter needs to be reconstrcuted
       reco = (!VTXconv && id==photonID) or (il && (id == electronID or id == positronID));
@@ -630,7 +626,7 @@ void DirectGamma(){
 
 // gamma hadron / gamma pi0
   TCanvas *c7 = plot.Canvas ("c7",500,400,510,10);
-  TH1D *f7 = plot.Frame("f7","p_{T} [GeV/c]","#gamma_{#eta,#omega,#eta'} / #gamma_{#eta}",pt_low,22.99,0.95,1.359);
+  TH1D *f7 = plot.Frame("f7","p_{T} [GeV/c]","#gamma_{#eta,#omega,#eta'} / #gamma_{#eta}",pt_low,22.99,0.9601,1.319);
   f7->Draw();
   h_g_htoeta->Draw("same Chist");
   h_g_htoeta_20->Draw("same Chist");

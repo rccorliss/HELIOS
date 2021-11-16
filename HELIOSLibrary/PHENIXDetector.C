@@ -1,118 +1,20 @@
-///////////////////////////////////////////////////////////////////////////////////
+////// PHENIXDetector.C //////////////////////////////////////////////////////////////////
 //
 // This Class containing a collection of PHENIX specific functions 
+// describing the EMCal and charged particle tracking
 //
-// changed from collection of functions to class structure 9/13/2021
+// see PHENIXDetector.h for more details
 //  
-//   InAcceptance(particle,charge)                        Ideal PHENIX acceptance - checks if particle is in acceptance 
-//   EMCalSector(phi)                                     EMCal sector number 1 - 8 (phi only)
-//   SmearEnergy(randomGenerator,energy,option,c1,c2)     EMCal energy resoltion function - parameters c1,c2 are optional
-//   NonLinearEnergy(energy,constant1,constant2)          parameterized non linear energy respose of EMCal
+// Axel Drees 
+// most recent update 11/16/2021
 //
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef MyPHENIX_h
-#define MyPHENIX_h
+#include "PHENIXDetector.h"
 
-#include <TLorentzVector.h>                                    // MyParticle inherits from TLorentz Vector
-#include <TRandom3.h>
-#include <TMath.h>
-#include "PDG.h"                                             // 
-#include "PHENIXSetup.h"
-#include "InteractionWithMaterial.h"
+  PHENIXDetector::PHENIXDetector(){                // constructor
 
-class MyPHENIX
-{
-
-public:
-  MyPHENIX();                                                // default constructor
-  virtual ~MyPHENIX();                                       // destructor
-
-// member functions - see definitions below for details 
-// general central arm functions  
-  Int_t InAcceptance(TLorentzVector particle, Int_t q); 
-
-// calculate inportant variables for given particle
-  void CharacterizeTrack(TLorentzVector VT, Int_t q, Int_t id);
-
-// EMCal 
-  TLorentzVector ReconstructShower(TLorentzVector VT, Int_t id);
-  Int_t    EMCalSector(Double_t phi);
-  Int_t    EMCalSectorCoordinates(Double_t phi, Double_t theta, Double_t& y, Double_t& z);
-  Bool_t   EMCalLive(Int_t sector);
-  Double_t NonLinearEnergy(Double_t energy, Double_t c0=1.003, Double_t c1=0.05, Double_t c2=1.77);
-  Double_t SmearEnergy(Double_t energy, Int_t opt=0, Double_t c1=0.081, Double_t c2=0.021 );
-  Double_t SmearEMCalPosition(Double_t energy, Double_t x, Int_t opt=0 );
-  Double_t ShowerEnergyCorrection(Double_t energy, Double_t sinT);
-  Double_t ShowerEnergyCorrection(Double_t energy, Double_t y, Double_t z);
-  Double_t EMCalImpactAngle(TLorentzVector VT, Int_t id);
-  Double_t EMCalPhi(TLorentzVector VT, Double_t q); 
-
-// Tracking
-  TLorentzVector ReconstructTrack(TLorentzVector VT, Int_t id);
-  Double_t SmearPt(Double_t pt, Int_t &q);
-  Double_t SmearDCphi0(Double_t pt, Double_t phi0);
-  Double_t SmearDCeta(Double_t pt, Double_t eta0);
-  Double_t DCPhi(TLorentzVector VT, Double_t q); 
-  Double_t RICHPhi(TLorentzVector VT, Double_t q); 
-
-  Double_t ElectronMomentum(Double_t E, Double_t p);
-
-// physics processes 
-  Int_t VTXConversion();
-
-// get Private variables
-  Int_t Arm(){
-    return arm;
-  }
-  Int_t Sector(){
-    return sector;
-  }
-  Double_t SectorY(){
-    return sectorY;
-  }
-  Double_t SectorZ(){
-    return sectorZ;
-  }
-  Double_t SectorSinT(){
-//   if (sector != 0) std::cout << " --+-- " << sectorSinT << std::endl;
-    return sectorSinT;
-  }
-  Double_t Phi_EMCal(){
-    return phi_EMCal;
-  }
-  Double_t Phi_DC(){
-    return phi_DC;
-  }
-  Double_t Phi_RICH(){
-    return phi_RICH;
-  }
-
-private:
-
-// internal variables
-  TRandom3 randy = TRandom3(0);                                // Random Generator
-  Double_t SectorX0[8],SectorXmax[8],SectorXmin[8];
-  Double_t SectorY0[8],SectorYmax[8],SectorYmin[8];
-  Double_t P_R_EMCal_max[8];
-  Bool_t Intersect(Double_t &Px,Double_t &Py,Double_t *x, Double_t *y);
-
-  Double_t  phi_EMCal;
-  Double_t  phi_RICH;
-  Double_t  phi_DC;
-  Double_t  alpha_DC;
-  Double_t  alpha_EMCal;
-  Double_t  sectorZ;
-  Double_t  sectorY;
-  Double_t  sectorSinT;
-  Int_t     sector;
-  Int_t     arm; 
-
-}; // end of Particle class
-//
-// End of Header File
-
-  MyPHENIX::MyPHENIX(){                // constructor
+  std::cout << "Hello test class " << std::endl;
 
     TH2D *h_xy = new TH2D("h_xy","",1100,-5.5,5.5,1100,-5.5,5.5);
     for (int i=0; i<8; i++){                                   // calculate sector edges in x-y plane for internal use
@@ -124,9 +26,9 @@ private:
        SectorYmin[i] = cos((P_centerPhi[i]-P_dPhi[i])*pi)*P_R_EMCal_max[i];
        SectorYmax[i] = cos((P_centerPhi[i]+P_dPhi[i])*pi)*P_R_EMCal_max[i];
     }
-
   }
-  MyPHENIX::~MyPHENIX(void){}
+  PHENIXDetector::~PHENIXDetector(void){}
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,7 +53,7 @@ private:
 //  
 // Axel Drees  10/20/2018 - updated 9/30/2019
 //
-Int_t MyPHENIX::InAcceptance(TLorentzVector particle, Int_t q)
+Int_t PHENIXDetector::InAcceptance(TLorentzVector particle, Int_t q)
 {
   Double_t phi_rich, phi_DC, phi_ECAL;
   bool dep = 0;
@@ -201,7 +103,7 @@ Int_t MyPHENIX::InAcceptance(TLorentzVector particle, Int_t q)
 //
 // Axel Drees 10/25/2018
 // 
-Int_t MyPHENIX::EMCalSector(Double_t phi){
+Int_t PHENIXDetector::EMCalSector(Double_t phi){
    
   sector = 0;
   for(int i=0;i<8;i++){
@@ -227,7 +129,7 @@ Int_t MyPHENIX::EMCalSector(Double_t phi){
 //
 // Axel Drees 8/20/21
 // 
-Int_t MyPHENIX::EMCalSectorCoordinates(Double_t phi, Double_t theta, Double_t& y, Double_t& z){
+Int_t PHENIXDetector::EMCalSectorCoordinates(Double_t phi, Double_t theta, Double_t& y, Double_t& z){
 
   sector=0;
   Double_t L = P_R_EMCal; // distance from origin in cm
@@ -267,7 +169,7 @@ Int_t MyPHENIX::EMCalSectorCoordinates(Double_t phi, Double_t theta, Double_t& y
 // Axel Drees updated 7/26/2021
 // dito               8/03/2021
 // 
-Double_t MyPHENIX::SmearEnergy(Double_t energy, Int_t opt, Double_t c1, Double_t c2 ){
+Double_t PHENIXDetector::SmearEnergy(Double_t energy, Int_t opt, Double_t c1, Double_t c2 ){
 
   Double_t E,E1,E2,Neff,sigmaE;
 
@@ -314,7 +216,7 @@ Double_t MyPHENIX::SmearEnergy(Double_t energy, Int_t opt, Double_t c1, Double_t
 //
 // Axel Drees        8/13/2021  
 // 
-Double_t MyPHENIX::SmearEMCalPosition(Double_t energy, Double_t x, Int_t opt ){
+Double_t PHENIXDetector::SmearEMCalPosition(Double_t energy, Double_t x, Int_t opt ){
 
   Double_t X = 0,sigmaX = 0;
   Double_t c1,c2,d;
@@ -355,7 +257,7 @@ Double_t MyPHENIX::SmearEMCalPosition(Double_t energy, Double_t x, Int_t opt ){
 //
 // Axel Drees  25/10/2018
 //
-Bool_t MyPHENIX::EMCalLive(Int_t sector){
+Bool_t PHENIXDetector::EMCalLive(Int_t sector){
   Bool_t live=0;
 
   live =  (randy.Uniform(0.,1.) >= P_SectorLive[sector-1]);
@@ -375,7 +277,7 @@ Bool_t MyPHENIX::EMCalLive(Int_t sector){
 //
 //  Axel Drees 10/24/2021
 //
-Double_t MyPHENIX::NonLinearEnergy(Double_t energy, Double_t c0, Double_t c1, Double_t c2){
+Double_t PHENIXDetector::NonLinearEnergy(Double_t energy, Double_t c0, Double_t c1, Double_t c2){
 
   Double_t E = c0*energy / (1 + c1*exp(-c2*energy));
   return E; 
@@ -396,7 +298,7 @@ Double_t MyPHENIX::NonLinearEnergy(Double_t energy, Double_t c0, Double_t c1, Do
 //
 //  Axel Drees 11/1/2018
 //
-Int_t MyPHENIX::VTXConversion(){
+Int_t PHENIXDetector::VTXConversion(){
 
   if (randy.Uniform(0.,1.) < 7./9.*VTX_X0[0]) return 1;
   if (randy.Uniform(0.,1.) < 7./9.*VTX_X0[1]) return 2;
@@ -422,7 +324,7 @@ Int_t MyPHENIX::VTXConversion(){
 //
 // Axel Drees 9/15/2020
 //
- Double_t MyPHENIX::SmearPt(Double_t pt, Int_t &q){
+ Double_t PHENIXDetector::SmearPt(Double_t pt, Int_t &q){
    
     Double_t a;   
     Double_t alpha = alpha_DC; 
@@ -455,7 +357,7 @@ Int_t MyPHENIX::VTXConversion(){
 //
 // Axel Drees 9/16/2021
 //
-Double_t MyPHENIX::SmearDCphi0(Double_t pt, Double_t phi0)
+Double_t PHENIXDetector::SmearDCphi0(Double_t pt, Double_t phi0)
 {
   Double_t phi;
   Double_t ff=(1-P_delta)/P_delta;
@@ -486,7 +388,7 @@ Double_t MyPHENIX::SmearDCphi0(Double_t pt, Double_t phi0)
 //
 // Axel Drees 9/16/2021
 //
-Double_t MyPHENIX::SmearDCeta(Double_t pt, Double_t eta0)
+Double_t PHENIXDetector::SmearDCeta(Double_t pt, Double_t eta0)
 {
   Double_t eta;
 
@@ -505,7 +407,7 @@ Double_t MyPHENIX::SmearDCeta(Double_t pt, Double_t eta0)
 //
 // Axel Drees 10/2/2021
 //
-void MyPHENIX::CharacterizeTrack(TLorentzVector VT, Int_t q, Int_t id){
+void PHENIXDetector::CharacterizeTrack(TLorentzVector VT, Int_t q, Int_t id){
   
   Double_t y=0,z=0;
    
@@ -532,7 +434,7 @@ void MyPHENIX::CharacterizeTrack(TLorentzVector VT, Int_t q, Int_t id){
 // Axel Drees  9/17/2021
 //
 
-TLorentzVector MyPHENIX::ReconstructTrack(TLorentzVector VT, Int_t q)
+TLorentzVector PHENIXDetector::ReconstructTrack(TLorentzVector VT, Int_t q)
 {
   TLorentzVector Reco;
   Double_t pt,eta,phi,m; 
@@ -556,7 +458,7 @@ TLorentzVector MyPHENIX::ReconstructTrack(TLorentzVector VT, Int_t q)
   } 
 }
 
-Double_t MyPHENIX::ElectronMomentum(Double_t E, Double_t p)
+Double_t PHENIXDetector::ElectronMomentum(Double_t E, Double_t p)
 {
   Double_t value;
   float we,wp;
@@ -581,7 +483,7 @@ Double_t MyPHENIX::ElectronMomentum(Double_t E, Double_t p)
 // Axel Drees  9/17/2021
 //
 
-TLorentzVector MyPHENIX::ReconstructShower(TLorentzVector VT, Int_t id)
+TLorentzVector PHENIXDetector::ReconstructShower(TLorentzVector VT, Int_t id)
 {
   TLorentzVector Reco;
   Int_t is,ia,iopt,q;
@@ -648,7 +550,7 @@ TLorentzVector MyPHENIX::ReconstructShower(TLorentzVector VT, Int_t id)
 //
 // Axel Drees 9/26/2021
 //
-Double_t  MyPHENIX::ShowerEnergyCorrection(Double_t energy, Double_t sinT)
+Double_t  PHENIXDetector::ShowerEnergyCorrection(Double_t energy, Double_t sinT)
 // use sin(theta) calculated externally 
 // must be used for charged particles
 {
@@ -663,7 +565,7 @@ Double_t  MyPHENIX::ShowerEnergyCorrection(Double_t energy, Double_t sinT)
   return corr; 
 }
 
-Double_t  MyPHENIX::ShowerEnergyCorrection(Double_t energy, Double_t y, Double_t z)
+Double_t  PHENIXDetector::ShowerEnergyCorrection(Double_t energy, Double_t y, Double_t z)
 // calculates sin(theta) from y,z position in local coordinates
 // this corresponds to what is assumed in the EMCal reconstruction 
 // but is valid only for photons
@@ -688,7 +590,7 @@ Double_t  MyPHENIX::ShowerEnergyCorrection(Double_t energy, Double_t y, Double_t
 //
 // Axel Drees 9/27/2021
 //
-Double_t MyPHENIX::EMCalImpactAngle(TLorentzVector VT, Int_t id){
+Double_t PHENIXDetector::EMCalImpactAngle(TLorentzVector VT, Int_t id){
 
   Int_t is;
   Double_t y=0,z=0,pT;
@@ -733,7 +635,7 @@ Double_t MyPHENIX::EMCalImpactAngle(TLorentzVector VT, Int_t id){
 //
 // Axel Drees 10/2/2021
 //
-Double_t MyPHENIX::EMCalPhi(TLorentzVector VT, Double_t q){
+Double_t PHENIXDetector::EMCalPhi(TLorentzVector VT, Double_t q){
 
   Double_t phi;
   Double_t phiDC,xDC,yDC,xE,yE;
@@ -772,7 +674,7 @@ Double_t MyPHENIX::EMCalPhi(TLorentzVector VT, Double_t q){
   return phi;
 
 }
-Double_t MyPHENIX::DCPhi(TLorentzVector VT, Double_t q){
+Double_t PHENIXDetector::DCPhi(TLorentzVector VT, Double_t q){
 
   Double_t phi; 
   if(q==0) {
@@ -785,7 +687,7 @@ Double_t MyPHENIX::DCPhi(TLorentzVector VT, Double_t q){
   return phi;
 
 }
-Double_t MyPHENIX::RICHPhi(TLorentzVector VT, Double_t q){
+Double_t PHENIXDetector::RICHPhi(TLorentzVector VT, Double_t q){
 
   Double_t phi;
   if(q==0) {
@@ -805,7 +707,7 @@ Double_t MyPHENIX::RICHPhi(TLorentzVector VT, Double_t q){
 // 
 // if lines intersect it will return the coordinates Px,Py of intersection
 
-Bool_t MyPHENIX::Intersect(Double_t &Px,Double_t &Py,Double_t *x, Double_t *y){
+Bool_t PHENIXDetector::Intersect(Double_t &Px,Double_t &Py,Double_t *x, Double_t *y){
   Bool_t inter = false;
 
   Double_t A1,B1,C1;
@@ -839,5 +741,3 @@ Bool_t MyPHENIX::Intersect(Double_t &Px,Double_t &Py,Double_t *x, Double_t *y){
   }
   return inter;
 }
-
-#endif 

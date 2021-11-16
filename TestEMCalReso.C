@@ -7,11 +7,8 @@
 #include <TFile.h>
 #include <TH1.h>
 #include <TLorentzVector.h>
-#include "C:/root_v6.22.06/macros/HELIOS/Library/PDG.h"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/MyPHENIX.h"
-#include "C:/root_v6.22.06/macros/HELIOS/Library/Particle.C"
-#include "C:/root_v6.22.06/macros/FunctionLib/MyPlot.C"
-#include "C:/root_v6.22.06/macros/FunctionLib/HagedornFunctionYield.C"                       //  
+#include "HELIOSLibrary/HELIOSLibrary.h"
+#include "MyPlotting/MyPlot.C"
 
 
 using namespace std;
@@ -56,9 +53,9 @@ void TestEMCalReso(){
   Double_t ww;
 
 //  TF1 *piHagedorn      = Hagedorn("piHagedorn", pi0Mass, pt_max, pt_min);
-  TF1 *piHagedornRE    = Hagedorn("piHagedornRE", pi0Mass, pt_max, pt_min, 58, 0.661, 0.015, 0.745, -9.167);
+  TF1 *piHagedornRE    = HagedornYield("piHagedornRE", pi0Mass, pt_max, pt_min, 58, 0.661, 0.015, 0.745, -9.167);
 // ppg088
-  TF1 *piHagedorn     = Hagedorn("piHagedorn", pi0Mass, pt_max, pt_min, 377., 0.356, 0.068, 0.7, -8.25);
+  TF1 *piHagedorn     = HagedornYield("piHagedorn", pi0Mass, pt_max, pt_min, 377., 0.356, 0.068, 0.7, -8.25);
 
   TH1D *h_ptpi             = new TH1D("h_ptpi0","pt",100,pt_low,pt_high);
   TH1D *h_ptpireco         = new TH1D("h_ptpireco","ptreco",100,pt_low,pt_high);
