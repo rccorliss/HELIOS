@@ -1,15 +1,56 @@
 //////   PHENIXDetector.h //////////////////////////////////////////////////////////////////
 //
-// This Class containing a collection of PHENIX specific functions 
-// describing the EMCal and charged particle tracking
+// HELIOS PHENIXDetector Class used to approximate acceptance and detector response 
+// of the main PHENIX central arm detectors, EMCal and DC/PC1
+// 
 //
-// changed from collection of functions to class structure 9/13/2021
-//  
-//   InAcceptance(particle,charge)                        Ideal PHENIX acceptance - checks if particle is in acceptance 
-//   EMCalSector(phi)                                     EMCal sector number 1 - 8 (phi only)
-//   SmearEnergy(randomGenerator,energy,option,c1,c2)     EMCal energy resoltion function - parameters c1,c2 are optional
-//   NonLinearEnergy(energy,constant1,constant2)          parameterized non linear energy respose of EMCal
+// PHENIXDetector()     constructor, sets private member variables not specific to a particle   
 //
+// high level member functions to generated PHENIX "default" response 
+// - CharacterizeTrack(particle, charge, id)  sets private member variables for particle
+// - ReconstructTrack(particle, id)           returns TLorentzVector with reconstructed charged track
+// - ReconstructShower(particle, id)          returns TLorentzVector with reconstrcuted EMCal shower 
+// 
+// more specific public member functions that can be used for systematic studies by 
+// variing default response, more detailed description can be found in PHENIXDetector.C
+// 
+// general:
+// - InAcceptance(particle,charge)            Ideal PHENIX acceptance - checks if particle is in acceptance 
+// EMCal
+// - EMCalSector(phi)                         returns sector number 
+// - EMCalSectorCoordinates(phi,theta, y, z)  returns x,z in local sector coordinates 
+// - EMCalLive(sector)                        returns true or false, implemented statistically without dead
+// - SmearEnergy(energy, opt, c1, c2)         returns smeared energy, default parameters opt 0=PbSc, 1=PbGl,  
+//                                            all other values use provided c1, c2
+// - SmearEMCalPosition(energy, x, opt)       returns smeared position, 
+//                                            x is distance from sector center, opt 0=PbSc, 1=PbGl
+// - ShowerEnergyCorrection(energy, sinT)     returns energy correction based on impact angle 
+// - ShowerEnergyCorrection(energy, y, z)     returns energy correction based on impact angle (for photons only)
+// - EMCalImpactAngle(particle, id)           returns sinT impact angle on calorimeter 
+// - EMCalPhi(particle, q)                    returns phi angle of charged particle at calorimeter  
+// - NonLinearEnergy(energy, c0, c1, c2)      optional nonlinearty with parameters c0=1.003, c1=0.05, c2=1.77
+//                                            not used in default shower reconstruction
+// DC/PC1
+// - SmearPt(pt, q)                           returns smeared pt, charge may change at very high momenta
+// - SmearDCphi0(pt, phi0)                    returns smeared phi             
+// - SmearDCeta(pt, eta0)                     returns smeared eta
+// - DCPhi(particle, q)                       returns phi angle at DC 
+// - RICHPhi(particle, q)                     dito at RICH 
+// other functions
+// - ElectronMomentum(E, p)                   calculates weighted average of electron momentum from reconstructed 
+//                                            E and p   
+// - VTXConversion()                          returns 1-4 if a conversion in VTX layer will occure, else 0 
+//
+// member functions that return private member variables, can be accessed after creating defaul response to particle 
+// - Arm()
+// - Sector()
+// - SectorY()
+// - SectorZ()
+// - SectorSinT()
+// - Phi_EMCal(){
+// - Phi_DC()
+// - Phi_DC()
+// - Phi_RICH()
 //
 // Axel Drees
 // updated 11/16/2021

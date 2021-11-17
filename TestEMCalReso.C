@@ -21,9 +21,7 @@ void TestEMCalReso(){
 
   cout << endl;
 
-
-
-  MyPHENIX PHENIX;
+  PHENIXDetector PHENIX;
   Particle pi0("pi0");
 
   TLorentzVector gamma1, gamma2; 
@@ -42,7 +40,7 @@ void TestEMCalReso(){
   Double_t pt_high = 15.;
   Double_t AssyCut = 0.2;                      // Assymetry cut for calibration
   Double_t Ecut = 0.2;
-  Int_t nevt = 10000000;
+  Int_t nevt = 1000000;
 
   Bool_t g1 = false;
   Bool_t g2 = false;
@@ -84,10 +82,7 @@ void TestEMCalReso(){
     if  (i < nevt) {
       pi0.GenerateP(pt_min,pt_max);                                // generate 4 vector for pi with flat distribution
       pi0.SetWeight(piHagedorn->Eval(pi0.Pt())/float(nevt));
-    } else {
-      pi0.GenerateP(piHagedorn);                                     // generate 4 vector for pi with flat distribution
-      pi0.SetWeight(1/float(nevt));
-    }
+    } 
     if (PHENIX.InAcceptance(pi0,pi0.Charge())>0) {                                // monitor PEHNIX acceptance 
       h_butsyk->Fill(pi0.Phi(),1./pi0.Pt(),pi0.Weight());                   //      for charged particles
       h_ptpi->Fill(pi0.Pt(),pi0.Weight());
@@ -146,13 +141,13 @@ void TestEMCalReso(){
              abs((Reco1.E()-Reco2.E())/(Reco1.E()+Reco2.E()))<=AssyCut ){      // both photons in same EMCal sector and within assymetry cut
           Reco0 = Reco1+Reco2;
           h_ptpireco->Fill(Reco0.Pt(),ww);
-//          if (is1 == is2) {
+          if (is1 == is2) {
             if (isPbGl1) {
               h_piMass1->Fill((Reco1.E()+Reco2.E())/2,Reco0.M()/pi0Mass,ww);   
             } else {
               h_piMass->Fill((Reco1.E()+Reco2.E())/2,Reco0.M()/pi0Mass,ww);               
             }
-//          }
+          }
         }
       }
 //
@@ -178,9 +173,6 @@ void TestEMCalReso(){
       }
     }  
   } // end of event loop
-
-
-
 
  ////////////////////////////////////////////////////////////////////////////
 
@@ -238,54 +230,61 @@ void TestEMCalReso(){
   h_piMassPos1_sigma->SetName("h_piMassPos1_sigma");
   plot.StyleMe(h_piMassPos1_sigma,20,kGreen,.8);
 
-
-
-
   plot.StyleMe(h_ptpi,   20, kBlue, 1., 1, 2); 
   plot.StyleMe(h_ptpireco, 20, kTeal, 1., 1, 2); 
 
-
+  plot.SetLeftMargin(.2);  
+  plot.SetyTitleOffset(1.4);
   TCanvas *c1 = plot.Canvas ("c1",400,500,10,10,1);
-  TH1D *frame1 = plot.Frame("frame1","pt","counts",pt_low,pt_high*.999,1e-12,1.);
-  frame1->Draw();
+  TH1D *f1    = plot.Frame("f1","p_{T} [GeV/c^{2}]","dN/dp_{T} [a.u.]",pt_low,pt_high*.999,1e-12,1.);
+  f1->Draw();
   h_ptpi->Draw("sameL Chist");
   h_ptpireco->Draw("sameL Chist");
-
-
-  TCanvas *c2 = plot.Canvas ("c2",600,300,410,10);
-  TH1D *frame2 = plot.Frame("frame2","phi","q/pt",-2.*pi,2*pi,-6.,6.);
-  frame2->Draw();
-  h_butsyk->Draw("Col same");
+  TLegend *L1 = plot.Legend(" " ,0.5,.79,.7,.95);
+  L1->AddEntry(h_ptpi,"#pi^{0}","l");
+  L1->AddEntry(h_ptpireco,"reconstructed #pi^{0}","l");
+  L1->Draw("same");
+  plot.Reset();
  
-  TCanvas *c3 = plot.Canvas ("c3",400,400,10,510);
-  TH1D *frame3 = plot.Frame("frame3","E true","E reco-true",0.,15.,-0.3,.3);
-  frame3->Draw();
+  TCanvas *c2 = plot.Canvas ("c2",400,400,10,510);
+  TH1D *f2 = plot.Frame("c2","E_{true} [GeV]","(E_{reco}-E_{true})/E_{true}",0.,15.,-0.3,.3);
+  f2->Draw();
   h_Ereso->Draw("Col same");
   h_Ereso_mean->Draw("same");
+  TLegend *L2 = plot.Legend(" PbSc " ,0.5,.79,.7,.95);
+  L2->Draw("same");
 
-  TCanvas *c6 = plot.Canvas ("c6",400,400,110,510);
-  TH1D *frame6 = plot.Frame("frame6","E true","E reco-true",0.,15.,-0.3,.3);
-  frame6->Draw();
+  TCanvas *c3 = plot.Canvas ("c3",400,400,260,510);
+  TH1D *f3 = plot.Frame("f3","E_{true} [GeV]","(E_{reco}-E_{true})/E_{true}",0.,15.,-0.3,.3);
+  f3->Draw();
   h_Ereso1->Draw("Col same");
   h_Ereso1_mean->Draw("same");
+  TLegend *L3 = plot.Legend(" PbGl " ,0.5,.79,.7,.95);
+  L3->Draw("same");
 
-  TCanvas *c4 = plot.Canvas ("c4",400,400,410,510);
-  TH1D *frame4 = plot.Frame("frame4","avg E reco","piMass ",0.,5.,0.,1.3);
-  frame4->Draw();
+  TCanvas *c4 = plot.Canvas ("c4",400,400,510,510);
+  TH1D *f4 = plot.Frame("f4","<E_{1}+E_{2}> [GeV]","(m_{reco}-m_{true})/m_{true}",0.,5.,0.,1.3);
+  f4->Draw();
   h_piMass->Draw("Col same");
   h_piMass_mean->Draw("same");
+  TLegend *L4 = plot.Legend(" PbSc " ,0.5,.29,.7,.35);
+  L4->Draw("same");
 
-  TCanvas *c7 = plot.Canvas ("c7",400,400,510,510);
-  TH1D *frame7 = plot.Frame("frame7","avg E reco","piMass ",0.,5.,0.,1.3);
-  frame7->Draw();
+  TCanvas *c5 = plot.Canvas ("c5",400,400,760,510);
+  TH1D *f5 = plot.Frame("f5","<E_{1}+E_{2}> [GeV]","(m_{reco}-m_{true})/m_{true}",0.,5.,0.,1.3);
+  f5->Draw();
   h_piMass1->Draw("Col same");
   h_piMass1_mean->Draw("same");
+  TLegend *L5 = plot.Legend(" PbGl " ,0.5,.29,.7,.35);
+  L5->Draw("same");
 
-  TCanvas *c5 = plot.Canvas ("c5",400,400,810,510);
-  TH1D *frame5 = plot.Frame("frame5","avg E reco","piMass ",0.,5.,0.,1.3);
-  frame5->Draw();
+  TCanvas *c6 = plot.Canvas ("c6",400,400,410,10);
+  TH1D *f6 = plot.Frame("f6","<E_{1}+E_{2}> [GeV]","(m_{reco}-m_{true})/m_{true}",0.,5.,0.,1.3);
+  f6->Draw();
   h_piMassPos->Draw("Col same");
   h_piMassPos_mean->Draw("same");
+  TLegend *L6 = plot.Legend(" PbGl - position resolution only " ,0.3,.29,.7,.35);
+  L6->Draw("same");
 
   TCanvas *c10 = plot.Canvas ("c10",500,400,1010,10);
   TH1D *frame10 = plot.Frame("frame10","E_{reco} [GeV]","#sigma_{E} [%]",0.,8.,0.,.25);
@@ -321,10 +320,7 @@ void TestEMCalReso(){
   L11->AddEntry(EMCalReso1,"5.9%/#sqrt{E_{true}} + 0.8%","l");
   L11->Draw("same");
 
-  TCanvas *c12 = plot.Canvas ("c12",500,400,1010,410);
-  TH1D *frame12 = plot.Frame("frame12","E_{reco} [GeV]","#sigma_{E_{true}} [%]",0.,8.,0.95,1.05);
-  frame12->Draw();
-  h_piMass_mean->Draw("same");
+
 
 }
 

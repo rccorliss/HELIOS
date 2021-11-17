@@ -1,14 +1,20 @@
-HELIOS 
+HH  HH EEEEEE LL     IIII   OOO    SSSSS
+HH  HH EE     LL      II   O   O  SS
+HHHHHH EEEEE  LL      II  O     O  SSSS
+HH  HH EE     LL      II   O   O      SS
+HH  HH EEEEEE LLLLLL IIII   OOO   SSSSS         
 
-Axel Drees 11/16/2021
+FAST SIMULATION          Axel Drees 2021
 
 Standalone fast simulation package that run in ROOT framework (version 6). 
-Desigined to aid systematic studies of measurements of photons and lepton 
+Designed to aid systematic studies of measurements of photons and lepton 
 pairs in high energy p+p, p+A and A+A collisions, in particular with PHENIX. 
 
-HELIOS package components in /HELIOSLibrary/ 
+All necessary files of the HELIOS package are in /HELIOSLibrary/ 
 
-include file
+content of /HELIOSLibrary/
+
+main include file for user program
 - HELIOSLibrary.h             use #include "...path../HELIOSLibrary.h" to include all necessary 
                               components of HELIOS in your code
 Particle generator
@@ -24,10 +30,65 @@ Interaction with matter
 - InteractionWithMaterial.h   simulation of physics processes like Photon conversions, bremmsstrahlung etc. 
 
 Experiment specific simulation
-- PHENIXSetup.h               collection of constants defining PHENIX
-- MyPHENIX.h                  PHENIX detector class
+- PHENIXSetup.h               collection of constants defining PHENIXDetector
+- PHENIXDetector.C, PHENIXDetector.h                  
+                              PHENIX detector class used to approximate acceptance and detector response 
+                              of the main PHENIX central arm detectors, EMCal and DC/PC1
 
-////// HELIOSLibrary.h /////////////////////////////////////////////////////////////////////////////////////
+Example codes running HELIOS fast simulation, can be executed at ROOT prompt (needs MyPlot class see below)
+- DirectGamma.C               generates direct photons, and photons from hadron decays, 
+                              true and reconstructed and histograms various properties like g_hadron/g_pion
+                          
+- TestDecay.C                 test Particle and Decay class: generates all implemented decays 
+                              and plots photons and e+e- pairs properties
+
+- TestEMCalReso.C 
+-
+
+the example codes heavily use the MyPlot class for displaying graphs, this class is not needed 
+to run HELIOS fast simulations. Code is located in /MyPlotting/
+
+MyPlot.h 
+
+TCanvas *Canvas (name,  width, height, x-position, y-position, logy=0, logx=0 )
+•   Creates default TCanvas of “name” with width and height and upper left corner at x-, x-position     
+•   Log x or y scales optional
+•   Sets  LeftMargin, RightMargin, TopMargin, and BottomMargin to default values, which can be changed (see below)
+
+TFrame *Frame (name,  xAxisLable,  yAxisLable,  xmin,  xmax, ymin, ymax, centerTitle=0);
+•   Creates a default TFrame with axis labels and axis ranges 
+•   Center axis labels optional  
+•   Axis title offset, size and font set to default values, which can be changed (see below) 
+
+TLegend *Legend (name, xmin, ymin, xmax, ymax, ScaleDefaultSize=1.);
+•   Creates a default legend at with 0 < xmin,xmax,ymin,ymax < 1
+•   Sets default size and font, size can be scaled optimally
+
+StyleMe (TObject, marker=20, color=1, msize=1.2,  lstyle=1 , lwidth=2);
+•   Sets marker and line properties for TH1D, TF1, TGraph, TGraphErrors
+
+Change default parameters before creating canvas:
+•   SetLeftMargin(t)        default 0.18
+•   SetRightMargin(t)       default 0.02
+•   SetBottomMargin(t)      default 0.15
+•   SetTopMargin(t)         default 0.02
+
+Change default parameters before creating frame:
+•   SetFont(i)              default   42 
+•   SetxTitleOffset(t)      default    1.1  
+•   SetyTitleOffset(t)      default   1.1
+•   SetTitleSize(t)         default   0.06
+•   void SetLabelSize(t)    default   0.05 
+•   SetLegendSize(t)        default   0.05
+•   SetLegendColor(t)       default  kBlack
+
+Restore default parameters for next canvas/frame with Reset()
+
+ 
+
+Description of HELIOS package from header files
+
+////// HELIOSLibrary.h /////////////////////////////////////////////////////////////////////
 //
 //  includes all necessary code for the HELIOS packackage and 
 //  defines string with full pathlength to local directory of HELIOS package
@@ -39,7 +100,7 @@ Experiment specific simulation
 //  Axel Drees 11/15/2021
 //
 //
-///// PDG.h /////////////////////////////////////////////////////////////////////////////////////////////////
+///// PDG.h ////////////////////////////////////////////////////////////////////////////////
 //
 // Collection Particle Properties used in HELIOS from PDG: https://pdg.lbl.gov/2021
 //
@@ -47,7 +108,7 @@ Experiment specific simulation
 // Axel Drees 8/30/2021
 //            9/21/2021 updated
 //  
-//// Particle.h //////////////////////////////////////////////////////////////////////////////////////////////
+//// Particle.h /////////////////////////////////////////////////////////////////////////////
 //
 // HELIOS Particle Class used for stand alone simulation in ROOT 6
 //
@@ -109,7 +170,7 @@ Experiment specific simulation
 // Axel Drees 11/19/2019
 // integrated to HELIOS 9/21/2021
 //
-////// Decay.h //////////////////////////////////////////////////////////////////////////////////////////////////
+////// Decay.h ///////////////////////////////////////////////////////////////////////////////
 //
 // Header for Class Decay that handels all decay branches defined for particles in HELIOS
 //
@@ -204,3 +265,60 @@ Experiment specific simulation
 //
 // Axel Drees 9/14/2021
 //  
+//////   PHENIXDetector.h //////////////////////////////////////////////////////////////////
+//
+// HELIOS PHENIXDetector Class used to approximate acceptance and detector response 
+// of the main PHENIX central arm detectors, EMCal and DC/PC1
+// 
+//
+// PHENIXDetector()     constructor, sets private member variables not specific to a particle   
+//
+// high level member functions to generated PHENIX "default" response 
+// - CharacterizeTrack(particle, charge, id)  sets private member variables for particle
+// - ReconstructTrack(particle, id)           returns TLorentzVector with reconstructed charged track
+// - ReconstructShower(particle, id)          returns TLorentzVector with reconstrcuted EMCal shower 
+// 
+// more specific public member functions that can be used for systematic studies by 
+// variing default response, more detailed description can be found in PHENIXDetector.C
+// 
+// general:
+// - InAcceptance(particle,charge)            Ideal PHENIX acceptance - checks if particle is in acceptance 
+// EMCal
+// - EMCalSector(phi)                         returns sector number 
+// - EMCalSectorCoordinates(phi,theta, y, z)  returns x,z in local sector coordinates 
+// - EMCalLive(sector)                        returns true or false, implemented statistically without dead
+// - SmearEnergy(energy, opt, c1, c2)         returns smeared energy, default parameters opt 0=PbSc, 1=PbGl,  
+//                                            all other values use provided c1, c2
+// - SmearEMCalPosition(energy, x, opt)       returns smeared position, 
+//                                            x is distance from sector center, opt 0=PbSc, 1=PbGl
+// - ShowerEnergyCorrection(energy, sinT)     returns energy correction based on impact angle 
+// - ShowerEnergyCorrection(energy, y, z)     returns energy correction based on impact angle (for photons only)
+// - EMCalImpactAngle(particle, id)           returns sinT impact angle on calorimeter 
+// - EMCalPhi(particle, q)                    returns phi angle of charged particle at calorimeter  
+// - NonLinearEnergy(energy, c0, c1, c2)      optional nonlinearty with parameters c0=1.003, c1=0.05, c2=1.77
+//                                            not used in default shower reconstruction
+// DC/PC1
+// - SmearPt(pt, q)                           returns smeared pt, charge may change at very high momenta
+// - SmearDCphi0(pt, phi0)                    returns smeared phi             
+// - SmearDCeta(pt, eta0)                     returns smeared eta
+// - DCPhi(particle, q)                       returns phi angle at DC 
+// - RICHPhi(particle, q)                     dito at RICH 
+// other functions
+// - ElectronMomentum(E, p)                   calculates weighted average of electron momentum from reconstructed 
+//                                            E and p   
+// - VTXConversion()                          returns 1-4 if a conversion in VTX layer will occure, else 0 
+//
+// member functions that return private member variables, can be accessed after creating defaul response to particle 
+// - Arm()
+// - Sector()
+// - SectorY()
+// - SectorZ()
+// - SectorSinT()
+// - Phi_EMCal(){
+// - Phi_DC()
+// - Phi_DC()
+// - Phi_RICH()
+//
+// Axel Drees
+// updated 11/16/2021
+//

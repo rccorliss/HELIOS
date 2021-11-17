@@ -23,7 +23,7 @@ void TestElectron(){
 
   cout << endl;
 
-  MyPHENIX PHENIX;
+  PHENIXDetector PHENIX;
   MyPlot plot;
 
   Particle electron("electron");
@@ -184,8 +184,8 @@ void TestElectron(){
           float Ecorr = PHENIX.ShowerEnergyCorrection(electron.E(),sinT1)
                         /PHENIX.ShowerEnergyCorrection(electron.E(),y1,z1);
           float E = E1*Ecorr;
-//          P1 = E;
-          P1 = PHENIX.ElectronMomentum(E,p1);
+          P1 = E;
+//          P1 = PHENIX.ElectronMomentum(E,p1);
           h_EoP->Fill(P1,E/p1,electron.Weight());
 //
           h_EoP_Ereso->Fill(P1,E1nb/p1_true,electron.Weight());
@@ -206,8 +206,8 @@ void TestElectron(){
           float Ecorr = PHENIX.ShowerEnergyCorrection(positron.E(),sinT2)
                         /PHENIX.ShowerEnergyCorrection(positron.E(),y2,z2);
           float E = E2*Ecorr;
-//          P2 = E;
-          P2 = PHENIX.ElectronMomentum(E,p2);
+          P2 = E;
+//          P2 = PHENIX.ElectronMomentum(E,p2);
           h_EoP->Fill(P2,E/p2,positron.Weight());
 //
           h_EoP_Ereso->Fill(P2,E2nb/p2_true,positron.Weight());

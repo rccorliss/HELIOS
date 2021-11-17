@@ -3,7 +3,7 @@
 // This Class containing a collection of PHENIX specific functions 
 // describing the EMCal and charged particle tracking
 //
-// see PHENIXDetector.h for more details
+// see PHENIXDetector.h for overview and below for more specific details
 //  
 // Axel Drees 
 // most recent update 11/16/2021
@@ -12,12 +12,13 @@
 
 #include "PHENIXDetector.h"
 
+////////////////////////////////////////////////////////////////////////////////////
+//
+// Constructor of PEHNIXDetector, calculates a number of internal members variables
+//  
   PHENIXDetector::PHENIXDetector(){                // constructor
 
-  std::cout << "Hello test class " << std::endl;
-
-    TH2D *h_xy = new TH2D("h_xy","",1100,-5.5,5.5,1100,-5.5,5.5);
-    for (int i=0; i<8; i++){                                   // calculate sector edges in x-y plane for internal use
+    for (int i=0; i<8; i++){                       // calculate sector edges in x-y plane for internal use
        SectorX0[i] = sin(P_centerPhi[i]*pi)*P_R_EMCal;
        SectorY0[i] = cos(P_centerPhi[i]*pi)*P_R_EMCal;
        P_R_EMCal_max[i] = P_R_EMCal*sqrt(1+pow(tan(P_dPhi[i]*pi),2));
@@ -27,9 +28,8 @@
        SectorYmax[i] = cos((P_centerPhi[i]+P_dPhi[i])*pi)*P_R_EMCal_max[i];
     }
   }
+
   PHENIXDetector::~PHENIXDetector(void){}
-
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 //

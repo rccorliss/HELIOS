@@ -467,44 +467,94 @@ void TestDecay(){
   h_mass->Add(h_massphi);
 
 
+///////////////////////////////////////////////////////////////////////////////////////
+  plot.SetLeftMargin(.2);  
+  plot.SetyTitleOffset(1.4);
   TCanvas *c1 = plot.Canvas ("c1",400,600,10,10,1);
-  TH1D *pt1 = plot.Frame("pt1","pt","counts",pt_low,pt_high*.999,1e-12,1.);
+  TH1D *pt1 = plot.Frame("pt1","p_{T} [GeV/c^{2}]","dN/dp_{T} [a.u.]",pt_low,pt_high*.999,1e-12,1.);
   pt1->Draw();
-   h_ptpi->Draw("sameL Chist");
-   h_pteta->Draw("sameL Chist");
-   h_ptomega->Draw("sameL Chist");
-   h_ptrho0->Draw("sameL Chist");
-   h_ptetap->Draw("sameL Chist");
+  h_ptpi->Draw("sameL Chist");
+  h_pteta->Draw("sameL Chist");
+  h_ptomega->Draw("sameL Chist");
+  h_ptrho0->Draw("sameL Chist");
+  h_ptetap->Draw("sameL Chist");
   h_ptphi->Draw("sameL Chist");
 
+  TLegend *L1 = plot.Legend("m_{T} scaled spectra for" ,0.5,.59,.7,.95);
+  L1->AddEntry(h_ptpi,"#pi^{0}","l");
+  L1->AddEntry(h_pteta,"#eta","l");
+  L1->AddEntry(h_ptrho0,"#rho^{0}","l");  
+  L1->AddEntry(h_ptomega,"#omega","l");  
+  L1->AddEntry(h_ptetap,"#eta'","l");  
+  L1->AddEntry(h_ptphi,"#phi","l");  
+  L1->Draw("same");
+
+///////////////////////////////////////////////////////////////////////////////////////////
   TCanvas *c11 = plot.Canvas ("c11",400,600,410,10,1);
-  TH1D *pt2 = plot.Frame("pt2","pt","counts",pt_low,pt_high*.999,1e-12,1.);
+  TH1D *pt2 = plot.Frame("pt2","p_{T} [GeV/c^{2}]","dN/dp_{T} [a.u.]",pt_low,pt_high*.999,1e-12,1.);
   pt2->Draw();
   h_pt_gpi->Draw("same Chist" );
   h_pt_geta->Draw("same Chist");
   h_pt_gomega->Draw("same Chist");
   h_pt_getap->Draw("same Chist");
 
-//  h_pt_eomega->Draw("same");
+  TLegend *L11 = plot.Legend("#gamma from decays of" ,0.5,.69,.7,.95);
+  L11->AddEntry(h_pt_gpi,"#pi^{0}","l");
+  L11->AddEntry(h_pt_geta,"#eta","l");
+  L11->AddEntry(h_pt_gomega,"#omega","l");  
+  L11->AddEntry(h_pt_getap,"#eta'","l");  
+  L11->Draw("same");
+  plot.Reset();
 
+///////////////////////////////////////////////////////////////////////////////////////
   TCanvas *c2 = plot.Canvas ("c2",400,300,10,610);
-  TH1D *ptr = plot.Frame("ptr","pt","ratio",pt_low,pt_high*.999,0.0,0.99);
+  TH1D *ptr = plot.Frame("ptr","p_{T} [GeV/c^{2}]","hadron/#pi^{0}",pt_low,pt_high*.999,0.0,0.99);
   ptr->Draw();
   h_etapi->Draw("same Chist" );
   h_omegapi->Draw("same Chist" );
   h_etappi->Draw("same Chist" );
 
+  plot.SetLegendSize(0.07);
+  plot.SetLegendColor(kRed);
+  TLegend *L2a = plot.Legend("#eta",0.825,.62,.9,.67);
+  L2a->Draw("same");
+  plot.SetLegendColor(kGreen+2);
+  TLegend *L2b = plot.Legend("#omega",0.875,.73,.9,.78);
+  L2b->Draw("same");
+  plot.SetLegendColor(kOrange+2);
+  TLegend *L2c = plot.Legend("#eta'",0.85,.22,.9,.27);
+  L2c->Draw("same");
+  plot.Reset();
+
+
+////////////////////////////////////////////////////////////////////////////////////////
   TCanvas *c21 = plot.Canvas ("c21",400,300,410,610,1);
-  TH1D *ptr1 = plot.Frame("ptr1","pt","ratio",pt_low,pt_high*.999,0.002,1.2);
+  TH1D *ptr1 = plot.Frame("ptr1","p_{T} [GeV/c^{2}]","#gamma_{decay}/#gamma_{hadron}",pt_low,pt_high*.999,0.002,1.2);
   ptr1->Draw();
   h_g_pih->Draw("same Chist");
   h_g_etah->Draw("same Chist");
   h_g_omegah->Draw("same Chist");
   h_g_etaph->Draw("same Chist");
 
+  plot.SetLegendColor(kBlue);
+  plot.SetLegendSize(0.07);
+  TLegend *L21a = plot.Legend("#pi^{0}",0.85,.8,.9,.85);
+  L21a->Draw("same");
+  plot.SetLegendColor(kRed);
+  TLegend *L21b = plot.Legend("#eta",0.825,.6,.9,.65);
+  L21b->Draw("same");
+  plot.SetLegendColor(kGreen+2);
+  TLegend *L21c = plot.Legend("#omega",0.875,.52,.9,.57);
+  L21c->Draw("same");
+  plot.SetLegendColor(kOrange+2);
+  TLegend *L21d = plot.Legend("#eta'",0.85,.32,.9,.37);
+  L21d->Draw("same");
+  plot.Reset();
+
 
   TCanvas *c3 = plot.Canvas ("c3",600,600,810,10,1);
-  TH1D *mass = plot.Frame("mass","mass","counts",0.,1.5,3e-12,3e-3);
+  plot.SetyTitleOffset(1.2);
+  TH1D *mass = plot.Frame("mass","mass [GeV/c^{2}]","dN/dm [a.u.]",0.,1.5,3e-12,3e-3);
   mass->Draw();
   h_masspi->Draw("same Chist");
   h_masseta->Draw("same Chist");
@@ -514,6 +564,22 @@ void TestDecay(){
   h_massphi->Draw("same Chist");
 
   h_mass->Draw("same Chist");
+
+  TLegend *L3a = plot.Legend(" " ,0.7,.79,.9,.95);
+  L3a->AddEntry(h_massomega,"#omega","l"); 
+  L3a->AddEntry(h_massrho0,"#pi^{0}","l");
+  L3a->AddEntry(h_massphi,"#phi","l");
+  L3a->Draw("same"); 
+
+  TLegend *L3 = plot.Legend("e^{+}e^{-} from decays of" ,0.5,.79,.7,.95);
+  L3->AddEntry(h_masspi,"#pi^{0}","l");
+  L3->AddEntry(h_masseta,"#eta","l");
+  L3->AddEntry(h_massetap,"#eta'","l");  
+
+  L3->Draw("same");
+
+
+
 }
 
 

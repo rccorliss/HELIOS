@@ -20,7 +20,7 @@ void TestDCReso(){
 
   cout << endl;
 
-  MyPHENIX PHENIX;
+  PHENIXDetector PHENIX;
   MyPlot plot;
 
   Particle pip("pi+");
@@ -91,6 +91,7 @@ void TestDCReso(){
    
     if (bp){
       q1 = pip.Charge();
+      PHENIX.CharacterizeTrack(pip,pip.Charge(),pipID);
       Reco1 = PHENIX.ReconstructTrack(pip, pip.Charge());
       if (i<100) { 
         cout << endl;
@@ -115,6 +116,7 @@ void TestDCReso(){
     }
     if (bm) {
       q2 = pim.Charge();
+      PHENIX.CharacterizeTrack(pim,pim.Charge(), pimID);
       Reco2 = PHENIX.ReconstructTrack(pim, pim.Charge());
       pt2 = Reco2.Pt();
       phi2 = Reco2.Phi();
