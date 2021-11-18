@@ -51,7 +51,7 @@ void DirectGamma(){
   Double_t pt_high = 25.;
   Double_t ecut = 0.5;
   Double_t opacut = 0;
-  Int_t nevt = 100000;
+  Int_t nevt = 10000000;
   Int_t ndecay =0;
   Double_t ww = 0, ww1, ww2; 
   Int_t id = 0;

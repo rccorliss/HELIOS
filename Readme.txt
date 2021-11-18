@@ -10,7 +10,10 @@ Standalone fast simulation package that run in ROOT framework (version 6).
 Designed to aid systematic studies of measurements of photons and lepton 
 pairs in high energy p+p, p+A and A+A collisions, in particular with PHENIX. 
 
-All necessary files of the HELIOS package are in /HELIOSLibrary/ 
+All necessary files of the HELIOS package are in /HELIOSLibrary/. Example code that
+uses HELIOS package can be found in the top directory. After updateing the download 
+locations in /HELIOSLibrary/HELIOSLibrary.h and /HELIOSLibrary/GPRfiles/GPRFileNames.h 
+the example code can be executed at the ROOT prompt in ROOT 6.  
 
 content of /HELIOSLibrary/
 
@@ -36,19 +39,30 @@ Experiment specific simulation
                               of the main PHENIX central arm detectors, EMCal and DC/PC1
 
 Example codes running HELIOS fast simulation, can be executed at ROOT prompt (needs MyPlot class see below)
-- DirectGamma.C               generates direct photons, and photons from hadron decays, 
-                              true and reconstructed and histograms various properties like g_hadron/g_pion
-                          
-- TestDecay.C                 test Particle and Decay class: generates all implemented decays 
+
+- TestDecay.C                 Example of use of Particle class without PHENIX detector simulation
+                              tests Particle and Decay class: generates all implemented decays 
                               and plots photons and e+e- pairs properties
 
-- TestEMCalReso.C 
--
+- TestEMCalReso.C             Combines use of Particle class and EMCal fast simulation to simulate 
+                              pi0 and EMCal response. Calculate energy resolution and shift of scale from pion mass (gamma+gamma) and its RMS as function of energy.      
+
+- TestElectron.C              Simulates electrons and determines E/p distribution.  
+
+- TestDCReso.C                Simulates pi+ and pi- to determine momentum and position resolution 
+                              of tracking as function of pt.
+
+- DirectGamma.C               Example code to detemine photons from hadron decays
+                              generates direct photons, and photons from hadron decays, 
+                              true and reconstructed and histograms various properties like g_hadron/g_pion
+ 
+- efFastSim.C                 simulates pi0 decay to gamma+gamma, converts one photon to e+e- and 
+                              determines the conditional acceptance efficiency <ef> for the second 
+                              decay photon to be detected in the EMCal if the e+e- pair was 
+                              reconstructed. Also simulates systematic change of <ef> with variations of energy scale uncertainty, energy resolution, non linearity of energy scale, and different input pt distributions.                            
 
 the example codes heavily use the MyPlot class for displaying graphs, this class is not needed 
 to run HELIOS fast simulations. Code is located in /MyPlotting/
-
-MyPlot.h 
 
 TCanvas *Canvas (name,  width, height, x-position, y-position, logy=0, logx=0 )
 •   Creates default TCanvas of “name” with width and height and upper left corner at x-, x-position     
@@ -108,6 +122,28 @@ Description of HELIOS package from header files
 // Axel Drees 8/30/2021
 //            9/21/2021 updated
 //  
+//// KinematicDistributions.h //////////////////////////////////////////////////////////////////////////
+//
+// collection of momentum spectra of various particles
+//
+// currently implemented:
+//
+//   TF1 Hagedorn (name, mass, upperlim, lowerlim, A=504.5, a=0.5169, b=0.1626, p0=0.7366, n=-8.274)
+//   TF1 HagedornYield (name, mass, upperlim, lowerlim, A=504.5, a=0.5169, b=0.1626, p0=0.7366, n=-8.274)
+//       default parameters for Au+Au 200 (see Alan Dion thesis for details)
+//       pp 200 parameters: 377., 0.356, 0.068, 0.7, -8.25
+//
+//   TF1 PromptPhotonYield(name, upperlim, lowerlim, a=0.0066, b=6.4, c=0.4, n=17.6, s=200.)
+//       Prompt photon function fit from PPG140 fit to pp 200
+//
+//   double  Weight_GPR_pion_pp200(pt, opt=0)
+//           - uses GPR for pi0 from ppg202, and pi+/pi-  ppg030 & ppg101  - Roli Esha 11/10/2021  
+//           - return value+opt*error
+//   double  Weight_GPR_etapi_uni(pt, opt=0)
+//           - universal eta/pi ratio fro Yuanjie Ren thesis  
+//
+// Axel Drees  11/11/2021 
+//
 //// Particle.h /////////////////////////////////////////////////////////////////////////////
 //
 // HELIOS Particle Class used for stand alone simulation in ROOT 6
