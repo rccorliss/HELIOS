@@ -17,7 +17,7 @@ Double_t f_EcalReso(Double_t *x,Double_t *p);
 ///////////////////////////////////////////////////////////////////////////////
 void efFastSim(){
 //
-  MyPHENIX PHENIX;                       // define PHENIX detector 
+  PHENIXDetector PHENIX;                       // define PHENIX detector 
   Particle pi0("pi0");                   // define particle - used for random generation and decay 
 
   TLorentzVector gamma1, gamma2;         // 4 vectors for pi0->gg
@@ -37,7 +37,7 @@ void efFastSim(){
   Double_t pt_high = 10.8;
   Double_t ptcut_t = 0.18;
   Double_t ptcut   = 0.2;
-  Int_t nevt = 10000000;
+  Int_t nevt = 100000000;
 
 // flags if particle is in PHENIX Acceptance
   Bool_t iA_pi0 = false; 
