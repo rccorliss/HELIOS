@@ -57,7 +57,7 @@ Double_t Hagedorn_Func(Double_t *x, Double_t *p) {
   Double_t p0   = p[4];
   Double_t n    = p[5];
  
-  Double_t value = pt*A* pow( exp(-a*mt-b*mt*mt)+mt/p0 ,n);
+  Double_t value = A* pow( exp(-a*mt-b*mt*mt)+mt/p0 ,n);
   return value;
 }
 //*******************************************************************
@@ -81,7 +81,7 @@ Double_t Hagedorn_Yield_Func(Double_t *x, Double_t *p) {
   Double_t p0   = p[4];
   Double_t n    = p[5];
  
-  Double_t value = pt*A* pow( exp(-a*mt-b*mt*mt)+mt/p0 ,n);
+  Double_t value = pt*A/2/3.141* pow( exp(-a*mt-b*mt*mt)+mt/p0 ,n);
   return value;
 }
 

@@ -10,20 +10,26 @@
 //
 // currently implemented particles and decay branches by name used in HELIOS
 // 
-//     hadrons       decays 
+//     mesons        decays 
 //     pi0           pi0->gg, pi0->gee
 //     pi+           stable
 //     pi-           stable
-//     eta           eta->gg, eta->gee
-//     etap          etap->gg, etap->gee
-//     rho0          rho0->ee
-//     omega         omega->ee, omega->pi0g, omega->pi0ee     
-//     phi           phi->ee
+//     eta           eta->gg, eta->gee, eta->gmm, eta->mm
+//     etap          etap->gg, etap->gee, etap-gmm
+//     rho0          rho0->ee, rho0->mm
+//     omega         omega->ee, omega->mm  omega->pi0g, omega->pi0ee, omega->pi0mm     
+//     phi           phi->ee, phi->mm
 //
 //     leptons     
 //     photon        stable
 //     electron      stable
 //     positron      stable
+//     mu+           stable
+//     mu-           stable
+//
+//     baryons       
+//     Delta         Delta->Ng
+//     Nucleon       generic nucleon
 //
 // generate random 3 vector 
 // GenerateP()     - there are three options implemented through over loading 

@@ -5,11 +5,12 @@
 // currently defined decay names (selfexplanatory) used to identify the correct parent specific decay branch 
 //
 //     "pi0->gg"       "pi0->gee"
-//     "eta->gg"       "eta->gee"
-//     "etap->gg"      "etap->gee"        "etap->rho0g"
-//     "omega->pi0g"   "omega->pi0ee"     "omega->ee"
-//     "rho0->ee"
-//     "phi->ee" 
+//     "eta->gg"       "eta->gee"         "eta->gmm"      "eta->mm"
+//     "etap->gg"      "etap->gee"        "etap->rho0g"   "etap->gmm"
+//     "omega->pi0g"   "omega->pi0ee"     "omega->ee"     "omega->pi0mm"     "omega->mm"
+//     "rho0->ee"      "rho0->mm"
+//     "phi->ee"       "phi->mm" 
+//     "Delta->Ng"
 // 
 // currently defined decay types of decay branches used internaly to select correct decay function                                   
 //     "TwoBody"  two body decay 
@@ -88,11 +89,12 @@ class Decay {
   }
   void SetName(TString n){
     if (   n == "pi0->gg" or n == "pi0->gee" 
-        or n == "eta->gg" or n == "eta->gee"
-        or n == "omega->pi0g"  or n == "omega->pi0ee" or n == "omega->ee"
-        or n == "rho0->ee"
-        or n == "etap->gg" or n == "etap->gee" or "etap->rho0g"
-        or n == "phi->ee") {
+        or n == "eta->gg" or n == "eta->gee" or "eta->gmm" or "eta->mm"
+        or n == "omega->pi0g"  or n == "omega->pi0ee" or n == "omega->ee" or n == "omega->gmm"
+        or n == "rho0->ee" or n == "rho0->mm"
+        or n == "etap->gg" or n == "etap->gee" or "etap->rho0g" or "etap->gmm" 
+        or n == "phi->ee" or  n == "phi->mm"
+        or n == "Delta->Ng") {
       DecayName = n;
     } else {
       std::cout << " decay type " << n << " not known" << std::endl;
@@ -136,6 +138,7 @@ class Decay {
    TLorentzVector Daughter[10];
    TLorentzVector Parent;
    Double_t BR;
+   Bool_t debug = false;
 
 // defined decay member functions
    void TwoBodyDecay(TLorentzVector &parent, TLorentzVector &daughter1, TLorentzVector &daughter2);

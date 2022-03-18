@@ -99,6 +99,11 @@ double f_etaDalitz(Double_t *x, Double_t *p) {
   Double_t y = KrollWada(mll,etaMass,eMass) * EMTFormFactor(mll,b_eta_Dalitz);
   return y; 
 }
+double f_etaDalitz2(Double_t *x, Double_t *p) {
+  Double_t mll=x[0];
+  Double_t y = KrollWada(mll,etaMass,muMass) * EMTFormFactor(mll,b_eta_Dalitz);
+  return y; 
+}
 //
 // taken from EXODUS code
 double f_etapDalitz(Double_t *x, Double_t *p) {
@@ -107,11 +112,23 @@ double f_etapDalitz(Double_t *x, Double_t *p) {
              / (pow( pow(0.764, 2) - mll*mll, 2) + pow(0.1020*0.764, 2));
   return y; 
 }
+double f_etapDalitz2(Double_t *x, Double_t *p) {
+  Double_t mll=x[0];
+  Double_t y = KrollWada(mll,etapMass,muMass) * pow(0.764, 4) 
+             / (pow( pow(0.764, 2) - mll*mll, 2) + pow(0.1020*0.764, 2));
+  return y; 
+}
 //
 double f_omegaDalitz(Double_t *x, Double_t *p) {
 //  std::cout << " ----------- " << x[0] << " " << p[0] << " " << p[1] << " " << p[2] << std::endl;
   Double_t mll=x[0];
-  Double_t y = KrollWada(mll,omegaMass,eMass,pi0Mass) *  EMTFormFactor(mll,b_omega_pi0ee);
+  Double_t y = KrollWada(mll,omegaMass,eMass,pi0Mass) *  EMTFormFactor(mll,b_omega_pi0ll);
+  return y; 
+}
+double f_omegaDalitz2(Double_t *x, Double_t *p) {
+//  std::cout << " ----------- " << x[0] << " " << p[0] << " " << p[1] << " " << p[2] << std::endl;
+  Double_t mll=x[0];
+  Double_t y = KrollWada(mll,omegaMass,muMass,pi0Mass) *  EMTFormFactor(mll,b_omega_pi0ll);
   return y; 
 }
 double f_omegaee(Double_t *x, Double_t *p) {
@@ -119,6 +136,13 @@ double f_omegaee(Double_t *x, Double_t *p) {
 //  std::cout << " ----------- " << x[0] << " " << p[0] << " " << p[1] << " " << p[2] << std::endl;
 //  Double_t y = BreitWigner(x[0],omegaMass,omegaWidth,eMass);
   Double_t y = GounarisSakurai(mll,omegaMass,omegaWidth,eMass);
+  return y; 
+}
+double f_omegamm(Double_t *x, Double_t *p) {
+  Double_t mll=x[0];
+//  std::cout << " ----------- " << x[0] << " " << p[0] << " " << p[1] << " " << p[2] << std::endl;
+//  Double_t y = BreitWigner(x[0],omegaMass,omegaWidth,eMass);
+  Double_t y = GounarisSakurai(mll,omegaMass,omegaWidth,muMass);
   return y; 
 }
 double f_rho0ee(Double_t *x, Double_t *p) {
@@ -129,11 +153,24 @@ double f_rho0ee(Double_t *x, Double_t *p) {
                * pow(mll*T_rho0_ll,3/2) * exp(-mll/T_rho0_ll);
   return y; 
 }
+double f_rho0mm(Double_t *x, Double_t *p) {
+  Double_t mll=x[0];
+//  std::cout << " ----------- " << x[0] << " " << p[0] << " " << p[1] << " " << p[2] << std::endl;
+//  Double_t y = BreitWigner(x[0],omegaMass,omegaWidth,eMass);
+  Double_t y = GounarisSakurai(mll,rho0Mass,rho0Width,muMass) 
+               * pow(mll*T_rho0_ll,3/2) * exp(-mll/T_rho0_ll);
+  return y; 
+}
 double f_phiee(Double_t *x, Double_t *p) {
-  Double_t mee=x[0];
 //  std::cout << " ----------- " << x[0] << " " << p[0] << " " << p[1] << " " << p[2] << std::endl;
 //  Double_t y = BreitWigner(x[0],omegaMass,omegaWidth,eMass);
   Double_t y = GounarisSakurai(x[0],phiMass,phiWidth,eMass);
+  return y; 
+}
+double f_phimm(Double_t *x, Double_t *p) {
+//  std::cout << " ----------- " << x[0] << " " << p[0] << " " << p[1] << " " << p[2] << std::endl;
+//  Double_t y = BreitWigner(x[0],omegaMass,omegaWidth,eMass);
+  Double_t y = GounarisSakurai(x[0],phiMass,phiWidth,muMass);
   return y; 
 }
 double f_etapRho0g(Double_t *x, Double_t *p) {

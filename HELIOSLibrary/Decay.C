@@ -30,19 +30,20 @@ void Decay::GenerateDecay(){
   TLorentzVector daughter1;
   TLorentzVector daughter2;
   TLorentzVector daughter3;
-  Double_t pt, eta, phi, eemass; 
+  Double_t pt, eta, phi, pairMass; 
 
+  if (debug)   std::cout << "Decay name " << DecayName << std::endl; 
   if (DecayType == "TwoBody") {
-//    std::cout << "Decay name " << DecayName << std::endl; 
-    if (DecayName == "omega->ee" or DecayName == "rho0->ee" 
-        or DecayName == "phi->ee") {
-       TF1 *h = (TF1 *)gROOT->FindObject(DecayName);   // get eepair mass
-       eemass = h->GetRandom(); 
+    if (DecayName == "omega->ee" or DecayName == "omega->mm" or DecayName == "rho0->ee" or DecayName == "rho0->mm"
+        or DecayName == "phi->ee" or DecayName == "phi->mm") {
+       TF1 *h = (TF1 *)gROOT->FindObject(DecayName);   // get leptonPair mass
+       if (debug) cout << " root object found" << DecayName << endl;
+       pairMass = h->GetRandom(); 
        pt  = Parent.Pt();
        eta = Parent.Eta();
        phi = Parent.Phi();
-//       std::cout << " ----- " << eemass  << std:: endl; 
-       parent.SetPtEtaPhiM(pt,eta,phi,eemass);
+       if (debug)  std::cout << " ----- " << pairMass  << std:: endl; 
+       parent.SetPtEtaPhiM(pt,eta,phi,pairMass);
     } else {
       parent = Parent;
     }
@@ -131,34 +132,34 @@ void Decay::DalitzDecay(TLorentzVector &parent, TLorentzVector &decay1, TLorentz
 //
   Double_t pi = 3.14159;                              // define pi
   Double_t px,py,pz,E;                                // define generic 4 vector component 
-  Double_t eemass=0;
+  Double_t pairMass=0;
   Double_t mass = parent.M();                         // mass of parent particle
   Double_t m1 = decay1.M();                           // mass of decay particle 1 
   Double_t m2 = decay2.M();                           // mass of decay particle 2
   Double_t m3 = decay3.M();                           // mass of decay particle 2
-  TLorentzVector eepair;
+  TLorentzVector leptonPair;
   TVector3 parentBoost = parent.BoostVector();        // boost vector of parent particle
 //
 // mass of ee pair
-  TF1 *h = (TF1 *)gROOT->FindObject(DecayName);           // get eepair mass
-  eemass = h->GetRandom(); 
-  eepair.SetPxPyPzE(0.,0.,0.,eemass);                 // set eepair lorentz vector
+  TF1 *h = (TF1 *)gROOT->FindObject(DecayName);           // get leptonPair mass
+  pairMass = h->GetRandom(); 
+  leptonPair.SetPxPyPzE(0.,0.,0.,pairMass);                 // set leptonPair lorentz vector
 
   // std::cout << std::endl;
-  // std::cout << "ee par mass: " << eemass << std::endl;      
+  if(debug) std::cout << "pair mass: " << pairMass << std::endl;      
 //
-// first 2 body decay parent->decay3 eepair
-  TwoBodyDecay(parent,decay3,eepair);
+// first 2 body decay parent->decay3 leptonPair
+  TwoBodyDecay(parent,decay3,leptonPair);
 //
-// second 2 body decay of eepair to decay1 and decay2
-  TwoBodyDecay(eepair,decay1,decay2);
+// second 2 body decay of leptonPair to decay1 and decay2
+  TwoBodyDecay(leptonPair,decay1,decay2);
 
   
   // parent.Print();
   // decay3.Print();                   
   // decay1.Print();
   // decay2.Print();
-  // eepair.Print();                   
+  // leptonPair.Print();                   
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,22 +178,40 @@ void Decay::SetMassDistributions(){
   
   if (DecayName == "pi0->gee") {
       TF1 *h_Mass = new TF1(DecayName,f_pi0Dalitz,2.*eMass,pi0Mass);
+
   } else if (DecayName == "eta->gee") {
       TF1 *h_Mass = new TF1(DecayName,f_etaDalitz,2.*eMass,etaMass);
+  } else if (DecayName == "eta->gmm") {
+      TF1 *h_Mass = new TF1(DecayName,f_etaDalitz2,2.*muMass,etaMass);
+
   } else if (DecayName == "etap->gee") {
       TF1 *h_Mass = new TF1(DecayName,f_etapDalitz,2.*eMass,etapMass);
+  } else if (DecayName == "etap->gmm") {
+      TF1 *h_Mass = new TF1(DecayName,f_etapDalitz2,2.*muMass,etapMass);
+
   } else if (DecayName == "etap->rho0g") {
       TF1 *h_Mass = new TF1(DecayName,f_etapRho0g,2.*eMass,etapMass);
+
   } else if (DecayName == "omega->pi0ee") {
       TF1 *h_Mass = new TF1(DecayName,f_omegaDalitz,2.*eMass,omegaMass-pi0Mass);
   } else if (DecayName == "omega->ee") {
       TF1 *h_Mass = new TF1(DecayName,f_omegaee,2.*pi0Mass,2*omegaMass); 
+
+  } else if (DecayName == "omega->pi0mm") {
+      TF1 *h_Mass = new TF1(DecayName,f_omegaDalitz2,2.*muMass,omegaMass-pi0Mass);
+  } else if (DecayName == "omega->mm") {
+      TF1 *h_Mass = new TF1(DecayName,f_omegamm,2.*pi0Mass,2*omegaMass); 
+
+
   } else if (DecayName == "rho0->ee") {
       TF1 *h_Mass = new TF1(DecayName,f_rho0ee,2.*pi0Mass,2*rho0Mass); 
+  } else if (DecayName == "rho0->mm") {
+      TF1 *h_Mass = new TF1(DecayName,f_rho0ee,2.*pi0Mass,2*rho0Mass); 
+
   } else if (DecayName == "phi->ee") {
       TF1 *h_Mass = new TF1(DecayName,f_phiee,2.*pi0Mass,2*phiMass); 
+  } else if (DecayName == "phi->mm") {
+      TF1 *h_Mass = new TF1(DecayName,f_phimm,2.*pi0Mass,2*phiMass); 
   }
-
-
 }
 

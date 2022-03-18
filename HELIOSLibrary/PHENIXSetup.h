@@ -42,6 +42,8 @@ const double P_R_EMCal = 5.00;
 //
 const double P_centerPhi[8] = {1./2.+2./15.9,  1./2.,          1./2.-2./15.9,  1./2.-4./15.9, 
 	                          -1./2.+4./15.9, -1./2.+2./15.9, -1./2.,         -1./2.-2/16.36 };
+//const double P_centerPhi[8] = {1./2.+2./16.,  1./2.,          1./2.-2./16.,  1./2.-4./16., 
+//	                          -1./2.+4./16., -1./2.+2./16.,  -1./2.,        -1./2.-2./16. };
 // half width of sector in units of pi
 const double P_dPhi[8] = {1./16.26,1./16.26,1./16.26,1./16.26,
 	                                1./16.26,1./16.26,1./17.48 ,1./17.48  };   
@@ -61,6 +63,9 @@ const double  P_delta = 1/3.;                // fraction of field bent measured 
 const double P_kDC_phi = (1-P_delta)*P_kDC;  // = 0.210
 const double P_kRICH_phi = 0.309;            // needs to be checked
 const double P_kEMCal_phi = 0.275;           // needs to be checked
+const double P_kCenter = 0.0027;             // const. field bent at small radia, mradGeV/cm
+
+
 #endif
 
 
@@ -90,7 +95,8 @@ const double sigma_x_PbGl_d  = 0.0;       // mm
 // live detector areas
 #if RUN == 14
 // EMCals Au-Au run 14
-const double P_SectorLive[8] = {0.1242, 0.113, 0.1551, 0.1956, 0.1273, 0.1493, 0.2398, 0.3431};
+//const double P_SectorLive[8] = {0.1242, 0.113, 0.1551, 0.1956, 0.1273, 0.1493, 0.2398, 0.3431};
+const double P_SectorLive[8] = {0., 0., 0., 0., 0., 0., 0., 0.};
 #endif
 
 

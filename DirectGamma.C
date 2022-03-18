@@ -47,7 +47,7 @@ void DirectGamma(){
 
   Double_t pt_min = 0.3;     // used for all simulation
   Double_t pt_max = 25.;
-  Double_t pt_low = 0.0;     // used for plotting
+  Double_t pt_low = 0.5;     // used for plotting
   Double_t pt_high = 25.;
   Double_t ecut = 0.5;
   Double_t opacut = 0;
@@ -125,14 +125,14 @@ void DirectGamma(){
 // systematic study
 // eta/pi uncertainty
   TH1D *h_gh_sys_10         = new TH1D("h_gh_sys_10","pt_g",100,pt_low,pt_high);
-  TH1D *h_gh_sys_11         = new TH1D("h_gh_sys_10","pt_g",100,pt_low,pt_high);
+  TH1D *h_gh_sys_11         = new TH1D("h_gh_sys_11","pt_g",100,pt_low,pt_high);
   plot.StyleMe(h_gh_sys_10,   20, kBlack, 1., 2, 2); 
   plot.StyleMe(h_gh_sys_11,   20, kBlack, 1., 2, 2); 
 // omega & eta'
-  TH1D *h_gh_sys_20         = new TH1D("h_gh_sys_20","pt_g",100,0.5,pt_high);
-  TH1D *h_gh_sys_21         = new TH1D("h_gh_sys_20","pt_g",100,0.5,pt_high);
-  plot.StyleMe(h_gh_sys_20,   20, kBlack, 1., 2, 2); 
-  plot.StyleMe(h_gh_sys_21,   20, kBlack, 1., 2, 2); 
+  TH1D *h_gh_sys_20         = new TH1D("h_gh_sys_20","pt_g",100,pt_low,pt_high);
+  TH1D *h_gh_sys_21         = new TH1D("h_gh_sys_21","pt_g",100,pt_low,pt_high);
+  plot.StyleMe(h_gh_sys_20,   20, kTeal, 1., 1, 1); 
+  plot.StyleMe(h_gh_sys_21,   20, kBlue, 1., 1, 1); 
 
 // dito reconstructed
   TH1D *h_pt_ghadron_r           = new TH1D("h_pt_ghadron_r","pt_g",100,pt_low,pt_high);
@@ -203,8 +203,6 @@ void DirectGamma(){
         h_pt_ghadron->Fill(temp.Pt(),ww);
         h_gh_sys_10->Fill(temp.Pt(),ww);
         h_gh_sys_11->Fill(temp.Pt(),ww);
-        h_gh_sys_20->Fill(temp.Pt(),ww);
-        h_gh_sys_21->Fill(temp.Pt(),ww);
          h_pt_gincl->Fill(temp.Pt(),ww);
         VTXconv = (MyPHENIX.VTXConversion()>0);                     // check if photon will convert 
       }  
@@ -284,7 +282,7 @@ void DirectGamma(){
         h_gh_sys_11->Fill(temp.Pt(),ww2);
         h_gh_sys_20->Fill(temp.Pt(),ww);
         h_gh_sys_21->Fill(temp.Pt(),ww);
-         h_pt_gincl->Fill(temp.Pt(),ww);
+        h_pt_gincl->Fill(temp.Pt(),ww);
         VTXconv = (MyPHENIX.VTXConversion()>0);                     // check if photon will convert 
       }  
                                                                   // check if decay daughter needs to be reconstrcuted
@@ -409,7 +407,7 @@ void DirectGamma(){
         h_gh_sys_11->Fill(temp.Pt(),ww);
         h_gh_sys_20->Fill(temp.Pt(),ww1);
         h_gh_sys_21->Fill(temp.Pt(),ww2);
-         h_pt_gincl->Fill(temp.Pt(),ww);
+        h_pt_gincl->Fill(temp.Pt(),ww);
         VTXconv = (MyPHENIX.VTXConversion()>0);                     // check if photon will convert 
       }  
                                                                   // check if decay daughter needs to be reconstrcuted
@@ -493,17 +491,27 @@ void DirectGamma(){
   h_g_htoeta->Add(h_pt_gpi,-1.);
   h_g_htoeta->Divide(h_pt_geta);
   TH1D *h_g_htoeta_20 = (TH1D*) h_gh_sys_20->Clone("h_g_htoeta_20");
-  h_g_htoeta_20->Add(h_pt_gpi,-1.);
   h_g_htoeta_20->Divide(h_pt_geta);
   TH1D *h_g_htoeta_21 = (TH1D*) h_gh_sys_21->Clone("h_g_htoeta_21");
-  h_g_htoeta_21->Add(h_pt_gpi,-1.);
   h_g_htoeta_21->Divide(h_pt_geta);
-
-// direct gamma / pi0
+//  direct gamma / pi0
   TH1D *h_gtopi       = (TH1D*) h_ptdirectx->Clone("h_gtopi");
   h_gtopi->Divide(h_ptpix);
 
-  TF1 *fhtopi = new TF1("htopi", fitf, 5., 25., 1); 
+//     cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+// for (int i=1; i<101; i++){
+//     cout << i << "     pt " << h_pt_geta->GetBinCenter(i);
+//     cout << "     eta " << h_pt_geta->GetBinContent(i);
+//     cout << "   omega " << h_pt_gomega->GetBinContent(i);
+//     cout << "    etap " << h_pt_getap->GetBinContent(i);
+//     cout << "    sys+ " << h_gh_sys_20->GetBinContent(i);
+//     cout << "   ratio " << h_gh_sys_20->GetBinContent(i)/h_pt_geta->GetBinContent(i);
+//     cout << endl;
+// }
+//     cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+
+
+  TF1 *fhtopi = new TF1("htopi", fitf, 5., 12., 1); 
   h_g_htopi->Fit("htopi","R");
   TF1 *fhtoeta = new TF1("htoeta", fitf, 8., 23., 1); 
   h_g_htoeta->Fit("htoeta","R");
@@ -517,7 +525,7 @@ void DirectGamma(){
   plot.SetLeftMargin(.2);
   TCanvas *c1 = plot.Canvas ("c1",400,500,10,10,1);
   plot.SetyTitleOffset(1.5);
-  TH1D *f1 = plot.Frame("f1","p_{T} [GeV/c]","Ed^{3}#sigma/dp^{3} [mb GeV^{-2} c^{3}]",pt_low,25,1e-14,1.);
+  TH1D *f1 = plot.Frame("f1","p_{T} [GeV/c]","Ed^{3}#sigma/dp^{3} [mb GeV^{-2} c^{3}]",0,22.99,1e-14,1.);
 //  TH1D *f1 = plot.Frame("f1","p_{T} [GeV/c]","Ed^{3}#sigma/dp^{3} [mb GeV^{-2} c^{3}]",pt_low,pt_high*.999,1e-14,1.);
   f1->Draw();
   h_ptdirectx->Draw("sameL Chist");
@@ -537,7 +545,7 @@ void DirectGamma(){
 
 // parent to pi0 ratios
   TCanvas *c2 = plot.Canvas ("c2",500,400,10,510);
-  TH1D *f2 = plot.Frame("f2","p_{T} [GeV/c]"," hadron / #pi^{0}",pt_low,pt_high*.999,0.0,1.509);
+  TH1D *f2 = plot.Frame("f2","p_{T} [GeV/c]"," hadron / #pi^{0}",0,22.999,0.0,0.99);
   f2->Draw();
   h_etapi->Draw("same Chist" );
   h_omegapi->Draw("same Chist" );
@@ -559,12 +567,11 @@ void DirectGamma(){
   plot.SetLeftMargin(.2);
   TCanvas *c3 = plot.Canvas ("c3",400,500,410,10,1);
   plot.SetyTitleOffset(1.5);
-  TH1D *f3 = plot.Frame("f3","p_{T} [GeV/c]","dN_{#gamma}/dp_{T} ",pt_low,pt_high*.999,1e-12,1.);
+  TH1D *f3 = plot.Frame("f3","p_{T} [GeV/c]","dN_{#gamma}/dp_{T} ",0,22.999,1e-12,1.);
   f3->Draw();
-//  h_pt_gincl->Draw("sameL Chist");
+  h_pt_gincl->Draw("sameL Chist");
   h_ptdirect->Draw("same Chist");
-//  h_pt_ghadron->Draw("same Chist");
-  h_pt_gpi->Draw("same Chist");
+  h_pt_ghadron->Draw("same Chist");
 
   TLegend *L3 = plot.Legend("#gamma from p+p #sqrt{s} 200 GeV ",0.5,.77,.9,.95);
   L3->AddEntry(h_pt_gincl,"inclusive","l");
@@ -575,7 +582,7 @@ void DirectGamma(){
 
 // gamma decay to gamma hadron 
   TCanvas *c4 = plot.Canvas ("c4",500,400,510,510,1);
-  TH1D *f4 = plot.Frame("f4","p_{T} [GeV/c]"," #gamma_{decay} / #gamma_{hadron}",pt_low,pt_high*.999,0.002,5.);
+  TH1D *f4 = plot.Frame("f4","p_{T} [GeV/c]"," #gamma_{decay} / #gamma_{hadron}",0,22.999,0.002,5.);
   f4->Draw();
   h_g_pih->Draw("same Chist");
   h_g_etah->Draw("same Chist");
@@ -607,26 +614,27 @@ void DirectGamma(){
 
 // gamma direct to pi0  
   TCanvas *c5 = plot.Canvas ("c5",500,400,1010,10);
-  TH1D *f5 = plot.Frame("f5","p_{T} [GeV/c]","#gamma_{direct} / #pi^{0}",pt_low,pt_high*.999,0.0,0.375);
+  TH1D *f5 = plot.Frame("f5","p_{T} [GeV/c]","#gamma_{direct} / #pi^{0}",0,22.999,0.0,0.375);
   f5->Draw();
   h_gtopi->Draw("same Chist");
 
 // gamma hadron / gamma pi0
   TCanvas *c6 = plot.Canvas ("c6",500,400,1010,410);
-  TH1D *f6 = plot.Frame("f6","p_{T} [GeV/c]","#gamma_{h} / #gamma_{#pi^{0}}",pt_low,21.99,0.95,1.359);
+  TH1D *f6 = plot.Frame("f6","p_{T} [GeV/c]","#gamma_{h} / #gamma_{#pi^{0}}",0,21.99,0.95,1.359);
   f6->Draw();
   h_g_htopi->Draw("same Chist");
   h_g_htopi_10->Draw("same Chist");
   h_g_htopi_11->Draw("same Chist");
-//  fhtopi->Draw("same");
+  fhtopi->Draw("same");
 
   plot.SetLegendSize(0.06);
-  TLegend *L6 = plot.Legend("#gamma_{hadr} / #gamma_{#pi^{0}} (p_{T}>8 GeV) = 1.23",0.35,.33,.9,.38);
-//  L6->Draw("same");
+  TLegend *L6 = plot.Legend("#gamma_{hadr} / #gamma_{#pi^{0}} (5 < p_{T} < 12 GeV) = 1.23",0.25,.18,.9,.38);
+  L6->AddEntry(h_g_htopi_10,"#sigma_{sys}(#eta/#pi^{0})","l");  
+  L6->Draw("same");
 
 // gamma hadron / gamma pi0
   TCanvas *c7 = plot.Canvas ("c7",500,400,510,10);
-  TH1D *f7 = plot.Frame("f7","p_{T} [GeV/c]","#gamma_{#eta,#omega,#eta'} / #gamma_{#eta}",pt_low,22.99,0.9601,1.319);
+  TH1D *f7 = plot.Frame("f7","p_{T} [GeV/c]","#gamma_{#eta,#omega,#eta'} / #gamma_{#eta}",0,22.99,0.9601,1.319);
   f7->Draw();
   h_g_htoeta->Draw("same Chist");
   h_g_htoeta_20->Draw("same Chist");
@@ -635,6 +643,7 @@ void DirectGamma(){
 
   plot.SetLegendSize(0.06);
   TLegend *L7 = plot.Legend("#gamma_{#eta,#omega,#eta'} / #gamma_{#eta} (p_{T}>8 GeV) = 1.19#pm0.03",0.33,.33,.9,.38);
+
   L7->Draw("same");
 
 }

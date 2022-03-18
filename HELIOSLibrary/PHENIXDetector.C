@@ -458,6 +458,7 @@ TLorentzVector PHENIXDetector::ReconstructTrack(TLorentzVector VT, Int_t q)
   } 
 }
 
+
 Double_t PHENIXDetector::ElectronMomentum(Double_t E, Double_t p)
 {
   Double_t value;
@@ -515,7 +516,8 @@ TLorentzVector PHENIXDetector::ReconstructShower(TLorentzVector VT, Int_t id)
         a1 = 0; 
         a2 = 0;
       }
-      phi = VT.Phi() + a1;                         
+//      phi = VT.Phi() + a1;
+      phi = EMCalPhi(VT,q);                         
       eta = VT.Eta() + a2;
       theta = pi/2. - 2.* atan(exp(-eta));
  //     theta = eta;

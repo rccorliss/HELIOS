@@ -9,6 +9,8 @@
 // high level member functions to generated PHENIX "default" response 
 // - CharacterizeTrack(particle, charge, id)  sets private member variables for particle
 // - ReconstructTrack(particle, id)           returns TLorentzVector with reconstructed charged track
+// - ReconstructTrack(particle, id, r)        returns TLorentzVector with reconstructed charged track
+//                                                    assumes off vertex 
 // - ReconstructShower(particle, id)          returns TLorentzVector with reconstrcuted EMCal shower 
 // 
 // more specific public member functions that can be used for systematic studies by 
@@ -96,6 +98,7 @@ public:
 
 // Tracking
   TLorentzVector ReconstructTrack(TLorentzVector VT, Int_t id);
+//  TLorentzVector ReconstructTrack(TLorentzVector VT, Int_t id, Double_t r=0);
   Double_t SmearPt(Double_t pt, Int_t &q);
   Double_t SmearDCphi0(Double_t pt, Double_t phi0);
   Double_t SmearDCeta(Double_t pt, Double_t eta0);

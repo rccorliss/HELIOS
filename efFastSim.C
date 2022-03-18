@@ -215,7 +215,7 @@ cout << "hello world" << endl;
       if (positron.Pt()<ptcut_t) break;  
       cc4=cc4+ww;
       iA_ep =  (PHENIX.InAcceptance(electron,-1) > 0)
-              && (PHENIX.InAcceptance(positron,-1) > 0)
+              && (PHENIX.InAcceptance(positron,1) > 0)
               && (PHENIX.InAcceptance(electron,-1) == PHENIX.InAcceptance(positron,+1))
               ;
       if (!iA_ep) break;
@@ -234,7 +234,7 @@ cout << "hello world" << endl;
       if (electron_reco.Pt()<ptcut) break;
       if (positron_reco.Pt()<ptcut) break;  
       iA_ep =  (PHENIX.InAcceptance(electron_reco,-1) > 0)
-               && (PHENIX.InAcceptance(positron_reco,-1) > 0)
+               && (PHENIX.InAcceptance(positron_reco,1) > 0)
                && (PHENIX.InAcceptance(electron_reco, -1) == PHENIX.InAcceptance(positron_reco,+1))
                ;
       if (!iA_ep) break;
