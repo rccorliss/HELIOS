@@ -62,9 +62,9 @@
 //  Double_t GetDaughterWeight(i)   - returns get weight for daughter, depending on method used for decay generator  
 //  TLorentzVector GetDecayDaughter(i) - returns 4 vector of daughter
 // 
-// Axel Drees 11/19/2019
-// integrated to HELIOS 9/21/2021
-//  
+// 11/19/2019   started by                  Axel Drees 
+// 9/21/2021    integrated to HELIOS        Axel Drees
+// 3/18/2022    muon decay channels added   Axel Drees
 //
 #ifndef Particle_h
 #define Particle_h

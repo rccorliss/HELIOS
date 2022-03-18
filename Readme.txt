@@ -5,6 +5,7 @@ HH  HH EE     LL      II   O   O      SS
 HH  HH EEEEEE LLLLLL IIII   OOO   SSSSS         
 
 FAST SIMULATION          Axel Drees 2021
+last updated 3/18/2022
 
 Standalone fast simulation package that run in ROOT framework (version 6). 
 Designed to aid systematic studies of measurements of photons and lepton 
@@ -121,6 +122,7 @@ Description of HELIOS package from header files
 //
 // Axel Drees 8/30/2021
 //            9/21/2021 updated
+//            3/13/2021 muon decays added
 //  
 //// KinematicDistributions.h //////////////////////////////////////////////////////////////////////////
 //
@@ -144,7 +146,7 @@ Description of HELIOS package from header files
 //
 // Axel Drees  11/11/2021 
 //
-//// Particle.h /////////////////////////////////////////////////////////////////////////////
+//// Particle.h //////////////////////////////////////////////////////////////////////////////////////////////
 //
 // HELIOS Particle Class used for stand alone simulation in ROOT 6
 //
@@ -156,20 +158,26 @@ Description of HELIOS package from header files
 //
 // currently implemented particles and decay branches by name used in HELIOS
 // 
-//     hadrons       decays 
+//     mesons        decays 
 //     pi0           pi0->gg, pi0->gee
 //     pi+           stable
 //     pi-           stable
-//     eta           eta->gg, eta->gee
-//     etap          etap->gg, etap->gee
-//     rho0          rho0->ee
-//     omega         omega->ee, omega->pi0g, omega->pi0ee     
-//     phi           phi->ee
+//     eta           eta->gg, eta->gee, eta->gmm, eta->mm
+//     etap          etap->gg, etap->gee, etap-gmm
+//     rho0          rho0->ee, rho0->mm
+//     omega         omega->ee, omega->mm  omega->pi0g, omega->pi0ee, omega->pi0mm     
+//     phi           phi->ee, phi->mm
 //
 //     leptons     
 //     photon        stable
 //     electron      stable
 //     positron      stable
+//     mu+           stable
+//     mu-           stable
+//
+//     baryons       
+//     Delta         Delta->Ng
+//     Nucleon       generic nucleon
 //
 // generate random 3 vector 
 // GenerateP()     - there are three options implemented through over loading 
@@ -202,22 +210,23 @@ Description of HELIOS package from header files
 //  Double_t GetDaughterWeight(i)   - returns get weight for daughter, depending on method used for decay generator  
 //  TLorentzVector GetDecayDaughter(i) - returns 4 vector of daughter
 // 
-//  
-// Axel Drees 11/19/2019
-// integrated to HELIOS 9/21/2021
+// 11/19/2019   started by                  Axel Drees 
+// 9/21/2021    integrated to HELIOS        Axel Drees
+// 3/18/2022    muon decay channels added   Axel Drees
 //
-////// Decay.h ///////////////////////////////////////////////////////////////////////////////
+////// Decay.h //////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Header for Class Decay that handels all decay branches defined for particles in HELIOS
 //
 // currently defined decay names (selfexplanatory) used to identify the correct parent specific decay branch 
 //
 //     "pi0->gg"       "pi0->gee"
-//     "eta->gg"       "eta->gee"
-//     "etap->gg"      "etap->gee"        "etap->rho0g"
-//     "omega->pi0g"   "omega->pi0ee"     "omega->ee"
-//     "rho0->ee"
-//     "phi->ee" 
+//     "eta->gg"       "eta->gee"         "eta->gmm"      "eta->mm"
+//     "etap->gg"      "etap->gee"        "etap->rho0g"   "etap->gmm"
+//     "omega->pi0g"   "omega->pi0ee"     "omega->ee"     "omega->pi0mm"     "omega->mm"
+//     "rho0->ee"      "rho0->mm"
+//     "phi->ee"       "phi->mm" 
+//     "Delta->Ng"
 // 
 // currently defined decay types of decay branches used internaly to select correct decay function                                   
 //     "TwoBody"  two body decay 
@@ -246,8 +255,9 @@ Description of HELIOS package from header files
 // defined operators:    " = "   set one decay branch equal to another
 //
 //
-// originally developed Axel Drees 8/23/2021
-// addpted to HELIOS               9/21/2021
+//  8/23/2021     originally developed Axel Drees 
+//  9/21/2021     addpted to HELIOS   
+//  3/18/2022     muon decay channels added           
 //
 ////// DecayAuxilliaryFunctions.h ///////////////////////////////////////////////////////////////////////////////////////
 //
@@ -255,16 +265,22 @@ Description of HELIOS package from header files
 //
 // mass distributions functions use to define TF1's for Dalitz Decays: 
 //
-// f_pi0Dalitz 
+// f_pi0Dalitz           ee Dalitz
 // f_etaDalitz 
 // f_etapDalitz 
 // f_omegaDalitz 
+// f_etaDalitz2          mumu Dalitz
+// f_etapDalitz2 
+// f_omegaDalitz2 
 //
 // mass distributions functions used to define TF1's for 2 body decays with finite width:
 //
 // f_omegaee
 // f_rho0ee
 // f_phiee
+// f_omegamm
+// f_rho0mm
+// f_phimm
 //
 // Support functions:
 // 
@@ -282,7 +298,8 @@ Description of HELIOS package from header files
 //
 // Axel Drees 8/30/2021
 // expanded   9/9/2021    
-//
+// muon decays added 3/18/2022
+//  
 //// InteractionWithMaterial.h //////////////////////////////////////////////////////////////////////////
 //
 // collection of functions to simulate interaction of particles with material

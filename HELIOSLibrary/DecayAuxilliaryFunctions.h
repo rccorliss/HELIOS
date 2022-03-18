@@ -4,16 +4,22 @@
 //
 // mass distributions functions use to define TF1's for Dalitz Decays: 
 //
-// f_pi0Dalitz 
+// f_pi0Dalitz           ee Dalitz
 // f_etaDalitz 
 // f_etapDalitz 
 // f_omegaDalitz 
+// f_etaDalitz2          mumu Dalitz
+// f_etapDalitz2 
+// f_omegaDalitz2 
 //
 // mass distributions functions used to define TF1's for 2 body decays with finite width:
 //
 // f_omegaee
 // f_rho0ee
 // f_phiee
+// f_omegamm
+// f_rho0mm
+// f_phimm
 //
 // Support functions:
 // 
@@ -31,6 +37,7 @@
 //
 // Axel Drees 8/30/2021
 // expanded   9/9/2021    
+// muon decays added 3/18/2022
 //  
 #ifndef Aux_h
 #define Aux_h

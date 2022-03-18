@@ -39,8 +39,9 @@
 // defined operators:    " = "   set one decay branch equal to another
 //
 //
-// originally developed Axel Drees 8/23/2021
-// addpted to HELIOS               9/21/2021
+//  8/23/2021     originally developed Axel Drees 
+//  9/21/2021     addpted to HELIOS   
+//  3/18/2022     muon decay channels added           
 //
 
 #ifndef Decay_h
