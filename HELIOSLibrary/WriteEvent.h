@@ -83,7 +83,7 @@ class WriteTrack : public TObject{
 	        weight = -999;
       	};
 
-    	virtual ~WriteTrack() {  };
+    	virtual ~WriteTrack();
 
     	int  	 GetFinal() {return isFinal; };
 
@@ -140,7 +140,7 @@ class WriteEvent : public TObject {
 
    		}
 
-   		virtual ~WriteEvent(){ };
+   		virtual ~WriteEvent();
 
       	void    SetNStable(int sstable_particles) { stable_particles = sstable_particles; };
       	int     GetNStable() { return stable_particles; }
