@@ -18,7 +18,18 @@
 //   double  Weight_GPR_etapi_uni(pt, opt=0)
 //           - universal eta/pi ratio fro Yuanjie Ren thesis  
 //
+//   TF1 SPSptYield(name,mass,ptmin=0,ptmax=4)
+//   TF1 SPSrapidity(name,mass,ymin,ymax,ebeam=200)
+//       pt and rapidity functions for SPS fix target collisions (taken from EXODUS)
+//
+//   double Pt_Mt_Scaled(pt,m,mref)
+//       mt scales pt from particle of mass m based on pt of particle with mass mref
+//   double RapidtyToEta(y,pt,m)
+//       calculates eta from y,pt,m
+//
 // Axel Drees  11/11/2021 
+// Axel Drees  3/18/2022    add SPS kinematic distributions
+// Axel Drees  6/9/2022     add conversion from rapidity to eta, and mt scaling from m to m* 
 //
 
 #ifndef KinDist_h
