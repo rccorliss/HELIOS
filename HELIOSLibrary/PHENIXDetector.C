@@ -14,7 +14,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////
 //
-// Constructor of PEHNIXDetector, calculates a number of internal members variables
+// Constructor of PHENIXDetector, calculates a number of internal members variables
 //  
   PHENIXDetector::PHENIXDetector(){                // constructor
 

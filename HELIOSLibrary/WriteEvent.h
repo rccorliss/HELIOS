@@ -129,17 +129,11 @@ class WriteEvent : public TObject {
    	private:
 
    		int 	stable_particles;
-
+ 
    		std::vector<WriteTrack> WriteTrackList;
 
    	public:	
-
-   		WriteEvent(){
-
-	   		stable_particles = 0;
-
-   		}
-
+        WriteEvent(){ stable_particles = 0;}
    		virtual ~WriteEvent();
 
       	void    SetNStable(int sstable_particles) { stable_particles = sstable_particles; };
