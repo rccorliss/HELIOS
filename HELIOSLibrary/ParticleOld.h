@@ -33,7 +33,7 @@
 //
 // generate random 3 vector 
 // GenerateP()     - there are three options implemented through over loading 
-//                 - flat, from pt spectrum, or pt, eta or y and phi spectra (see below)
+//                 - flat, from pt spectrum, or pt, eta and phi spectra (see below)
 //
 // decays particle, three different options 
 // Decay()         - generate one random decay with probability equal to branching ratio
@@ -61,14 +61,10 @@
 //  Int_t GetDaughterID(i)          - returns PDG ID of daughter i 
 //  Double_t GetDaughterWeight(i)   - returns get weight for daughter, depending on method used for decay generator  
 //  TLorentzVector GetDecayDaughter(i) - returns 4 vector of daughter
-//  TString GetDecayName()          - returns decay name (eg. pi0->gg)
-//  Int_t GetDecayNumber()          - returns decay number (eg. 0 for pi0->gg) [from DefineDecays() in Particle.C]
 // 
 // 11/19/2019   started by                  Axel Drees 
 // 9/21/2021    integrated to HELIOS        Axel Drees
 // 3/18/2022    muon decay channels added   Axel Drees
-// 5/13/2022    retrieve more decay info    Roli Esha
-// 6/9/2022     generate in y or eta        Axel Drees
 //
 #ifndef Particle_h
 #define Particle_h
@@ -89,20 +85,18 @@ public:
   void GenerateP(Double_t ptmin, Double_t ptmax, Bool_t rap=false); 
                                                                // generate flat pt between min and max, -pi<phi<pi, -0.5<y<0.5
                                                                // default rap=false uses pseudorapidity, if true use rapidity
-  void GenerateP(TF1* PtSpectrum, Bool_t rap=false);           // generates pt from ptSpectrum, -pi<phi<pi, -0.5<y<0.5
-                                                               // default rap=false uses pseudorapidity, if true use rapidity
-  void GenerateP(TF1* Pt,TF1* PhiSpectrum, TF1* YSpectrum, Bool_t rap=false);    
-                                                               // generates 4 vector from TF1 ptSpectrum, PhiSpectrum, and EtaSpectrum
-                                                               // default rap=false uses pseudorapidity, if true use rapidity
+  void GenerateP(Double_t ptmin,Double_t ptmax,TF1* YSpectrum);  // generate flat pt between min and max, -pi<phi<pi, TF1 Yspectrum
+  void GenerateP(TF1* PtSpectrum);                             // generates pt from ptSpectrum, -pi<phi<pi, -0.5<y<0.5
+  void GenerateP(TF1* Pt,TF1* PhiSpectrum, TF1* YSpectrum);    // generates 4 vector from TF1 ptSpectrum, PhiSpectrum, and EtaSpectrum
 
 // public random decay generators
   void Decay();                                                // generate random decay from know decay branches
   void DecaySingleBranch(TString branch);                      // generate decay for specified branch only
   void DecayFlat();                                            // generates random decay with equal probability for each 
                                                                // branch and sets weight corresponding weight
+  void DecaySpecies(Int_t daughterID);                         // same as DecayFlat, but only for decays with specified daughter
+
 // public access to decay particles
-  TString GetDecayName();                                      // get decay name (eg. pi0->gg)
-  Int_t GetDecayNumber();                                      // get decay numer (eg. 0 for pi0->gg)
   Int_t GetNumberOfDaughters();                                // get number of decay particles
   Int_t GetDaughterID(Int_t index);                            // get PDG ID of decay particle index
   Double_t GetDaughterWeight(Int_t index);                     // get weight of decay 
@@ -139,8 +133,6 @@ public:
   void ExecuteDecay(Int_t branch, Double_t ww, Int_t i=0);     // manages random decay after branch is selected
   class Decay DecayBranch[10];                                 // possible decay branches - maximum of 10  
   Int_t NumberOfBranches = 0;                                  // actual number of decay branches 
-  TString DecayName = "null";                                  // name of the decay channel
-  Int_t DecayNumber = -999;                                    // branch number of the decay channel
   Int_t NumberOfDaughters = 0;
   TLorentzVector daughter[10][10];                             // 4 vector for daughters [branch][index], max 10 per branch
   Int_t daughterID[10][10];                                    // ID of daughters [branch][index]

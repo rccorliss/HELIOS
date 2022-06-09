@@ -20,6 +20,6 @@
 #include "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/Particle.C"
 #include "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/PHENIXSetup.h"
 #include "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/PHENIXDetector.C"
-
+#include "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/WriteEvent.C"
 
 #endif

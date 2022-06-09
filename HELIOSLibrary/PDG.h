@@ -6,6 +6,7 @@
 // Axel Drees 8/30/2021
 //            9/21/2021 updated
 //            3/13/2021 muon decays added
+// Roli Esha  5/13/2022 added photonMass = 0
 //  
 #ifndef PDG_h
 #define PDG_h
@@ -24,6 +25,7 @@
   Double_t omegaMass= 0.78266;                         // omega meson
   Double_t etapMass = 0.95778;                         // eta' meson
   Double_t phiMass  = 1.0195;                          // phi meson
+  Double_t photonMass = 0;                             // photon
 
   Double_t DeltaMass = 1.232;                          // Delta baryon average
   Double_t NucleonMass = 0.939;                         // Nucleon (p+n)/2

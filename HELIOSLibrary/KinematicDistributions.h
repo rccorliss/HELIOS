@@ -236,4 +236,178 @@ double Pt_Mt_Scaled(double pt, double m, double m_ref){
   return pt_ref;
 }
 
+
+//-----------------------------------------------------------------------------
+//
+// Generate transverse-momentum distribution of pions for top SPS energies 
+// based on parameterization from CERES (included in EXODUS) 
+//
+//-----------------------------------------------------------------------------
+
+double SPSpt_Func(double *x, double *p)
+{
+  double pt = x[0];
+  double mass = p[0];
+  double a1 = p[1];
+  double a2 = p[2];
+  double a3 = p[3];
+  double T1 = p[4];
+  double T2 = p[5];
+  double T3 = p[6];
+  double mt = sqrt(pt*pt+mass*mass);
+  double weight;
+
+  weight = pt*(a1*exp(-1.0*mt/T1)+a2*exp(-1.0*mt/T2)+a3*exp(-1.0*mt/T3));
+
+  return weight;
+}
+
+TF1 *SPSptYield(const Char_t *name, Double_t mass, Double_t ptmin=0, Double_t ptmax=4.0){
+//
+//
+  const double a1 = 1.0;
+  const double a2 = 0.139;
+  const double a3 = 0.107;
+  const double T1 = 0.1;
+  const double T2 = 0.23;
+  const double T3 = 0.102;
+  if (ptmin <= 0.) ptmin = 0.001;
+  TF1 *fSPSptYield = new TF1(name, SPSpt_Func, ptmin, ptmax, 7);
+  fSPSptYield->SetParameters(mass, a1, a2, a3, T1, T2, T3); 
+  fSPSptYield->FixParameter(0,mass); 
+  fSPSptYield->SetParNames("mass","a1", "a2", "a3", "T1", "T2", "T3");
+  return fSPSptYield;
+}
+
+
+//-----------------------------------------------------------------------------
+//
+// Generate rapidity distributions for the CERES generator
+//
+//-----------------------------------------------------------------------------
+double SPSrapidity_Func(double *x, double *p)
+{
+  double s2pi = 0.39894245; // 1/sqrt(2*pi)
+  double y = x[0];
+  double sigma = p[1];
+  double y0    = p[0];
+
+  double weight = exp(-pow((y-y0)/sigma,2)/2);
+
+  return weight;
+}
+
+// double y_shift(const double, const double, const double, const double);
+
+
+// void SPSrapidity(const Char_t *name, Double_t mass, Double_t ymin, Double_t ymax, Double_t ebeam=200) {
+
+TF1 *SPSrapidity(const Char_t *name, Double_t mass, Double_t ymin=-999, Double_t ymax = -999, Double_t ebeam=200) {
+
+  const double mnuc  = NucleonMass;
+  const double m_pi0 = pi0Mass;
+  
+  double sqrts        = sqrt(2.0*mnuc*ebeam+2.0*mnuc*mnuc);
+  double y0           = log(2.0*ebeam/mnuc)/2.0;
+  double gamma        = sqrts/(2.0*mnuc);
+  double sigma_landau = sqrt(log(gamma));
+  double ymax_pi0     = log(sqrts/m_pi0);
+  double ymax_part    = log(sqrts/mass);
+  double sig          = sigma_landau*(ymax_part/ymax_pi0);
+  if (ymin == -999 or ymin < -ymax_part) ymin = -ymax_part;
+  if (ymax == -999 or ymax > ymax_part) ymax = ymax_part;
+  
+  cout << "sqrt(s)      " << sqrts << endl;
+  cout << "y_cms        " << y0 << endl;
+  cout << "gamma        " << gamma << endl;
+  cout << "sigma_Landau " << sigma_landau << endl;
+  cout << "ymax_pi0     " << ymax_pi0 << endl;
+  cout << "ymax_part    " << ymax_part << endl;
+  cout << "sig          " << sig << endl;
+  cout << "ymin         " << ymin << endl;
+  cout << "ymax         " << ymax << endl;
+  cout << endl;
+ 
+  TF1 *fSPSrapidity = new TF1(name, SPSrapidity_Func, ymin, ymax, 2);
+  fSPSrapidity->SetParameters(y0, sig);
+  return fSPSrapidity;
+}
+
+  double RapidityToEta(double rapidity, double pt, double mass){
+
+    double eta;
+    float pz = sqrt(mass*mass+pt*pt) * sinh(rapidity);
+    float p = sqrt(pt*pt+pz*pz);
+    eta = log((p+pz)/(p-pz))/2;
+    return eta;
+  }
+
+ // legacy code from EXODUS for assymetric systems
+ //  or ( int ibin=1; ibin<=nbins; ibin++ )
+ // {
+ //   const double y  = ymin+(ibin-1)*binwidth+binwidth/2.0;
+ //   double sigma;
+ //   if ( y<=ymean )
+ //   {
+ //     sigma = sig*(1.0-((y0-ymean)*(y0-ymean)/(ymax_part-ymin_part)));
+ //   }
+ //   else
+ //   {
+ //     sigma = sig*(1.0+((y0-ymean)*(y0-ymean)/(ymax_part-ymin_part)));
+ //   }
+ //   double weight = std::exp(0.75*(y-ymean)/sigma)+std::exp(-0.75*(y-ymean)/sigma);
+ //   weight = 1.0/(weight*weight);
+ //   yhistogram->AddBinContent(ibin,weight);
+ // }
+ //  return yhistogram;
+ 
+
+// double y_shift(const double Aproj, const double Atarg, const double bpar)
+// {
+//  const double density = 0.168;
+
+//  if ( Aproj<2.0 )
+//  {
+//    if ( Atarg<12.0 ) return 0.0;
+//    return 1.0;
+//  }
+//  else
+//  {
+//    if ( sqrt((Atarg/Aproj-1.0)*(Atarg/Aproj-1.0))<0.1 ) return 0.0;
+//  }
+
+//  double rmin = std::exp((1.0/3.0)*std::log(0.75*Aproj/TMath::Pi()/density));
+//  double rmax = std::exp((1.0/3.0)*std::log(0.75*Atarg/TMath::Pi()/density));
+//  if ( bpar>(rmin+rmax) ) return 0.0;
+
+//  double hmax = 2.0*std::sqrt(rmax*rmax-rmin*rmin);
+
+//  double t_part, p_part;
+//  if ( bpar<(rmax-rmin) )
+//  {
+//    double rcyl   = rmin;
+//    double vmax   = 2.0*TMath::Pi()*rcyl*rcyl*hmax;
+//    double hmic   = rmax-std::sqrt(rmax*rmax-rmin*rmin);
+//    double rapb   = (rmax-hmic)/rmax;
+//      double vmin   = 2.0/3.0*TMath::Pi()*rmax*rmax*rmax*(1.0+0.5*rapb*rapb*rapb-1.5*rapb);
+//      t_part = density*(2.0*vmin+vmax);
+//      p_part = Aproj;
+//    }
+//    else
+//    {
+//      double rcyl   = 0.5*(rmax+rmin-bpar);
+//      double vmax   = 2.0*TMath::Pi()*rcyl*rcyl*hmax;
+//      double hmic   = rmax-std::sqrt(rmax*rmax-rmin*rmin);
+//      double rapc   = (rmin-2.0*rcyl)/rmin;
+//      t_part = density*(2.0/3.0*TMath::Pi()*rcyl*rcyl*hmic+vmax);
+//      p_part = density*2.0/3.0*TMath::Pi()*rmin*rmin*rmin*
+//        (1.0+0.5*rapc*rapc*rapc-1.5*rapc);
+//    }
+ 
+//    double shift = 0.0055*(t_part-p_part);
+//    return shift;
+//  }
+
+
+
 #endif

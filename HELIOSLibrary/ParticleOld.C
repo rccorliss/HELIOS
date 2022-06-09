@@ -7,7 +7,7 @@
 //
 // Axel Drees 11/19/2019
 // addaped to HELIOS 9/21/2021
-// updated to write ROOT and Oscar output 05/13/2022 
+//  
 
 #include "Particle.h"
 
@@ -30,8 +30,7 @@
 //                   phi
 //
 // Axel Drees 11/19/2019
-// updated    6/9/2022 see Partile.h 
-// 
+// last updated 9/11/2021
 //
   Particle::Particle(){                 // default constructor makes pi0
     name   = "pi0";
@@ -167,14 +166,6 @@
 
 
   // public access to decay particles
-  TString Particle::GetDecayName(){                                // get name of the decay channel
-    return DecayName;
-  }
-
-  Int_t Particle::GetDecayNumber(){                                // get branch_number of the decay channel
-    return DecayNumber;
-  }
-
   Int_t Particle::GetNumberOfDaughters(){                                // get number of decay particles
     return NumberOfDaughters;
   }
@@ -222,6 +213,7 @@
 // Generate particle with flat pt from pt_low to pt_high
 //                               phi over 2pi
 //                               rapidity from -0.5 to 0.5
+//                               if rap=true use true rapidity, else pseudo rapidity
 //
 // input  Double_t pt_low      - lower pt bound 
 //        Double_t pt_high     - upper pt bound
@@ -232,16 +224,43 @@
 // updates       8/28/2020
 //
 void Particle::GenerateP(Double_t pt_low, Double_t pt_high, Bool_t rap=false) {
-   Double_t pt,phi,rapidity,eta; 
+   Double_t pt,phi,eta,rapidity; 
    pt        = randy.Uniform(pt_low,pt_high);
    phi       = randy.Uniform(0.,2*pi);
    rapidity  = randy.Uniform(-0.5,0.5);
-
    eta       = rapidity;
+
 //   generate flat in rapidity rather than pseudorapidity
    if (rap) eta = RapidityToEta(rapidity,pt,mass);
+   
    SetPtEtaPhiM(pt,eta,phi,mass);
   }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Generate particle with flat pt from pt_low to pt_high
+//                               phi over 2pi
+//                               but with external rapidity distribution
+//
+// input  Double_t pt_low      - lower pt bound 
+//        Double_t pt_high     - upper pt bound
+//        TF1 RapiditySpectrum - TF1 with Rapidity spectrum to generate from  
+//
+// sets 4 vector of particle
+//
+// Axel Drees    10/18/2018 
+// updates       8/28/2020
+//
+void Particle::GenerateP(Double_t pt_low, Double_t pt_high,  TF1* RapiditySpectrum) {
+   Double_t pt,phi,rapidity; 
+   pt        = randy.Uniform(pt_low,pt_high);
+   phi       = randy.Uniform(0.,2*pi);
+   rapidity  = RapiditySpectrum->GetRandom(); 
+
+
+   SetPtEtaPhiM(pt,rapidity,phi,mass);
+  }
+
  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -256,17 +275,14 @@ void Particle::GenerateP(Double_t pt_low, Double_t pt_high, Bool_t rap=false) {
 // Axel Drees    10/21/2018
 // updated       8/28/2021
 //
-void Particle::GenerateP(TF1* PtSpectrum, TF1* PhiSpectrum, TF1* RapiditySpectrum, Bool_t rap=false) {
-   Double_t pt,phi,rapidity,eta;
+void Particle::GenerateP(TF1* PtSpectrum, TF1* PhiSpectrum, TF1* RapiditySpectrum) {
+   Double_t pt,phi,rapidity;
 
    pt        = PtSpectrum->GetRandom(); 
    phi       = PhiSpectrum->GetRandom();
    rapidity  = RapiditySpectrum->GetRandom(); 
 
-   eta       = rapidity;
-//   generate flat in rapidity rather than pseudorapidity
-   if (rap) eta = RapidityToEta(rapidity,pt,mass);
-   SetPtEtaPhiM(pt,eta,phi,mass);
+   SetPtEtaPhiM(pt,rapidity,phi,mass);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -279,16 +295,14 @@ void Particle::GenerateP(TF1* PtSpectrum, TF1* PhiSpectrum, TF1* RapiditySpectru
 // Axel Drees    10/18/2018
 // updated       8/28/2021
 //
-void Particle::GenerateP(TF1* PtSpectrum, Bool_t rap=false) {
-   Double_t pt,phi,rapidity,eta;
+void Particle::GenerateP(TF1* PtSpectrum) {
+   Double_t pt,phi,rapidity;
    
    pt        = PtSpectrum->GetRandom(); 
    phi       = randy.Uniform(-pi,pi);
    rapidity  = randy.Uniform(-0.5,0.5);
-   eta       = rapidity;
-//   generate flat in rapidity rather than pseudorapidity
-   if (rap) eta = RapidityToEta(rapidity,pt,mass);
-   SetPtEtaPhiM(pt,eta,phi,mass);
+
+    SetPtEtaPhiM(pt,rapidity,phi,mass);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -699,6 +713,56 @@ void Particle::DecayFlat(){
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+// Decay particle if not stable with equal probability for all decays containing daughter of specified type
+//
+// Axel Drees 3/18/2022 
+//
+void Particle::DecaySpecies(Int_t ID){
+ 
+  Int_t nbr;
+  Int_t BranchCount = 0;
+  Int_t BranchWithDaugtherList[100];
+  Bool_t ThisDecay = false;
+  Double_t br=0 , brtot=0;                                             
+  if (debug) std::cout << "---- DecaySpecies ----------------------------------------" << std::endl;
+  if (debug) std::cout << " number of decay branches defined: " << NumberOfBranches << std::endl;
+
+// calculate total defined BR
+  for (int i=0; i<NumberOfBranches; i++) {            // calculate total defined branching ratio
+// look for requested daughter
+     ThisDecay = false;
+     int n = DecayBranch[i].GetNumberDecayParticles();
+     if (debug) std::cout << n << " number of decay daughters for branch: " << i << std::endl;
+
+     for (int j=0; j<n;j++){                          // search for requested decay daughter
+        if (daughterID[i][j] == ID) ThisDecay=true;
+     }
+     if (ThisDecay) {  
+        brtot = brtot + DecayBranch[i].GetBR();
+        BranchWithDaugtherList[BranchCount] = i;
+        BranchCount++;
+     }
+  }
+  if (debug) { 
+    std::cout << " number of requested branches:  " << BranchCount << std::endl;
+    for (int i=0;i<BranchCount;i++) {
+          int n = BranchWithDaugtherList[i];
+          std::cout << "decay branch " << i << " with index:  " << n << " and BR " << DecayBranch[n].GetBR() << std::endl;
+    }
+    std::cout << " total defined branching ratio: " << brtot << std::endl;
+  }
+
+// randomly select one decay branch  
+  nbr = randy.Uniform(0.,BranchCount);           // get random variable 0 to total defined BR
+  int n = BranchWithDaugtherList[nbr];
+  br = DecayBranch[n].GetBR();  // get branching ratio of this branch
+  if (debug) cout << " index of decay to generate " << nbr << " corresponds to decay branch " << n << endl; 
+  br = br*BranchCount;              
+  ExecuteDecay(n,br);                               // execute selected decay
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 // Decay particle through preset decay branch using MyDecay class
 //
 // input: Int_t nbr          index of selected decay branch
@@ -711,13 +775,10 @@ void Particle::DecayFlat(){
 //         DecayDaughter[i]          4 vector of daughter particle i  
 //         DecayDaughterID[i]        PDG ID of particle
 //         DecayDaughterWeight[i]    weight assigned to decay
-//         TString DecayName         name of the decay channel
-//         Int_t DecayNumber         branch number of the decay channel in DefineDecays() [above]
 //
 // these variables are accessed through member functions 
 //
 // Axel Drees 9/1/2021
-// Roli Esha  5/13/2022
 //
 void Particle::ExecuteDecay(Int_t nbr, Double_t ww, Int_t index){
   Int_t n=0;
@@ -733,8 +794,6 @@ void Particle::ExecuteDecay(Int_t nbr, Double_t ww, Int_t index){
   if (debug) std::cout << " generate decay partiles " << std::endl;
 // generate decay
   DecayBranch[nbr].GenerateDecay();                           // generate decay particles 
-  DecayName = DecayBranch[nbr].GetName();                     // get name of the decay branch
-  DecayNumber = nbr;                                          // get branch number of the decay
   n = DecayBranch[nbr].GetNumberDecayParticles();             // get number of decay particle generated
   if (debug) std::cout << " number of decay partiles " << n << std::endl;
 
