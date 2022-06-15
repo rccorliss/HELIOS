@@ -247,6 +247,24 @@ Double_t PHENIXDetector::SmearEMCalPosition(Double_t energy, Double_t x, Int_t o
 }
 ////////////////////////////////////////////////////////////////////////////////
 //
+//  PHENIX EMCal efficiency
+//
+//  input  Int_t                - sector number as deterimed by EMCalSector(phi)
+//
+//  returns .true. if reconstructed
+//
+// efficiency is determined statistically based on Wenqing Fan thesis 
+//
+// Axel Drees  6/10/2022
+//
+Bool_t PHENIXDetector::EMCalEff(Int_t sector){
+  Bool_t live=0;
+
+  live =  (randy.Uniform(0.,1.) >= EMCProbEff);
+  return live;
+}
+////////////////////////////////////////////////////////////////////////////////
+//
 //  PHENIX EMCal live area
 //
 //  input  Int_t                - sector number as deterimed by EMCalSector(phi)

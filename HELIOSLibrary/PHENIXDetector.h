@@ -88,6 +88,7 @@ public:
   Int_t    EMCalSector(Double_t phi);
   Int_t    EMCalSectorCoordinates(Double_t phi, Double_t theta, Double_t& y, Double_t& z);
   Bool_t   EMCalLive(Int_t sector);
+  Bool_t   EMCalEff(Int_t sector);
   Double_t NonLinearEnergy(Double_t energy, Double_t c0=1.003, Double_t c1=0.05, Double_t c2=1.77);
   Double_t SmearEnergy(Double_t energy, Int_t opt=0, Double_t c1=0.081, Double_t c2=0.021 );
   Double_t SmearEMCalPosition(Double_t energy, Double_t x, Int_t opt=0 );

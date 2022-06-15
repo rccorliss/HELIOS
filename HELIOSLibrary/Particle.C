@@ -231,7 +231,7 @@
 // Axel Drees    10/18/2018 
 // updates       8/28/2020
 //
-void Particle::GenerateP(Double_t pt_low, Double_t pt_high, Bool_t rap=false) {
+void Particle::GenerateP(Double_t pt_low, Double_t pt_high, Bool_t rap=true) {
    Double_t pt,phi,rapidity,eta; 
    pt        = randy.Uniform(pt_low,pt_high);
    phi       = randy.Uniform(0.,2*pi);
@@ -256,7 +256,7 @@ void Particle::GenerateP(Double_t pt_low, Double_t pt_high, Bool_t rap=false) {
 // Axel Drees    10/21/2018
 // updated       8/28/2021
 //
-void Particle::GenerateP(TF1* PtSpectrum, TF1* PhiSpectrum, TF1* RapiditySpectrum, Bool_t rap=false) {
+void Particle::GenerateP(TF1* PtSpectrum, TF1* PhiSpectrum, TF1* RapiditySpectrum, Bool_t rap=true) {
    Double_t pt,phi,rapidity,eta;
 
    pt        = PtSpectrum->GetRandom(); 
@@ -279,7 +279,7 @@ void Particle::GenerateP(TF1* PtSpectrum, TF1* PhiSpectrum, TF1* RapiditySpectru
 // Axel Drees    10/18/2018
 // updated       8/28/2021
 //
-void Particle::GenerateP(TF1* PtSpectrum, Bool_t rap=false) {
+void Particle::GenerateP(TF1* PtSpectrum, Bool_t rap=true) {
    Double_t pt,phi,rapidity,eta;
    
    pt        = PtSpectrum->GetRandom(); 

@@ -86,14 +86,14 @@ public:
   virtual ~Particle();                                         // destructor
 
 // public random generator functions for particle 4 vector 
-  void GenerateP(Double_t ptmin, Double_t ptmax, Bool_t rap=false); 
+  void GenerateP(Double_t ptmin, Double_t ptmax, Bool_t rap=true); 
                                                                // generate flat pt between min and max, -pi<phi<pi, -0.5<y<0.5
-                                                               // default rap=false uses pseudorapidity, if true use rapidity
-  void GenerateP(TF1* PtSpectrum, Bool_t rap=false);           // generates pt from ptSpectrum, -pi<phi<pi, -0.5<y<0.5
-                                                               // default rap=false uses pseudorapidity, if true use rapidity
-  void GenerateP(TF1* Pt,TF1* PhiSpectrum, TF1* YSpectrum, Bool_t rap=false);    
+                                                               // rap=false uses pseudorapidity, if true use rapidity
+  void GenerateP(TF1* PtSpectrum, Bool_t rap=true);           // generates pt from ptSpectrum, -pi<phi<pi, -0.5<y<0.5
+                                                               // rap=false uses pseudorapidity, if true use rapidity
+  void GenerateP(TF1* Pt,TF1* PhiSpectrum, TF1* YSpectrum, Bool_t rap=true);    
                                                                // generates 4 vector from TF1 ptSpectrum, PhiSpectrum, and EtaSpectrum
-                                                               // default rap=false uses pseudorapidity, if true use rapidity
+                                                               // rap=false uses pseudorapidity, if true use rapidity
 
 // public random decay generators
   void Decay();                                                // generate random decay from know decay branches

@@ -95,8 +95,9 @@ const double sigma_x_PbGl_d  = 0.0;       // mm
 // live detector areas
 #if RUN == 14
 // EMCals Au-Au run 14
-//const double P_SectorLive[8] = {0.1242, 0.113, 0.1551, 0.1956, 0.1273, 0.1493, 0.2398, 0.3431};
-const double P_SectorLive[8] = {0., 0., 0., 0., 0., 0., 0., 0.};
+const double P_SectorLive[8] = {0.1242, 0.113, 0.1551, 0.1956, 0.1273, 0.1493, 0.2398, 0.3431};
+//const double P_SectorLive[8] = {0., 0., 0., 0., 0., 0., 0., 0.};
+const double EMCProbEff = 0.1;
 #endif
 
 
