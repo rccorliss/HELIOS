@@ -5,29 +5,29 @@
 // WriteTrack stores the information at track level
 //  
 // Event level functions:
-//     	GetNStable / SetNStable() 	- returns/sets the total number of stable particles in an event
-//		AddEntry() 				 	- adds a track to the event
-//		GetNEntries()				- returns total number of tracks in an event (all of parents and daughters)
-//		GetWriteTrack(int i)		- returns the ith track
+//     	GetNStable / SetNStable()    	- returns/sets the total number of stable particles in an event
+//	AddEntry() 		     	- adds a track to the event
+//	GetNEntries()			- returns total number of tracks in an event (all of parents and daughters)
+//	GetWriteTrack(int i)		- returns the ith track
 //
 //
 // Track level functions:
-//		GetFinal()					- returns 1 if particle is stable else 0 if it decays
-//		GetNum()					- returns the index of the track
-//		GetID()						- returns the PDG ID of the particle
-//		GetIst()					- always 0 (required in OSCAR1999A format)
-//		GetPx()						- returns x-component of track momentum
-//		GetPy()						- returns y-component of track momentum
-//		GetPz()						- returns z-component of track momentum
-//		GetEnergy()					- returns energy of the track
-//		GetMass()					- returns mass of the track
-//		GetBranch()					- returns the decay branch where it comes from
-//		GetParentIndex()			- returns the index of the immediate parent particle
-//		GetWeight()					- returns the weight of the track due to its branching ratio
+//	GetFinal()			- returns 1 if particle is stable else 0 if it decays
+//	GetNum()			- returns the index of the track
+//	GetID()				- returns the PDG ID of the particle
+//	GetIst()			- always 0 (required in OSCAR1999A format)
+//	GetPx()				- returns x-component of track momentum
+//	GetPy()				- returns y-component of track momentum
+//	GetPz()				- returns z-component of track momentum
+//	GetEnergy()			- returns energy of the track
+//	GetMass()			- returns mass of the track
+//	GetBranch()			- returns the decay branch where it comes from
+//	GetParentIndex()		- returns the index of the immediate parent particle
+//	GetWeight()			- returns the weight of the track due to its branching ratio
 //		
-//	Every Get function comes with a similar Set function in ordet to set the variables
+//	Every Get function comes with a similar Set function in order to set the variables
 //
-//	OpenOutputFile 					- opens a text file to write out the OSCAR output
+//	OpenOutputFile 			- opens a text file to write out the OSCAR output
 //	WriteOscarEvent(std::ofstream* output_file, WriteEvent Event) - writes out OSCAR output directly [refer to WriteOscarOutput.C for more info]
 //
 //  In order to get a ROOT output refer to WriteROOTOutput.C
@@ -43,11 +43,10 @@ class WriteTrack : public TObject{
 
    	private:
 
-   		int 	isFinal;
-
-   		int 	num;
-   		int 	id;
-   		int 	ist;
+   	int 	isFinal;
+   	int 	num;
+   	int 	id;
+   	int 	ist;
       	float   px;           
       	float   py;           
       	float   pz;           
@@ -65,7 +64,6 @@ class WriteTrack : public TObject{
       	WriteTrack(){  
 
       		isFinal = -999;
-
       		num = -999;
       		id = -999;
       		ist = -999;
@@ -77,7 +75,6 @@ class WriteTrack : public TObject{
 	        xpos = -999;
 	        ypos = -999;
 	        zpos = -999;
-
 	        br  = -999;
 	        ParentIndex = -999;
 	        weight = -999;
@@ -86,39 +83,36 @@ class WriteTrack : public TObject{
     	virtual ~WriteTrack();
 
     	int  	 GetFinal() {return isFinal; };
-
-	    int    	 GetNum() { return num; };
-	    int      GetID() { return id; };
-	    int      GetIst() { return ist; };
-	    float    GetPx() { return px; };
-	    float    GetPy() { return py; };
-	    float    GetPz() { return pz; };
-	    float    GetEnergy() { return en; };
-	    float    GetMass() { return mass; };
-	    float    GetXpos() { return xpos; };
-	    float    GetYpos() { return ypos; };
-	    float    GetZpos() { return zpos; };
-	    int      GetBranch() { return br; };
-	    int      GetParentIndex() { return ParentIndex; };
-	    int      GetWeight() { return weight; };
+	int    	 GetNum() { return num; };
+	int      GetID() { return id; };
+	int      GetIst() { return ist; };
+	float    GetPx() { return px; };
+	float    GetPy() { return py; };
+	float    GetPz() { return pz; };
+	float    GetEnergy() { return en; };
+	float    GetMass() { return mass; };
+	float    GetXpos() { return xpos; };
+	float    GetYpos() { return ypos; };
+	float    GetZpos() { return zpos; };
+	int      GetBranch() { return br; };
+	int      GetParentIndex() { return ParentIndex; };
+	int      GetWeight() { return weight; };
 	    
-
-	    void	SetFinal(int sisFinal) { isFinal = sisFinal;};
-
-	    void  	SetNum(int snum)  	{ num = snum; };
-	    void    SetID(int sid)  	{ id = sid; };
-	    void    SetIst(int sist)  	{ ist = sist; };
-	    void    SetPx(float spx)  	{ px = spx; };
-	    void    SetPy(float spy)  	{ py = spy; };
-	    void    SetPz(float spz)  	{ pz = spz; };
-	    void    SetEnergy(float sen)  { en = sen; };
-	    void    SetMass(float smass)  { mass = smass; };
-	    void    SetXpos(float sxpos)  { xpos = sxpos; };
-	    void    SetYpos(float sypos)  { ypos = sypos; };
-	    void    SetZpos(float szpos)  { zpos = szpos; };
-	    void    SetBranch(int sbr)  { br = sbr; };
-	    void    SetParentIndex(int sParentIndex)  	{ ParentIndex = sParentIndex; };
-	    void    SetWeight(float sweight)  	{ weight = sweight; };
+        void     SetFinal(int sisFinal) { isFinal = sisFinal;};
+        void   	 SetNum(int snum)  	{ num = snum; };
+        void     SetID(int sid)  	{ id = sid; };
+        void     SetIst(int sist)  	{ ist = sist; };
+        void     SetPx(float spx)  	{ px = spx; };
+        void     SetPy(float spy)  	{ py = spy; };
+        void     SetPz(float spz)  	{ pz = spz; };
+        void     SetEnergy(float sen)  { en = sen; };
+        void     SetMass(float smass)  { mass = smass; };
+        void     SetXpos(float sxpos)  { xpos = sxpos; };
+        void     SetYpos(float sypos)  { ypos = sypos; };
+        void     SetZpos(float szpos)  { zpos = szpos; };
+        void     SetBranch(int sbr)  { br = sbr; };
+        void     SetParentIndex(int sParentIndex)  	{ ParentIndex = sParentIndex; };
+        void     SetWeight(float sweight)  	{ weight = sweight; };
     
     ClassDef(WriteTrack,1)  
 };

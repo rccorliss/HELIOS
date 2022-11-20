@@ -22,6 +22,9 @@
 //   TF1 SPSrapidity(name,mass,ymin,ymax,ebeam=200)
 //       pt and rapidity functions for SPS fix target collisions (taken from EXODUS)
 //
+//   TF1 Flat(const Char_t *name, Double_t min=0, Double_t max = 2*3.1415926)  
+//       generates generic flat distribution between min,max default assumes 0-2pi
+//
 //   double Pt_Mt_Scaled(pt,m,mref)
 //       mt scales pt from particle of mass m based on pt of particle with mass mref
 //   double RapidtyToEta(y,pt,m)
@@ -30,6 +33,7 @@
 // Axel Drees  11/11/2021 
 // Axel Drees  3/18/2022    add SPS kinematic distributions
 // Axel Drees  6/9/2022     add conversion from rapidity to eta, and mt scaling from m to m* 
+// Axel Drees  11/17/2022   debug and fix SPS rapidity distributions 
 //
 
 #ifndef KinDist_h
@@ -325,19 +329,20 @@ TF1 *SPSrapidity(const Char_t *name, Double_t mass, Double_t ymin=-999, Double_t
   double ymax_pi0     = log(sqrts/m_pi0);
   double ymax_part    = log(sqrts/mass);
   double sig          = sigma_landau*(ymax_part/ymax_pi0);
-  if (ymin == -999 or ymin < -ymax_part) ymin = -ymax_part;
-  if (ymax == -999 or ymax > ymax_part) ymax = ymax_part;
+  if (ymin == -999 or ymin < y0-ymax_part) ymin = y0-ymax_part;
+  if (ymax == -999 or ymax > y0+ymax_part) ymax = y0+ymax_part;
   
-  cout << "sqrt(s)      " << sqrts << endl;
-  cout << "y_cms        " << y0 << endl;
-  cout << "gamma        " << gamma << endl;
-  cout << "sigma_Landau " << sigma_landau << endl;
-  cout << "ymax_pi0     " << ymax_pi0 << endl;
-  cout << "ymax_part    " << ymax_part << endl;
-  cout << "sig          " << sig << endl;
-  cout << "ymin         " << ymin << endl;
-  cout << "ymax         " << ymax << endl;
-  cout << endl;
+  std::cout << "name         " << name         << std::endl;
+  std::cout << "sqrt(s)      " << sqrts        << std::endl;
+  std::cout << "y_cms        " << y0           << std::endl;
+  std::cout << "gamma        " << gamma        << std::endl;
+  std::cout << "sigma_Landau " << sigma_landau << std::endl;
+  std::cout << "ymax_pi0     " << ymax_pi0     << std::endl;
+  std::cout << "ymax_part    " << ymax_part    << std::endl;
+  std::cout << "sig          " << sig          << std::endl;
+  std::cout << "ymin         " << ymin         << std::endl;
+  std::cout << "ymax         " << ymax         << std::endl;
+  std::cout << std::endl;
  
   TF1 *fSPSrapidity = new TF1(name, SPSrapidity_Func, ymin, ymax, 2);
   fSPSrapidity->SetParameters(y0, sig);
@@ -419,6 +424,30 @@ TF1 *SPSrapidity(const Char_t *name, Double_t mass, Double_t ymin=-999, Double_t
 //    return shift;
 //  }
 
+//-----------------------------------------------------------------------------
+//
+// Generate flat distributions for any purpose
+//
+// default min max set to 0 - 2 pi
+//-----------------------------------------------------------------------------
+double Flat_Func(double *x, double *p)
+{
+  double phi = x[0];
+  double c = p[0];
+
+  double weight = c;
+
+  return weight;
+}
+
+TF1 *Flat(const Char_t *name, Double_t min=0, Double_t max = 2*3.1415926) {
+
+  double cc[0];
+  cc[0]=1.;
+  TF1 *fFlat = new TF1(name, Flat_Func, min, max, 1);
+  fFlat->SetParameters(cc);
+  return fFlat;
+}
 
 
 #endif

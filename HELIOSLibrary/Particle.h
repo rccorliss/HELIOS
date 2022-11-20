@@ -14,8 +14,8 @@
 //     pi0           pi0->gg, pi0->gee
 //     pi+           stable
 //     pi-           stable
-//     eta           eta->gg, eta->gee, eta->gmm, eta->mm
-//     etap          etap->gg, etap->gee, etap-gmm
+//     eta           eta->gg, eta->gee, eta->gmm, eta->mm, eta->3pi0
+//     etap          etap->gg, etap->gee, etap-gmm, etap->wg, etap->2pi0eta
 //     rho0          rho0->ee, rho0->mm
 //     omega         omega->ee, omega->mm  omega->pi0g, omega->pi0ee, omega->pi0mm     
 //     phi           phi->ee, phi->mm
@@ -37,7 +37,8 @@
 //
 // decays particle, three different options 
 // Decay()         - generate one random decay with probability equal to branching ratio
-// DecaySingleBranch(name) - forces a particular decay
+// DecaySingleBranch(name)   - forces a particular decay
+// DecayMultiBranch(name[])  - forces a slected subset of decays 
 // DeacyFlat        - generates one random decay with equal probability for all defined branches
 //
 // member variables
@@ -69,6 +70,7 @@
 // 3/18/2022    muon decay channels added   Axel Drees
 // 5/13/2022    retrieve more decay info    Roli Esha
 // 6/9/2022     generate in y or eta        Axel Drees
+// 11/11/2022   3 body dacys and updates    Axel Drees
 //
 #ifndef Particle_h
 #define Particle_h
@@ -89,15 +91,20 @@ public:
   void GenerateP(Double_t ptmin, Double_t ptmax, Bool_t rap=true); 
                                                                // generate flat pt between min and max, -pi<phi<pi, -0.5<y<0.5
                                                                // rap=false uses pseudorapidity, if true use rapidity
+  void GenerateP(Double_t ptmin, Double_t ptmax, TF1* YSpectrum, Bool_t rap=true); 
+                                                               // generate flat pt between min and max, -pi<phi<pi
+                                                               // uses TF1 for rapidity distribution 
+                                                               // rap=false uses pseudorapidity, if true use rapidity
   void GenerateP(TF1* PtSpectrum, Bool_t rap=true);           // generates pt from ptSpectrum, -pi<phi<pi, -0.5<y<0.5
                                                                // rap=false uses pseudorapidity, if true use rapidity
   void GenerateP(TF1* Pt,TF1* PhiSpectrum, TF1* YSpectrum, Bool_t rap=true);    
                                                                // generates 4 vector from TF1 ptSpectrum, PhiSpectrum, and EtaSpectrum
                                                                // rap=false uses pseudorapidity, if true use rapidity
-
 // public random decay generators
   void Decay();                                                // generate random decay from know decay branches
   void DecaySingleBranch(TString branch);                      // generate decay for specified branch only
+  void DecayMultiBranch(TString *branch, Int_t n);             // generates random decay with equal probability for
+                                                               // specified branches only and sets weight corresponding weight
   void DecayFlat();                                            // generates random decay with equal probability for each 
                                                                // branch and sets weight corresponding weight
 // public access to decay particles
@@ -120,6 +127,33 @@ public:
   void AddWeight(Double_t w);                                  // updates particle weight
 
   void UpdateParticle(TLorentzVector &p);                      // update 4 vector of particle
+
+// Define = operator for particle class: Particle = Particle
+void operator = (Particle const &otherParticle)
+{
+    name   = otherParticle.name;                      // set name 
+    id     = otherParticle.id;                        // set id  
+    charge = otherParticle.charge;                    // set charge  
+    weight = otherParticle.weight;                    // set weight  
+    mass   = otherParticle.mass;                      // set mass  
+    stable = otherParticle.stable;                    // set stable
+    double t_pt     = otherParticle.Pt();             // set 4-momentum 
+    double t_eta    = otherParticle.Eta();
+    double t_phi    = otherParticle.Phi();
+    double t_mass   = otherParticle.M();
+    SetPtEtaPhiM(t_pt,t_eta,t_phi,t_mass);
+    if (!stable) DefineDecays();                      // define decays id not stable
+}
+
+// Define = operator for particle class:  Particle = TLorentzVector
+void operator = ( TLorentzVector const &otherParticle)
+{
+    double t_pt     = otherParticle.Pt();             // set 4-momentum 
+    double t_eta    = otherParticle.Eta();
+    double t_phi    = otherParticle.Phi();
+    double t_mass   = otherParticle.M();
+    SetPtEtaPhiM(t_pt,t_eta,t_phi,t_mass);
+}
 
  private:  
 // internal variables

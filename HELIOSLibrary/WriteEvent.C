@@ -33,7 +33,7 @@ void WriteOscarEvent(std::ofstream* file, WriteEvent Event){
 	int parentID = -999;
 	WriteTrack Track;
 
-	*file << 0 << "\t" << Event.GetNEntries() << endl;
+	*file << 0 << "\t" << Event.GetNEntries() << std::endl;
 
 	for(int i = 0; i < Event.GetNEntries(); i++){
 
@@ -43,17 +43,17 @@ void WriteOscarEvent(std::ofstream* file, WriteEvent Event){
 
 			parentID = i;
 
-			*file << Track.GetNum() << "\t" << "0" << "\t" << Track.GetID() << "\t" << Track.GetPx() << "\t" << Track.GetPy() << "\t" << Track.GetPz() << "\t" << Track.GetEnergy() << "\t" << Track.GetMass() << "\t" << Track.GetXpos() << "\t" << Track.GetYpos() << "\t" << Track.GetZpos() << "\t" << Track.GetBranch() << endl;
+			*file << Track.GetNum() << "\t" << "0" << "\t" << Track.GetID() << "\t" << Track.GetPx() << "\t" << Track.GetPy() << "\t" << Track.GetPz() << "\t" << Track.GetEnergy() << "\t" << Track.GetMass() << "\t" << Track.GetXpos() << "\t" << Track.GetYpos() << "\t" << Track.GetZpos() << "\t" << Track.GetBranch() << std::endl;
 		}
 
 		else if(Track.GetFinal() == 1){
 
-			*file << Track.GetNum() << "\t" << Track.GetID() << "\t" << parentID << "\t" << Track.GetPx() << "\t" << Track.GetPy() << "\t" << Track.GetPz() << "\t" << Track.GetEnergy() << "\t" << Track.GetMass() << "\t" << Track.GetXpos() << "\t" << Track.GetYpos() << "\t" << Track.GetZpos() << "\t" << "0" << endl;
+			*file << Track.GetNum() << "\t" << Track.GetID() << "\t" << parentID << "\t" << Track.GetPx() << "\t" << Track.GetPy() << "\t" << Track.GetPz() << "\t" << Track.GetEnergy() << "\t" << Track.GetMass() << "\t" << Track.GetXpos() << "\t" << Track.GetYpos() << "\t" << Track.GetZpos() << "\t" << "0" << std::endl;
 
 		}
 	}
 
-	*file << "0" << "\t" << "0" << endl;
+	*file << "0" << "\t" << "0" << std::endl;
 
 }
 

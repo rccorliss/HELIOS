@@ -23,7 +23,7 @@ main include file for user program
                               components of HELIOS in your code
 Particle generator
 - PDG.h                       Collection of particle properties and constants
-- KinematicDistributions.h    Collection of momentum spectra of various particles
+- KinematicDistributions.h    Collection of kinematic distributions of various particles
 - Particle.C, Particle.h      Particle Class - inherets from TLorentzVector, 
                               defines, particles and decays, includes 3-momentum generator 
                               and generates decay particles using decay class 
@@ -115,14 +115,16 @@ Description of HELIOS package from header files
 //  Axel Drees 11/15/2021
 //
 //
-///// PDG.h ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Collection Particle Properties used in HELIOS from PDG: https://pdg.lbl.gov/2021
+// Particle Properties used in HELIOS from PDG: https://pdg.lbl.gov/2021
 //
 //
 // Axel Drees 8/30/2021
-//            9/21/2021 updated
-//            3/13/2021 muon decays added
+//            9/21/2021  updated
+//            3/13/2021  muon decays added
+// Roli Esha  5/13/2022  added photonMass = 0
+// Axel Drees 11/18/2022 added several decays 
 //  
 //// KinematicDistributions.h //////////////////////////////////////////////////////////////////////////
 //
@@ -144,7 +146,22 @@ Description of HELIOS package from header files
 //   double  Weight_GPR_etapi_uni(pt, opt=0)
 //           - universal eta/pi ratio fro Yuanjie Ren thesis  
 //
+//   TF1 SPSptYield(name,mass,ptmin=0,ptmax=4)
+//   TF1 SPSrapidity(name,mass,ymin,ymax,ebeam=200)
+//       pt and rapidity functions for SPS fix target collisions (taken from EXODUS)
+//
+//   TF1 Flat(const Char_t *name, Double_t min=0, Double_t max = 2*3.1415926)  
+//       generates generic flat distribution between min,max default assumes 0-2pi
+//
+//   double Pt_Mt_Scaled(pt,m,mref)
+//       mt scales pt from particle of mass m based on pt of particle with mass mref
+//   double RapidtyToEta(y,pt,m)
+//       calculates eta from y,pt,m
+//
 // Axel Drees  11/11/2021 
+// Axel Drees  3/18/2022    add SPS kinematic distributions
+// Axel Drees  6/9/2022     add conversion from rapidity to eta, and mt scaling from m to m* 
+// Axel Drees  11/17/2022   debug and fix SPS rapidity distributions 
 //
 //// Particle.h //////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -162,8 +179,8 @@ Description of HELIOS package from header files
 //     pi0           pi0->gg, pi0->gee
 //     pi+           stable
 //     pi-           stable
-//     eta           eta->gg, eta->gee, eta->gmm, eta->mm
-//     etap          etap->gg, etap->gee, etap-gmm
+//     eta           eta->gg, eta->gee, eta->gmm, eta->mm, eta->3pi0
+//     etap          etap->gg, etap->gee, etap-gmm, etap->wg, etap->2pi0eta
 //     rho0          rho0->ee, rho0->mm
 //     omega         omega->ee, omega->mm  omega->pi0g, omega->pi0ee, omega->pi0mm     
 //     phi           phi->ee, phi->mm
@@ -181,11 +198,12 @@ Description of HELIOS package from header files
 //
 // generate random 3 vector 
 // GenerateP()     - there are three options implemented through over loading 
-//                 - flat, from pt spectrum, or pt, eta and phi spectra (see below)
+//                 - flat, from pt spectrum, or pt, eta or y and phi spectra (see below)
 //
 // decays particle, three different options 
 // Decay()         - generate one random decay with probability equal to branching ratio
-// DecaySingleBranch(name) - forces a particular decay
+// DecaySingleBranch(name)   - forces a particular decay
+// DecayMultiBranch(name[])  - forces a slected subset of decays 
 // DeacyFlat        - generates one random decay with equal probability for all defined branches
 //
 // member variables
@@ -209,10 +227,15 @@ Description of HELIOS package from header files
 //  Int_t GetDaughterID(i)          - returns PDG ID of daughter i 
 //  Double_t GetDaughterWeight(i)   - returns get weight for daughter, depending on method used for decay generator  
 //  TLorentzVector GetDecayDaughter(i) - returns 4 vector of daughter
+//  TString GetDecayName()          - returns decay name (eg. pi0->gg)
+//  Int_t GetDecayNumber()          - returns decay number (eg. 0 for pi0->gg) [from DefineDecays() in Particle.C]
 // 
 // 11/19/2019   started by                  Axel Drees 
 // 9/21/2021    integrated to HELIOS        Axel Drees
 // 3/18/2022    muon decay channels added   Axel Drees
+// 5/13/2022    retrieve more decay info    Roli Esha
+// 6/9/2022     generate in y or eta        Axel Drees
+// 11/11/2022   3 body dacys and updates    Axel Drees
 //
 ////// Decay.h //////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -222,15 +245,16 @@ Description of HELIOS package from header files
 //
 //     "pi0->gg"       "pi0->gee"
 //     "eta->gg"       "eta->gee"         "eta->gmm"      "eta->mm"
-//     "etap->gg"      "etap->gee"        "etap->rho0g"   "etap->gmm"
+//     "etap->gg"      "etap->gee"        "etap->rho0g"   "etap->gmm"        "etap->wg"       "etap->2pi0eta"
 //     "omega->pi0g"   "omega->pi0ee"     "omega->ee"     "omega->pi0mm"     "omega->mm"
 //     "rho0->ee"      "rho0->mm"
 //     "phi->ee"       "phi->mm" 
 //     "Delta->Ng"
 // 
 // currently defined decay types of decay branches used internaly to select correct decay function                                   
-//     "TwoBody"  two body decay 
-//     "Dalitz"   Dalitz decay
+//     "TwoBody"    two body decay 
+//     "Dalitz"     Dalitz decay
+//     "ThreeBody"  three body decay
 //
 // Particle class defines each decay branch for non stable particle with Decay constructor and sets 
 // properties using:
@@ -257,7 +281,8 @@ Description of HELIOS package from header files
 //
 //  8/23/2021     originally developed Axel Drees 
 //  9/21/2021     addpted to HELIOS   
-//  3/18/2022     muon decay channels added           
+//  3/18/2022     muon decay channels added 
+//  11/13/2022    3 body decays           
 //
 ////// DecayAuxilliaryFunctions.h ///////////////////////////////////////////////////////////////////////////////////////
 //

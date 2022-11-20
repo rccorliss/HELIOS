@@ -4,9 +4,10 @@
 //
 //
 // Axel Drees 8/30/2021
-//            9/21/2021 updated
-//            3/13/2021 muon decays added
-// Roli Esha  5/13/2022 added photonMass = 0
+//            9/21/2021  updated
+//            3/13/2021  muon decays added
+// Roli Esha  5/13/2022  added photonMass = 0
+// Axel Drees 11/18/2022 added several decays 
 //  
 #ifndef PDG_h
 #define PDG_h
@@ -61,8 +62,9 @@
   Double_t BR_pi0_Dalitz    = 1-0.98823;
   Double_t BR_eta_gg        = 0.3941;
   Double_t BR_eta_Dalitz    = 0.0069;
-  Double_t BR_eta_Dalitz2   = 0.0031;
+  Double_t BR_eta_Dalitz2   = 0.0031;                 // g mu mu
   Double_t BR_eta_mm        = 0.000058;
+  Double_t BR_eta_3pi0      = 0.3257;
   Double_t BR_omega_pi0g    = 0.0834;
   Double_t BR_omega_pi0ee   = 0.00077;
   Double_t BR_omega_ee      = 0.0000739;
@@ -73,6 +75,7 @@
   Double_t BR_etap_Dalitz2  = 0.000113;
   Double_t BR_etap_wg       = 0.0252;
   Double_t BR_etap_rho0g    = 0.295;
+  Double_t BR_etap_2pi0eta  = 0.224;
   Double_t BR_rho0_ee       = 0.0000472;
   Double_t BR_rho0_mm       = 0.000045;
   Double_t BR_phi_ee        = 0.000297;

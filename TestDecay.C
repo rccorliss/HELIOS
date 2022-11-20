@@ -21,7 +21,7 @@ void TestDecay(){
   Double_t ww = 0; 
   Int_t id = 0;
 
-  Int_t iopt = 2;                                   
+  Int_t iopt = 1;                                   
 
   cout << endl;
 
@@ -144,15 +144,10 @@ void TestDecay(){
     pi0.ResetP();
     pi0.GenerateP(pt_min,pt_max);                                // generate 4 vector for pi0 with flat distribution
     pi0.SetWeight(piHagedorn->Eval(pi0.Pt())/float(nevt));
-
-
-//    pi0.GenerateP(piHagedorn,pi0Phi,pi0Rapidity);               // generate 4 vector for pi0 
-//    pi0.GenerateP(piHagedorn);                                  // generate 4 vector for pi0 
     h_ptpi->Fill(pi0.Pt(),pi0.Weight());                         // histogram pion proprety
 
-    if (iopt == 2) pi0.DecayFlat();
-    if (iopt == 1) pi0.Decay();
-    if (iopt == 4) pi0.DecaySingleBranch("pi0->Dalitz");
+    if (iopt == 1) pi0.DecayFlat();
+    if (iopt == 2) pi0.DecaySingleBranch("pi0->Dalitz");
     if (iopt == 3) pi0.DecaySingleBranch("pi0->gg");
 
 

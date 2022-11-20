@@ -37,7 +37,7 @@ void Decay::GenerateDecay(){
     if (DecayName == "omega->ee" or DecayName == "omega->mm" or DecayName == "rho0->ee" or DecayName == "rho0->mm"
         or DecayName == "phi->ee" or DecayName == "phi->mm") {
        TF1 *h = (TF1 *)gROOT->FindObject(DecayName);   // get leptonPair mass
-       if (debug) cout << " root object found" << DecayName << endl;
+       if (debug) std::cout << " root object found" << DecayName << std::endl;
        pairMass = h->GetRandom(); 
        pt  = Parent.Pt();
        eta = Parent.Eta();
@@ -58,6 +58,15 @@ void Decay::GenerateDecay(){
     daughter2.SetPtEtaPhiM(0.,0.,0.,Daughter[1].M());
     daughter3.SetPtEtaPhiM(0.,0.,0.,Daughter[2].M());
     DalitzDecay(parent,daughter1,daughter2,daughter3);
+    Daughter[0] = daughter1;
+    Daughter[1] = daughter2;
+    Daughter[2] = daughter3;
+  } else if (DecayType == "ThreeBody" ){
+    parent = Parent;
+    daughter1.SetPtEtaPhiM(0.,0.,0.,Daughter[0].M());
+    daughter2.SetPtEtaPhiM(0.,0.,0.,Daughter[1].M());
+    daughter3.SetPtEtaPhiM(0.,0.,0.,Daughter[2].M());
+    ThreeBodyDecay(parent,daughter1,daughter2,daughter3);
     Daughter[0] = daughter1;
     Daughter[1] = daughter2;
     Daughter[2] = daughter3;
@@ -161,6 +170,80 @@ void Decay::DalitzDecay(TLorentzVector &parent, TLorentzVector &decay1, TLorentz
   // decay2.Print();
   // leptonPair.Print();                   
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void Decay::ThreeBodyDecay(TLorentzVector &parent, TLorentzVector &daughter1, TLorentzVector &daughter2, TLorentzVector &daughter3){
+//
+// Isotropic three body decay of parent into three particles
+//
+// input:  parent 4 vector
+// output: daughter1&2&3 4 vector 
+//
+// Axel Drees 11/11/2022 - based on EXODUS code, also check PDG chaper on kinematics
+//
+  TRandom3 randy = TRandom3(0);                       // Random Generator
+  Double_t mp = parent.M();                           // parent mass
+  Double_t md[3];                                     // 3 daughter masses
+  md[0] = daughter1.M();
+  md[1] = daughter2.M();
+  md[2] = daughter3.M();
+
+  TVector3 boost = parent.BoostVector();              // boost vector of parent particle
+
+  Double_t m12,m13;                                   // enery of daugther 1&2 1&3 pair in parent rest frame
+  Double_t m12lo = pow(md[0]+md[1], 2);               // min. energy for daughters 1&2
+  Double_t m12hi = pow(mp-md[2], 2);                  // max. energy for daugthers 1&2
+  Double_t m13lo = pow(md[0]+md[2], 2);               // dito daughters 1&3 
+  Double_t m13hi = pow(mp-md[1], 2);
+  
+  Double_t t1, t2, t3, e1s, e3s, m13min, m13max;      // temp variables
+  while (true) {                                      // populate Dalitz plot randomly in allowed region
+                                                      // see PDG chapter on Kinematics
+    m12 = sqrt(randy.Uniform(m12lo,m12hi));           // start with random value m12lo<m12<m12hi
+    m13 = sqrt(randy.Uniform(m13lo,m13hi));           // dito m13
+    e1s = (m12*m12+md[0]*md[0]-md[1]*md[1])/(2.0*m12);// used to calculate boundary of dalitz plot
+    e3s = (mp*mp-m12*m12-md[2]*md[2])/(2.0*m12);  
+    t1 = e1s*e1s-md[0]*md[0];                         // used to calculate min/max m13
+    t2 = e3s*e3s-md[2]*md[2];
+    t3 = pow(e1s+e3s,2);
+    m13max = sqrt(t3 - pow(sqrt(t1)-sqrt(t2),2));     // maximum energy for 1&3 given m12
+    m13min = sqrt(t3 - pow(sqrt(t1)+sqrt(t2),2));     // minimum energy for 1&3 given m12
+    if( m13<=m13max && m13>=m13min ) break;           // found a valid m12 m13 combimation
+  }
+
+                                                    // generate daughter 3 in restframe of parent
+  Double_t Ed3 = (mp*mp + md[2]*md[2] - m12*m12)/(2.0*mp);   // calculate energy of daughter 3
+  Double_t pd3 = sqrt((Ed3+md[2])*(Ed3-md[2]));              // calculate momentum of daughter 3
+  
+  Double_t phi = randy.Uniform(0.,2*pi);              // phi random from 0. to 2pi
+  Double_t z   = randy.Uniform(-1.,1.);               // z used to calculate theta 
+  Double_t theta = acos(z);                           // so that each angle in 4pi is equaly likely
+  Double_t pz = pd3*cos(theta);                       // longitudinal momentum
+  Double_t px = pd3*sin(theta)*cos(phi);              // transverse momentum x component
+  Double_t py = pd3*sin(theta)*sin(phi);              // transverse momentum y component
+  daughter3.SetPxPyPzE(px,py,pz,Ed3);                 // set 4 vector of 3 decay particle
+  daughter3.Boost(boost);                             // boost with parent momentum
+
+  TLorentzVector temp = -(parent-daughter3);
+
+//
+// generate daughter 1 & 2 as two body decay of -(parent-daughter3)
+  TwoBodyDecay(temp,daughter1,daughter2);
+
+  if(debug) {
+    std::cout << std::endl;
+    std::cout << " 3 body: " << " daughter3 "; daughter3.Print(); 
+    std::cout << " 3 body: " << " m12 " << m12 << " " << temp.M() << std::endl;
+    std::cout << " 3 body: " << " daughter1 "; daughter1.Print(); 
+    std::cout << " 3 body: " << " daughter1 "; daughter1.Print(); 
+    std::cout << " 3 body: " << " daughter2 "; daughter2.Print(); 
+    TLorentzVector mom = daughter1+daughter2+daughter3;
+    std::cout << " 3 body: " << " parent mass " << parent.M() << "    " << mom.M() << std::endl;
+    std::cout << " 3 body: " << " parent      "; parent.Print(); 
+    std::cout << " 3 body: " << " mom         "; mom.Print(); 
+    std::cout << std::endl;
+  }
+
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Decay::SetMassDistributions(){
@@ -194,6 +277,7 @@ void Decay::SetMassDistributions(){
 
   } else if (DecayName == "omega->pi0ee") {
       TF1 *h_Mass = new TF1(DecayName,f_omegaDalitz,2.*eMass,omegaMass-pi0Mass);
+
   } else if (DecayName == "omega->ee") {
       TF1 *h_Mass = new TF1(DecayName,f_omegaee,2.*pi0Mass,2*omegaMass); 
 

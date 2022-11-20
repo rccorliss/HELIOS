@@ -6,15 +6,16 @@
 //
 //     "pi0->gg"       "pi0->gee"
 //     "eta->gg"       "eta->gee"         "eta->gmm"      "eta->mm"
-//     "etap->gg"      "etap->gee"        "etap->rho0g"   "etap->gmm"
+//     "etap->gg"      "etap->gee"        "etap->rho0g"   "etap->gmm"        "etap->wg"       "etap->2pi0eta"
 //     "omega->pi0g"   "omega->pi0ee"     "omega->ee"     "omega->pi0mm"     "omega->mm"
 //     "rho0->ee"      "rho0->mm"
 //     "phi->ee"       "phi->mm" 
 //     "Delta->Ng"
 // 
 // currently defined decay types of decay branches used internaly to select correct decay function                                   
-//     "TwoBody"  two body decay 
-//     "Dalitz"   Dalitz decay
+//     "TwoBody"    two body decay 
+//     "Dalitz"     Dalitz decay
+//     "ThreeBody"  three body decay
 //
 // Particle class defines each decay branch for non stable particle with Decay constructor and sets 
 // properties using:
@@ -41,7 +42,8 @@
 //
 //  8/23/2021     originally developed Axel Drees 
 //  9/21/2021     addpted to HELIOS   
-//  3/18/2022     muon decay channels added           
+//  3/18/2022     muon decay channels added 
+//  11/13/2022    3 body decays           
 //
 
 #ifndef Decay_h
@@ -81,7 +83,7 @@ class Decay {
     BR = br;
   }
   void SetType(TString t){                                  // set decay time  
-    if (t == "TwoBody" or t == "Dalitz") {
+    if (t == "TwoBody" or t == "Dalitz" or t == "ThreeBody") {
       DecayType = t;
     } else {
       std::cout << " decay type " << t << " not known" << std::endl;
@@ -90,10 +92,10 @@ class Decay {
   }
   void SetName(TString n){
     if (   n == "pi0->gg" or n == "pi0->gee" 
-        or n == "eta->gg" or n == "eta->gee" or "eta->gmm" or "eta->mm"
+        or n == "eta->gg" or n == "eta->gee" or "eta->gmm" or "eta->mm" or "eta->3pi0"
         or n == "omega->pi0g"  or n == "omega->pi0ee" or n == "omega->ee" or n == "omega->gmm"
         or n == "rho0->ee" or n == "rho0->mm"
-        or n == "etap->gg" or n == "etap->gee" or "etap->rho0g" or "etap->gmm" 
+        or n == "etap->gg" or n == "etap->gee" or n == "etap->rho0g" or n == "etap->wg" or n == "etap->gmm" or n == "etap->2pieta"
         or n == "phi->ee" or  n == "phi->mm"
         or n == "Delta->Ng") {
       DecayName = n;
@@ -144,6 +146,7 @@ class Decay {
 // defined decay member functions
    void TwoBodyDecay(TLorentzVector &parent, TLorentzVector &daughter1, TLorentzVector &daughter2);
    void DalitzDecay (TLorentzVector &parent, TLorentzVector &daughter1, TLorentzVector &daughter2, TLorentzVector &daughter3);
+   void ThreeBodyDecay(TLorentzVector &parent, TLorentzVector &daughter1, TLorentzVector &daughter2, TLorentzVector &daughter3);
 
 }; //end of class
 
