@@ -20,6 +20,8 @@ const int arm_east = 2;
 // central arm acceptance 
 // physical phi and eta acceptance of arms
 const double P_eta = 0.35;     // rapidity range
+const double P_theta_min = 2*atan(exp(-P_eta));
+const double P_theta_max = 2*atan(exp(P_eta));
 const double P_phi_west_max =  11./16.*pi;
 const double P_phi_west_min =   3./16.*pi;
 const double P_phi_east_max =  -3./16.*pi; 
@@ -56,15 +58,17 @@ const double P_fdPhi[8] = {1./17.21,1./17.21,1./17.21,1./17.21,
 // 	 315 mrad/pt measured in GeV for the ++ field configuration. This is split between alpha 
 //   and phi_0 - phi_DC about 1/3 to 2/3
 // 	                                
-const double  P_kDC = 0.315;                 // this is the full bent angle in the field at the DC
+const double  P_kDC = 0.307;                 // this is the full bent angle in the field at the DC
 const double  P_kBfield = 1.023*P_kDC;       // bent in full field (i.e. out to 3 meters) ~ .322      
-const double  P_delta = 1/3.;                // fraction of field bent measured by alpha           
+const double  P_delta = 0.35;                // fraction of field bent measured by alpha - also valid for conversions in VTX          
 // phi component of magnetic field bent at DC and RICH (assume RICH~EMCAL)
 const double P_kDC_phi = (1-P_delta)*P_kDC;  // = 0.210
-const double P_kRICH_phi = 0.309;            // needs to be checked
-const double P_kEMCal_phi = 0.275;           // needs to be checked
-const double P_kCenter = 0.0027;             // const. field bent at small radia, mradGeV/cm
-
+const double P_kRICH_phi = P_kBfield;        // is this needed ?? 
+const double P_kEMCal_phi = 0.263;           // needs to be checked
+const double P_kDCtoEMC = 0.0097;            // residual bent from DC to EMC 
+const double P_deltaDCtoEMC = 0.081;         // same as P_delta 
+// 
+const double P_kVTX[4] = {0.300,0.294,0.280,0.254};  // field bend for track startin at vtx B0, B1, B2, B3
 
 #endif
 
@@ -104,8 +108,10 @@ const double EMCProbEff = 0.1;
 // detector material used for Bremsstrahlung and conversions
 #if RUN > 10
 const double VTX_X0[4] = {0.013,0.013,0.052,0.052}; 
+const double VTX_R[4]  = {2.5,5.,10.,20.}; 
 #else
 const double VTX_X0[4] = {0.,0.,0.,0.};
+const double VTX_R[4] = {0.,0.,0.,0.};
 #endif
 
 #endif

@@ -346,7 +346,7 @@ void TestDecay(){
 
     ndecay = etap.GetNumberOfDaughters();
     if (i<10)  cout << "----- etapDeacy --------------------------------------------------------" << endl; 
-    if (i<10) cout << " found decay with " << ndecay << " daughters " << endl; 
+    if (i<10) cout << " found decay " << etap.GetDecayName() << " with " << ndecay << " daughters " << endl; 
      
     elecFound = false;
     posiFound = false;    
@@ -379,6 +379,7 @@ void TestDecay(){
       if (i<10) eepair.Print();
       h_massetap->Fill(eepair.M(),ww);     
     }
+
 /////////////////////////////////////////////// phi decays ////////////////////////////////////////////////
     phi_meson.ResetP();
     electron.ResetP();
@@ -386,7 +387,8 @@ void TestDecay(){
     phi_meson.GenerateP(pt_min,pt_max);                                // generate 4 vector for pi0 with flat distribution
     phi_meson.SetWeight(phiHagedorn->Eval(phi_meson.Pt())/float(nevt)*0.25);
     h_ptphi->Fill(phi_meson.Pt(),phi_meson.Weight());                         // histogram pion proprety
-    
+
+    if (i<10) phi_meson.Print();        
     if (iopt == 1) phi_meson.Decay();
     if (iopt == 2) phi_meson.DecayFlat();
     if (iopt == 5) phi_meson.DecaySingleBranch("phi->ee");

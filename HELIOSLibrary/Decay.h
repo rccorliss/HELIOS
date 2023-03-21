@@ -10,6 +10,7 @@
 //     "omega->pi0g"   "omega->pi0ee"     "omega->ee"     "omega->pi0mm"     "omega->mm"
 //     "rho0->ee"      "rho0->mm"
 //     "phi->ee"       "phi->mm" 
+//     "K0s->2pi0"
 //     "Delta->Ng"
 // 
 // currently defined decay types of decay branches used internaly to select correct decay function                                   

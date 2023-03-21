@@ -12,6 +12,8 @@
 #ifndef PDG_h
 #define PDG_h
 
+
+
 // constants
   Double_t pi = 3.14159;                              // define pi
   Double_t alpha = 1/137.;                            // fine structure constant
@@ -26,10 +28,14 @@
   Double_t omegaMass= 0.78266;                         // omega meson
   Double_t etapMass = 0.95778;                         // eta' meson
   Double_t phiMass  = 1.0195;                          // phi meson
+  Double_t K0sMass  = 0.497611;                        // K0 short 
   Double_t photonMass = 0;                             // photon
 
-  Double_t DeltaMass = 1.232;                          // Delta baryon average
-  Double_t NucleonMass = 0.939;                         // Nucleon (p+n)/2
+  Double_t DeltaMass   = 1.232;                          // Delta baryon average
+  Double_t NucleonMass = 0.939;                        // Nucleon (p+n)/2
+  Double_t protonMass  = 0.93827;
+  Double_t neutronMass = 1.00866;
+  Double_t LambdaMass  = 1.11568;                        // lightest starnge baryon
 
 // width of particles
   Double_t omegaWidth = 0.00849;  
@@ -53,9 +59,17 @@
   Int_t rho0ID     = 113;
   Int_t etapID     = 331;
   Int_t phiID      = 333;
-
+  Int_t K0sID      = 310;
   Int_t DeltaID    = 2114;                            // this is the ID of the Delta_0
   Int_t NucleonID  = 2112;                            // neutron ID  
+  Int_t protonID   = 2212;
+  Int_t neutronID  = 2112;
+  Int_t LambdaID   = 3122;
+
+// PDG decay lengths for weak decays
+  Double_t K0s_ct   =  2.6844;                        // ct in cm
+  Double_t Lambda_ct = 7.89; 
+
 
 // Branching ratios of defined decays
   Double_t BR_pi0_gg        = 0.98823; 
@@ -80,7 +94,9 @@
   Double_t BR_rho0_mm       = 0.000045;
   Double_t BR_phi_ee        = 0.000297;
   Double_t BR_phi_mm        = 0.000286;
+  Double_t BR_K0s_2pi0      = 0.314 ;
   Double_t BR_Delta_Ng      = 0.006;
+  Double_t BR_Lambda_ppim   = 0.639;
 
 // transition formfactor slope values -> NA60 and Lepton G
   Double_t b_pi0_Dalitz = 5.5;
@@ -97,5 +113,21 @@
   Double_t Omega_to_Pi0 =  0.81; // 0.81+/-0.02(stat)+/-0.09(sys) from ppg118 
 //  Double_t Rho_to_Pi0 = ; 
 //  Double_t Phi_to_Pi0 = ; 
+
+Int_t PDG_Charge(Int_t ID){
+
+  Int_t q = 0; 
+
+  if (ID == pipID) q = 1;
+  if (ID == pimID) q = -1;
+  if (ID == electronID) q = -1;
+  if (ID == positronID) q = 1;
+  if (ID == mupID) q = 1;
+  if (ID == mumID) q = -1;
+  if (ID == protonID) q = 1;
+  
+  return q;
+}
+
 
 #endif 

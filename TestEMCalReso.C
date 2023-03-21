@@ -40,7 +40,7 @@ void TestEMCalReso(){
   Double_t pt_high = 15.;
   Double_t AssyCut = 0.2;                      // Assymetry cut for calibration
   Double_t Ecut = 0.2;
-  Int_t nevt = 1000000;
+  Int_t nevt = 100000;
 
   Bool_t g1 = false;
   Bool_t g2 = false;

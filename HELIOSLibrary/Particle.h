@@ -19,6 +19,7 @@
 //     rho0          rho0->ee, rho0->mm
 //     omega         omega->ee, omega->mm  omega->pi0g, omega->pi0ee, omega->pi0mm     
 //     phi           phi->ee, phi->mm
+//     K0s           K0s->2pi0
 //
 //     leptons     
 //     photon        stable
@@ -30,7 +31,10 @@
 //     baryons       
 //     Delta         Delta->Ng
 //     Nucleon       generic nucleon
-//
+//     proton        stable
+//     neutron       stable
+//     Lambda        Lambda->ppi-
+// 
 // generate random 3 vector 
 // GenerateP()     - there are three options implemented through over loading 
 //                 - flat, from pt spectrum, or pt, eta or y and phi spectra (see below)
@@ -100,6 +104,9 @@ public:
   void GenerateP(TF1* Pt,TF1* PhiSpectrum, TF1* YSpectrum, Bool_t rap=true);    
                                                                // generates 4 vector from TF1 ptSpectrum, PhiSpectrum, and EtaSpectrum
                                                                // rap=false uses pseudorapidity, if true use rapidity
+  void GenerateVtx();                                          // generates decay vertex location
+
+
 // public random decay generators
   void Decay();                                                // generate random decay from know decay branches
   void DecaySingleBranch(TString branch);                      // generate decay for specified branch only
@@ -115,7 +122,8 @@ public:
   Double_t GetDaughterWeight(Int_t index);                     // get weight of decay 
                                                                // = 1 if random decay branch is generated with Decay() 
   TLorentzVector GetDecayDaughter(Int_t index);                // return 4 vector for decay particle index
- 
+  TVector3 GetDecayVtx();                                      // returns position of decay
+
   Double_t Weight();                                           // returns weight - not part of TLorentzVector
   Int_t   Charge();                                           // returns charge - not part of TLorentzVector
   TString Name();                                              // returns name   - not part of TLorentzVector
@@ -165,8 +173,10 @@ void operator = ( TLorentzVector const &otherParticle)
   Double_t charge;                                             // charge 
   Double_t weight;                                             // weight 
   Double_t mass;                                               // mass in GeV
+  Double_t ct;                                                 // decay length for weak decays
   Int_t id;                                                    // iD using PDG scheme
   Bool_t stable;                                               // if false decay branches will be defined in DefineDecays()
+  TVector3 vtx;                                                // vertex or origin of particle, default 0,0,0 unless from weak decay
 
 // characteristics of decay Branches and decay particles 
   void DefineDecays();                                         // defines decay of parent particle if not stable 

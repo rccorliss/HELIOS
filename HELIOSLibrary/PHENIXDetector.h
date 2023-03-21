@@ -7,6 +7,7 @@
 // PHENIXDetector()     constructor, sets private member variables not specific to a particle   
 //
 // high level member functions to generated PHENIX "default" response 
+// - ReconstructParticle(Particle)            One stop shop ... works with Particle Class
 // - CharacterizeTrack(particle, charge, id)  sets private member variables for particle
 // - ReconstructTrack(particle, id)           returns TLorentzVector with reconstructed charged track
 // - ReconstructTrack(particle, id, r)        returns TLorentzVector with reconstructed charged track
@@ -17,7 +18,8 @@
 // variing default response, more detailed description can be found in PHENIXDetector.C
 // 
 // general:
-// - InAcceptance(particle,charge)            Ideal PHENIX acceptance - checks if particle is in acceptance 
+// - InAcceptance(particle,charge)            Ideal PHENIX acceptance - checks if particle is in acceptance returns arm
+// - Acceptance()                             used in InAcceptance() 
 // EMCal
 // - EMCalSector(phi)                         returns sector number 
 // - EMCalSectorCoordinates(phi,theta, y, z)  returns x,z in local sector coordinates 
@@ -49,13 +51,36 @@
 // - SectorY()
 // - SectorZ()
 // - SectorSinT()
-// - Phi_EMCal(){
+// - Phi_EMCal()
 // - Phi_DC()
 // - Phi_DC()
 // - Phi_RICH()
 //
+// private members
+//
+// internal variables
+//   TRandom3 randy = TRandom3(0);                                // Random Generator
+//   Double_t SectorX0[8],SectorXmax[8],SectorXmin[8];
+//   Double_t SectorY0[8],SectorYmax[8],SectorYmin[8];
+//   Double_t P_R_EMCal_max[8];
+//   Bool_t Intersect(Double_t &Px,Double_t &Py,Double_t *x, Double_t *y);
+//   Double_t  phi_EMCal;
+//   Double_t  theta_EMCal;
+//   Double_t  phi_RICH;
+//   Double_t  phi_DC;
+//   Double_t  pt_DC;
+//   Double_t  eta_DC;
+//   Double_t  q_charge;
+//   Double_t  alpha_DC;
+//   Double_t  alpha_EMCal;
+//   Double_t  sectorZ;
+//   Double_t  sectorY;
+//   Double_t  sectorSinT;
+//   Int_t     sector;
+//   Int_t     arm; 
+//
 // Axel Drees
-// updated 11/16/2021
+// updated 11/22/2022
 //
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -76,10 +101,21 @@ public:
   PHENIXDetector();                                                // default constructor
   virtual ~PHENIXDetector();                                       // destructor
 
+// high level interface to PHENIX stand alone fast simulation
+  TLorentzVector ReconstructParticleShower(Int_t ID, TLorentzVector particle, TVector3 vtx2); 
+
+// EMCal acceptance and local variables
+  Bool_t InEMCalAcceptance(Int_t ID, TLorentzVector particle, TVector3 vtx2);
+
+// apply energy resolution etc .. 
+  TLorentzVector ReconstructShower(Int_t id);
+
+// LEGACY stuff
 // member functions - see definitions below for details 
 // general central arm functions  
-  Int_t InAcceptance(TLorentzVector particle, Int_t q); 
-
+  Int_t InAcceptance(TLorentzVector particle, Int_t q);            // standalone acceptance calculation
+  Int_t Acceptance();                                              // same as InAcceptance() but expects 
+                                                                   // private member variables preset
 // calculate inportant variables for given particle
   void CharacterizeTrack(TLorentzVector VT, Int_t q, Int_t id);
 
@@ -96,6 +132,7 @@ public:
   Double_t ShowerEnergyCorrection(Double_t energy, Double_t y, Double_t z);
   Double_t EMCalImpactAngle(TLorentzVector VT, Int_t id);
   Double_t EMCalPhi(TLorentzVector VT, Double_t q); 
+  Double_t EMCalPhi(TLorentzVector VT, TVector3 vtx); 
 
 // Tracking
   TLorentzVector ReconstructTrack(TLorentzVector VT, Int_t id);
@@ -109,7 +146,7 @@ public:
   Double_t ElectronMomentum(Double_t E, Double_t p);
 
 // physics processes 
-  Int_t VTXConversion();
+  Bool_t VTXConversion(TVector3 &vtx2);
 
 // get Private variables
   Int_t Arm(){
@@ -142,14 +179,20 @@ private:
 
 // internal variables
   TRandom3 randy = TRandom3(0);                                // Random Generator
+  Bool_t debug = true;
+
   Double_t SectorX0[8],SectorXmax[8],SectorXmin[8];
   Double_t SectorY0[8],SectorYmax[8],SectorYmin[8];
   Double_t P_R_EMCal_max[8];
   Bool_t Intersect(Double_t &Px,Double_t &Py,Double_t *x, Double_t *y);
-
+  Double_t  E_EMCal;
   Double_t  phi_EMCal;
+  Double_t  theta_EMCal;
   Double_t  phi_RICH;
   Double_t  phi_DC;
+  Double_t  pt_DC;
+  Double_t  eta_DC;
+  Double_t  q_charge;
   Double_t  alpha_DC;
   Double_t  alpha_EMCal;
   Double_t  sectorZ;

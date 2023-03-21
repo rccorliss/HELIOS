@@ -6,7 +6,7 @@
 // see PHENIXDetector.h for overview and below for more specific details
 //  
 // Axel Drees 
-// most recent update 11/16/2021
+// most recent update 11/22/2022
 //
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -18,79 +18,77 @@
 //  
   PHENIXDetector::PHENIXDetector(){                // constructor
 
+//    std::cout << std::endl;
+//    std::cout << " min " << P_theta_min << " zmin " << cos(P_theta_min)*P_R_EMCal << std::endl;
+//    std::cout << " max " << P_theta_max << " zmax " << cos(P_theta_max)*P_R_EMCal << std::endl;
     for (int i=0; i<8; i++){                       // calculate sector edges in x-y plane for internal use
-       SectorX0[i] = sin(P_centerPhi[i]*pi)*P_R_EMCal;
-       SectorY0[i] = cos(P_centerPhi[i]*pi)*P_R_EMCal;
+       SectorY0[i] = sin(P_centerPhi[i]*pi)*P_R_EMCal;
+       SectorX0[i] = cos(P_centerPhi[i]*pi)*P_R_EMCal;
+
        P_R_EMCal_max[i] = P_R_EMCal*sqrt(1+pow(tan(P_dPhi[i]*pi),2));
-       SectorXmin[i] = sin((P_centerPhi[i]-P_dPhi[i])*pi)*P_R_EMCal_max[i];
-       SectorXmax[i] = sin((P_centerPhi[i]+P_dPhi[i])*pi)*P_R_EMCal_max[i];
-       SectorYmin[i] = cos((P_centerPhi[i]-P_dPhi[i])*pi)*P_R_EMCal_max[i];
-       SectorYmax[i] = cos((P_centerPhi[i]+P_dPhi[i])*pi)*P_R_EMCal_max[i];
+       SectorYmin[i] = sin((P_centerPhi[i]-P_dPhi[i])*pi)*P_R_EMCal_max[i]; 
+       SectorYmax[i] = sin((P_centerPhi[i]+P_dPhi[i])*pi)*P_R_EMCal_max[i];
+       SectorXmin[i] = cos((P_centerPhi[i]-P_dPhi[i])*pi)*P_R_EMCal_max[i];
+       SectorXmax[i] = cos((P_centerPhi[i]+P_dPhi[i])*pi)*P_R_EMCal_max[i];
+
+       // std::cout << "PHENIXDetector sector  " << i 
+       //           << " center " << P_centerPhi[i]*pi 
+       //           << " min " << (P_centerPhi[i]-P_dPhi[i])*pi
+       //           << " max " << (P_centerPhi[i]+P_dPhi[i])*pi
+       //           << std::endl;
+       // std::cout << "PHENIXDetector sector  " << i 
+       //           << " center " << atan2(SectorY0[i],SectorX0[i]) 
+       //           << " min " << atan2(SectorYmin[i],SectorXmin[i])
+       //           << " max " << atan2(SectorYmax[i],SectorXmax[i])
+       //           << std::endl;
     }
   }
 
   PHENIXDetector::~PHENIXDetector(void){}
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 //
-// PHENIX Butsyk acceptance for central arms in ++ field configuration
+// Reconstruct Particle shower ... interface to PHENIX EMCal fast simulation 
 //
-// input   TLorentzVector Particle     4 vector of input particle
-//         Int_t   q                   charge
+// input   ID                  PDG particle ID
+//         TLorentzVector Pin  4 momentum vector Pin input to be reconstructed
+//         TVector3 vtx        3 vector for secondary vertex, (0,0,0) if primary 
 //
-// returns 0 not in acceptance  
-//         1 in arm 0
-//         2 in arm 1
+// returns TlorentzVector Pout 4 momentum vector of reconstructed particle  
 //
-// for q = +1 or -1 particle will be in DC and RICH acceptance considering bent in B-field
-// for q = 0 only ECAL acceptance is considered, no magnetic field
+//   
+// works for  photons from secondary and primary  
 //
-// assumes acceptance for ECAL and RICH are the same
+// Axel Drees    11/23/2022  
 //
-// note orientation of phi using Lorentz Vectors is such that phi = 0 
-// is along the PHENIX y-axis, i.e. straight up.  
-//
-//  
-// Axel Drees  10/20/2018 - updated 9/30/2019
-//
-Int_t PHENIXDetector::InAcceptance(TLorentzVector particle, Int_t q)
-{
-  Double_t phi_rich, phi_DC, phi_ECAL;
-  bool dep = 0;
+  TLorentzVector PHENIXDetector::ReconstructParticleShower(Int_t ID, TLorentzVector Pin, TVector3 vtx2){
 
-  Double_t phi = particle.Phi();
-  Double_t pT  = particle.Pt();
-  Double_t eta   = particle.Eta();    
+    TLorentzVector Pout; 
+    TVector3 temp;
+//    vtx2 = temp;
 
-  if (eta > P_eta or eta < -P_eta)  return 0;
-  if (pT<0.1)     return 0;
+    if (Pin.Pt() < 0.1) return Pout;             // minimum required energy
 
-  phi_DC   = DCPhi(particle,q); 
-  phi_rich = RICHPhi(particle,q); 
-  phi_ECAL = EMCalPhi(particle,q);  
-
-  arm = 0;
-  if ( abs(q) == 1 &&
-      ( phi_DC >= P_phi_east_min && phi_DC <= P_phi_east_max) && 
-      ( phi_rich >= P_phi_east_min && phi_rich <= P_phi_east_max)) arm = arm_east;
-
-  if ( abs (q) == 1 &&
-      ( phi_DC >= P_phi_west_min && phi_DC <= P_phi_west_max) &&
-      ( phi_rich >= P_phi_west_min && phi_rich <= P_phi_west_max))  arm = arm_west;
-    
-  if ( q == 0 && ( phi_ECAL >= P_phi_east_min && phi_ECAL <= P_phi_east_max)) arm =arm_east;
-  if ( q == 0 && ( phi_ECAL >= P_phi_west_min && phi_ECAL <= P_phi_west_max)) arm = arm_west;
-
-  return arm;
+    if (InEMCalAcceptance(ID,Pin,vtx2)) {
+      Pout = ReconstructShower(ID); 
+    }
+    return Pout;
 }
+
 /////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////
 //
-// PHENIX EMCal Sector
 //
-// input   Double_t             - phi angle at EMCal
+// InEMCalAcceptance(Int_t ID, TLorentzVector VT, TVector3 vtx2)
 //
-// returns sector number
+// input ID         PDG particle ID
+//       VT         4 momentum of particle
+//       vtx2       origin of particle 
+// 
+// calculates phi, theta angles of photon (4 vector VT) 
+// at EMCal with origin of photon at vtx2 
+//   
+// also sets arm and sector number as well as local EMCal coordinates
 //
 //               E3   /5   4\   W3
 //               E2  |6     3|  W2
@@ -99,52 +97,311 @@ Int_t PHENIXDetector::InAcceptance(TLorentzVector particle, Int_t q)
 //
 // based on numbers from mEmcGeometryModule.C 
 // 
-// phi = 0 needs to be understood as pointing downward
-//
-// Axel Drees 10/25/2018
+// phi coordinates consitent with TLorentzVector defintion pi to -pi 
+// to avoid phi = 0 in the acceptance x and y coordinates 
+// are swapped relative to PHENIX coordinates  
 // 
-Int_t PHENIXDetector::EMCalSector(Double_t phi){
-   
-  sector = 0;
-  for(int i=0;i<8;i++){
-//    cout << (P_centerPhi[i]+fdPhi[i])*pi << " " <<  phi << "  " << (P_centerPhi[i]-fdPhi[i])*pi << endl;
-    if ( phi >= (P_centerPhi[i]-P_fdPhi[i])*pi && 
-         phi <= (P_centerPhi[i]+P_fdPhi[i])*pi) {sector=i+1;} 
-  }
-  return sector; 
-}
-/////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////
-//
-// PHENIX EMCal Sector Coordinates
-//
-// input   Double_t             - phi angle at EMCal
-//         Double_t             - theta (eqivalent to eta angle at mid rapidity)          
-//
-// return  Double_t             - y is coordinate in phi direction in cm from center
-//         Double_t             - z is coordinate in eta direction in cm from center
-//
-//
-// based on numbers from mEmcGeometryModule.C 
-//
-// Axel Drees 8/20/21
+//  phi = atan2(y,x)
+//  theta = atan2(r,z)
 // 
-Int_t PHENIXDetector::EMCalSectorCoordinates(Double_t phi, Double_t theta, Double_t& y, Double_t& z){
+//  west arm is positive phi and +y with sector 1 at -x
+//  east arm is negative phi and -y with sector 8 at -x 
+//
+// sets private member varialbles
+//
+//      E_EMCal
+//      phi_EMCal
+//      theta_EMCal
+//      arm
+//      sector  
+//      sectorY     
+//      sectorZ  
+//      sectorSinT  
+//
+// Axel Drees 11/26/2022
+//
+Bool_t PHENIXDetector::InEMCalAcceptance(Int_t ID, TLorentzVector VT, TVector3 vtx2){
 
-  sector=0;
-  Double_t L = P_R_EMCal; // distance from origin in cm
+  Double_t phi;
+  Double_t x[4],y[4], Px=0, Py=0; 
+  Double_t r[4],z[4];
+  Double_t scale;
+  Bool_t test = false , inter = false;
+  Double_t kbf = 0;                               // field deflection from origin to DC  
+  Double_t rDC = -999;                               // distance from origin to DC
+  Double_t Dphi;   
+  Double_t Dalpha; 
 
-  for(int i=0;i<8;i++){
-    if ( phi >= (P_centerPhi[i]-P_dPhi[i])*pi && 
-         phi <= (P_centerPhi[i]+P_dPhi[i])*pi) {
-        sector=i+1;
-        z = tan(pi/2.-theta)*L;
-        y = tan(phi-P_centerPhi[i]*pi)*L;
-//        std::cout << " -----------  y=" << y << "    z=" << z << " phi=" << tan(phi-P_centerPhi[i]*pi) << std::endl;
-    } 
+//    TH2D *h  = (TH2D *)gROOT->FindObject("h_phenix");           
+//    TH2D *hz = (TH2D *)gROOT->FindObject("h_phenix2");          
+//
+// preset member variables for EMCal
+//
+  E_EMCal     = -999;
+  theta_EMCal = -999;
+  phi_EMCal   = -999;
+  arm     = 0;
+  sector  = 0;
+  sectorY = -999.; 
+  sectorZ = -999.; 
+//
+// check if particles in theta acceptance
+//
+  r[2] = P_R_EMCal;                                     // r,z 2,3 define z acceptance of calorimeter
+  r[3] = P_R_EMCal;
+  z[2] = P_R_EMCal/tan(P_theta_min);
+  z[3] = P_R_EMCal/tan(P_theta_max);
+  r[0] = vtx2.Perp()/100;                               // convert origin r,z to centimeters
+  z[0] = vtx2.Z()/100;
+  scale = 6.5/sqrt(pow(VT.Perp(),2)+pow(VT.Pz(),2));    // convert momentum vector to 6.5 units length  
+  r[1]  = r[0]+VT.Perp()*scale;                         // point on trajectory behind EMCal
+  z[1]  = z[0]+VT.Pz()*scale;                           // 
+
+//  {for (int i=0; i<4; i++)  hz->Fill(z[i],r[i]);}
+  
+  if (Intersect(Px,Py,z,r)){
+    theta_EMCal = atan2(Py,Px);
+    sectorZ = tan(pi/2.-theta_EMCal)*P_R_EMCal;
+//    hz->Fill(Px,Py);  
+//   std::cout << " in theta " << theta_EMCal << " track " << VT.Theta() 
+//             << " or " << atan2(VT.Perp(),VT.Pz()) 
+//             << " or " << atan2(r[1],z[1]) << std::endl; 
+  } else {
+//   std::cout << " out theta " << theta_EMCal << " track " << VT.Theta() << std::endl;
+    return false;
   }
-  return sector; 
+//
+// now check phi acceptance - this is charge dependent! 
+//   
+  q_charge    = PDG_Charge(ID);                 // convert ID to charge
+//  std::cout << " charge  " << q_charge <<  " PID " << ID << std::endl; 
+  if (VT.Pt()<0.16) return false;
+
+      double xt=0,yt=0;
+
+//   std::cout << "--------------------------------" << std::endl; 
+//   std::cout << " phi  " << VT.Phi() << " pt " << VT.Pt() << std::endl; 
+
+
+  if (q_charge == 0) {                          // neutral particle
+
+    x[0]  = vtx2.X()/100.;                      // convert x,y origin cm to meter
+    y[0]  = vtx2.Y()/100.; 
+    scale = 7./sqrt(pow(VT.Px(),2)+pow(VT.Py(),2));  // convert momentum vector to 10 units length  
+    x[1]  = x[0]+VT.Px()*scale; 
+    y[1]  = y[0]+VT.Py()*scale;
+
+   //  if (debug) {
+//       h->Fill(x[0],y[0]);
+//       h->Fill(x[1],y[1]);
+//       h->Fill(VT.Px()*scale,VT.Py()*scale);
+//       for (int ll=0;ll<11;ll++) { 
+//         xt = vtx2.X()/100+ll*0.6*cos(VT.Phi());
+//         yt = vtx2.Y()/100+ll*0.6*sin(VT.Phi());
+//         h->Fill(xt,yt);
+//       }
+//
+   //    std::cout << " scale " << scale << std::endl; 
+   //    std::cout << " x[0] " << x[0] << std::endl; 
+   //    std::cout << " y[0] " << y[0] << std::endl; 
+   //    std::cout << " x[1] " << x[1] << std::endl; 
+   //    std::cout << " y[1] " << y[1] << std::endl; 
+   // }
+  } else {                                      // charged particles 
+    if (vtx2.Perp() == 0) {                     // primary track     
+      kbf = P_kDC;
+      rDC = P_R_DC;
+
+    } else if (vtx2.Perp() <3) {                // conversion in 1st layer
+      kbf = P_kVTX[0];
+      rDC = P_R_DC-VTX_R[0]/100;
+    } else if (vtx2.Perp() <6) {                // conversion in 2nd layer
+      kbf = P_kVTX[1];
+      rDC = P_R_DC-VTX_R[1]/100;
+    } else if (vtx2.Perp() <11) {               // conversion in 3rd layer
+      kbf = P_kVTX[2];
+      rDC = P_R_DC-VTX_R[2]/100;
+    } else if (vtx2.Perp() <21) {               // conversion in 4th layer
+      kbf = P_kVTX[3];
+      rDC = P_R_DC-VTX_R[3]/100;
+    } else {
+      kbf = P_kDCtoEMC;
+      rDC = P_R_DC;
+    }
+//    std::cout << " rDC  " << rDC << " kBf " << kbf << std::endl; 
+                                                // only implemented for primary and conversitions in VTX!
+
+    Dphi   = q_charge *kbf/VT.Pt(); 
+    Dalpha = q_charge* P_delta*kbf/VT.Pt(); 
+    phi = VT.Phi() + (1-P_delta)* Dphi;                      // get phi angle with respect to origin of track
+    if (phi>pi)    phi = - (phi - 2.*pi);
+    if (phi<-pi)   phi =  (phi + 2.*pi);
+ 
+    x[0]  = vtx2.X()/100.+cos(phi)*rDC;         // calculate x,y coordinates at DC 
+    y[0]  = vtx2.Y()/100.+sin(phi)*rDC; 
+
+    phi_DC = atan2(y[0],x[0]);                  // phi angle with respect to primary vertex
+
+    phi = phi_DC+Dalpha+q_charge*(1-P_deltaDCtoEMC)*P_kDCtoEMC;
+    x[1]  = x[0] + 4.*cos(phi_DC+Dalpha+q_charge*(1-P_deltaDCtoEMC)*P_kDCtoEMC);
+    y[1]  = y[0] + 4.*sin(phi_DC+Dalpha+q_charge*(1-P_deltaDCtoEMC)*P_kDCtoEMC);
+
+  }
+//     if (debug) {
+//      h->Fill(vtx2.X(),vtx2.Y());
+//      h->Fill(x[0],y[0]);
+//      h->Fill(x[1],y[1]);
+//      for (int ll=0;ll<110;ll++) { 
+//        xt = vtx2.X()/100+ll*0.01*cos(VT.Phi());
+//        yt = vtx2.Y()/100+ll*0.01*sin(VT.Phi());
+//        h->Fill(xt,yt);
+//      }
+//      if (q_charge != 0){
+//      xt = vtx2.X()/100;
+//      yt = vtx2.Y()/100;
+//      for (int ll=0;ll<11;ll++) { 
+//        phi = VT.Phi()+Dphi;
+//        if (phi>pi)    phi = - (phi - 2.*pi);
+//        if (phi<-pi)   phi =  (phi + 2.*pi);
+//        xt = xt+0.1*cos(phi);
+//        yt = yt+0.1*sin(phi);
+//        h->Fill(xt,yt);
+//      }
+//      xt = vtx2.X()/100;
+//      yt = vtx2.Y()/100;
+//      for (int ll=0;ll<11;ll++) { 
+//        phi = phi_DC;
+//        if (phi>pi)    phi = - (phi - 2.*pi);
+//        if (phi<-pi)   phi =  (phi + 2.*pi);
+//        xt = xt + 0.2*cos(phi);
+//        yt = yt + 0.2*sin(phi);
+//        h->Fill(xt,yt);
+//      }
+//      xt = x[0];
+//      yt = y[0];
+//      for (int ll=0;ll<11;ll++) { 
+//        phi = phi_DC+Dalpha;
+//        if (phi>pi)    phi = - (phi - 2.*pi);
+//        if (phi<-pi)   phi =  (phi + 2.*pi);
+//        xt = xt + 0.2*cos(phi);
+//        yt = yt + 0.2*sin(phi);
+//        h->Fill(xt,yt);
+//      }
+//    }
+//
+//      std::cout << " Dphi " << Dphi;  
+//      std::cout << " phi_DC " << phi_DC;  
+//      std::cout << " alpha_DC " << Dalpha << std::endl; 
+////      std::cout << " scale " << scale << std::endl; 
+//      std::cout << " x[0] " << x[0]; 
+//      std::cout << " y[0] " << y[0] << std::endl; 
+//      std::cout << " x[1] " << x[1];  
+//      std::cout << " y[1] " << y[1] << std::endl; 
+//       std::cout << "--------------------------------" << std::endl; 
+//       std::cout << std::endl; 
+//    }
+
+
+  for (int i=0; i<8; i++){
+    x[2] = SectorXmin[i];
+    y[2] = SectorYmin[i];
+    x[3] = SectorXmax[i];
+    y[3] = SectorYmax[i];
+// std::cout << " sector " << i << " phimin " << atan2(x[2],y[2]) << " phimax " << atan2(x[3],y[3]) << std::endl; 
+//    h->Fill(x[2],y[2]);
+//    h->Fill(x[3],y[3]);
+    inter = Intersect(Px,Py,x,y);
+    if (inter) {
+//      std::cout << " intersection x " << Px << " y " << Py << std::endl;
+      sector = i+1;
+      phi = atan2(Py,Px);
+//      h->Fill(Px,Py);
+      if (phi>0) arm = arm_west;
+      if (phi<0) arm = arm_east;
+      phi_EMCal = phi;
+      E_EMCal = VT.E();
+      sectorY = tan(phi-P_centerPhi[i]*pi)*P_R_EMCal;
+      if (ID == photonID) {
+         sectorSinT = sqrt((pow(sectorY,2)+pow(sectorZ,2))
+                            /(pow(P_R_EMCal,2)+pow(sectorY,2)+pow(sectorZ,2)));
+      } else {
+
+      }
+
+//   std::cout << " particle phi " << VT.Phi() 
+//             << " theta " << VT.Theta() 
+//             << " energy " << VT.E() 
+//             << " at radial distance " << vtx2.Perp()
+//             << std::endl;
+//   std::cout << " phi EMCal  " << phi_EMCal 
+//             << " theta "      << theta_EMCal 
+//             << " energy "     << E_EMCal
+//             << " arm " << arm << " sector " << sector 
+//             << " sectorY " << sectorY 
+//             << " sectorZ " << sectorZ 
+//             << " sinT " << sectorSinT
+//             << std::endl;
+//  std::cout << std::endl;
+           return true;
+    }
+  }
+  return false;
 }
+////////////////////////////////////////////////////////////////////////////////////////
+//
+// simulate shower reconstruction
+// 
+// currently only setup for electromagnetic showers for photons and electrons
+// position resolution only implemented for photons
+//
+// MUST becalled AFTER InEMCalAcceptance(ID,particle,origin)
+//
+// Axel Drees  11/26/2022
+//
+
+TLorentzVector PHENIXDetector::ReconstructShower(Int_t id)
+{
+  TLorentzVector Reco;
+  Double_t a1,a2;
+  Int_t iopt; 
+  Double_t E=0, phi=0, theta=0, pt=0, eta = 0, m=0;
+
+  if ( id == photonID or  abs(id) == electronID) {
+    if ( arm > 0 && sector > 0){
+      iopt = 0;
+      if (sector == 7 or sector ==8) iopt = 1;
+      E = SmearEnergy(E_EMCal,iopt);                 // apply default energy resolution
+      if (abs(id) == photonID ) {  
+        m = photonMass;
+        a1 = SmearEMCalPosition(E_EMCal,sectorY,iopt);  // apply position resolution to phi
+        a2 = SmearEMCalPosition(E_EMCal,sectorZ,iopt);  // apply position resolution to eta ~ theta
+      } else {
+        m = eMass;
+        a1 = 0; 
+        a2 = 0;
+      }
+      phi   = phi_EMCal + a1;
+      theta = theta_EMCal + a2;
+      eta = - log(tan(theta/2));
+      pt = E*sin(theta);                         // recalculate pt
+
+ // std::cout << " particle phi " << phi 
+ //           << " theta " << theta 
+ //           << " energy " << E
+ //           << " pt " << pt
+ //           << " <------------------ " << std::endl;
+      Reco.SetPtEtaPhiM(pt,eta,phi,m);
+      return Reco;
+    } else {
+//      std::cout << " not in acceptance " << std::endl;      
+      return Reco;
+    }
+  } else {
+//    std::cout << " not photon or electron " << std::endl;
+    return Reco;
+  } 
+}
+
 /////////////////////////////////////////////////////////////////////////////////
 //
 // PHENIX EMCAL Energy resolution 
@@ -195,6 +452,7 @@ Double_t PHENIXDetector::SmearEnergy(Double_t energy, Int_t opt, Double_t c1, Do
 //  std::cout << " PHENIX EMCal resolution " << energy << "   " << E << "   " << "  " << E1 << "  " << E2 << "  " << sigmaE/energy << "   " << Neff << endl;
   return E;
 }
+
 /////////////////////////////////////////////////////////////////////////////////
 //
 // PHENIX EMCAL position resolution 
@@ -237,7 +495,8 @@ Double_t PHENIXDetector::SmearEMCalPosition(Double_t energy, Double_t x, Int_t o
     return X;
   }
 
-  sintheta = sin(abs(atan(x/P_R_EMCal)));
+//  sintheta = sin(abs(atan(x/P_R_EMCal)));
+  sintheta = sectorSinT;
   sigmaX = sqrt(c1*c1/energy + c2*c2 + d*d*sintheta*sintheta);  // calculate energy dependent sigma 
   X = randy.Gaus(0,sigmaX);                             // get random variable and calculate energy shift
 
@@ -245,6 +504,58 @@ Double_t PHENIXDetector::SmearEMCalPosition(Double_t energy, Double_t x, Int_t o
 //  << x/P_R_EMCal << "   " << atan(x/P_R_EMCal) << std::endl;
   return X;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////
+//
+// intersection of two line segments (x[0],y[0])(x[1],y[1]) and (x[2],y[2])(x[3],y[3])
+// 
+// if lines intersect it will return the coordinates Px,Py of intersection
+
+Bool_t PHENIXDetector::Intersect(Double_t &Px,Double_t &Py,Double_t *x, Double_t *y){
+  Bool_t inter = false;
+
+  Double_t A1,B1,C1;
+  Double_t A2,B2,C2;
+  Px = 0;
+  Py = 0;
+
+//  for (int i=0; i<4; i++){
+//    std::cout << i << " : " << x[i] << " " << y[i] << "  " ; 
+//  }
+
+  A1 = y[1]-y[0];
+  B1 = x[0]-x[1];
+  C1 = A1*x[0]+B1*y[0];
+
+  A2 = y[3]-y[2];
+  B2 = x[2]-x[3];
+  C2 = A2*x[2]+B2*y[2];
+
+  Double_t d = A1*B2-A2*B1; 
+
+  if (d==0) {
+    std::cout << " d = 0 " << std::endl;
+    return inter;
+  } else {
+    Px = (B2*C1 - B1*C2)/d;
+    Py = (A1*C2 - A2*C1)/d;
+//    std::cout << " Px " << Px << " Py " << Py << " ";
+  }
+  Bool_t b1,b2,b3,b4;
+  b1 = (std::min(x[0],x[1]) <= Px && Px <= std::max(x[0],x[1])); 
+  b2 = (std::min(x[2],x[3]) <= Px && Px <= std::max(x[2],x[3])); 
+  b3 = (std::min(y[0],y[1]) <= Py && Py <= std::max(y[0],y[1])); 
+  b4 = (std::min(y[2],y[3]) <= Py && Py <= std::max(y[2],y[3])) or (y[2]==y[3]);
+//  std:: cout << b1 << " " << b2 << " "<< b3 << " "<< b4 << " ";
+  inter = b1 && b2 && b3 && b4;
+  if (!inter) {
+    Px=0;
+    Py=0;
+  }
+//  std::cout << std::endl;
+  return inter;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  PHENIX EMCal efficiency
@@ -316,15 +627,161 @@ Double_t PHENIXDetector::NonLinearEnergy(Double_t energy, Double_t c0, Double_t 
 //
 //  Axel Drees 11/1/2018
 //
-Int_t PHENIXDetector::VTXConversion(){
+Bool_t PHENIXDetector::VTXConversion(TVector3 &vtx2){
 
-  if (randy.Uniform(0.,1.) < 7./9.*VTX_X0[0]) return 1;
-  if (randy.Uniform(0.,1.) < 7./9.*VTX_X0[1]) return 2;
-  if (randy.Uniform(0.,1.) < 7./9.*VTX_X0[2]) return 3;
-  if (randy.Uniform(0.,1.) < 7./9.*VTX_X0[3]) return 4;
-
+  if (randy.Uniform(0.,1.) < 7./9.*VTX_X0[0]) {
+    vtx2.SetPerp(VTX_R[0]);
+    return 1;
+  } else if (randy.Uniform(0.,1.) < 7./9.*VTX_X0[1]) {
+    vtx2.SetPerp(VTX_R[1]);
+    return 1;
+  } else if (randy.Uniform(0.,1.) < 7./9.*VTX_X0[2]) {
+    vtx2.SetPerp(VTX_R[2]);
+    return 1;
+  } else if (randy.Uniform(0.,1.) < 7./9.*VTX_X0[3]) {
+    vtx2.SetPerp(VTX_R[3]);
+    return 1;
+  }
   return 0; 
 }
+
+
+
+
+
+//*******************************************************************************************
+//*******************************************************************************************
+//*******************************************************************************************
+//
+// LEGACY CODE BELOW THIS LINE 
+// 
+//*******************************************************************************************
+//*******************************************************************************************
+//*******************************************************************************************
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//
+// PHENIX Butsyk acceptance for central arms in ++ field configuration
+//
+// input   TLorentzVector Particle     4 vector of input particle
+//         Int_t   q                   charge
+//
+// returns 0 not in acceptance  
+//         1 in arm 0
+//         2 in arm 1
+//
+// for q = +1 or -1 particle will be in DC and RICH acceptance considering bent in B-field
+// for q = 0 only ECAL acceptance is considered, no magnetic field
+//
+// assumes acceptance for ECAL and RICH are the same
+//
+// note orientation of phi using Lorentz Vectors is such that phi = 0 
+// is along the PHENIX y-axis, i.e. straight up.  
+//
+//  
+// Axel Drees  10/20/2018 - updated 9/30/2019
+// Axel Drees  11/21/2022 - modified to 
+//
+Int_t PHENIXDetector::InAcceptance(TLorentzVector particle, Int_t q) {
+
+  q_charge  = q;
+  phi_DC    = DCPhi(particle,q); 
+  pt_DC     = particle.Pt();
+  eta_DC    = particle.Eta();    
+  phi_RICH  = RICHPhi(particle,q); 
+  phi_EMCal = EMCalPhi(particle,q);
+ 
+  arm = Acceptance();
+  return arm;
+}
+
+Int_t PHENIXDetector::Acceptance(){
+  Double_t q = q_charge; 
+  arm = 0;
+
+  if (eta_DC > P_eta or eta_DC < -P_eta)  return 0;
+  if (pt_DC < 0.1)     return 0;
+
+  if ( abs(q) == 1 &&
+      ( phi_DC >= P_phi_east_min && phi_DC <= P_phi_east_max) && 
+      ( phi_RICH >= P_phi_east_min && phi_RICH <= P_phi_east_max)) arm = arm_east;
+
+  if ( abs (q) == 1 &&
+      ( phi_DC >= P_phi_west_min && phi_DC <= P_phi_west_max) &&
+      ( phi_RICH >= P_phi_west_min && phi_RICH <= P_phi_west_max))  arm = arm_west;
+    
+  if ( q == 0 && ( phi_EMCal >= P_phi_east_min && phi_EMCal <= P_phi_east_max)) arm =arm_east;
+  if ( q == 0 && ( phi_EMCal >= P_phi_west_min && phi_EMCal <= P_phi_west_max)) arm = arm_west;
+
+  return arm;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+//
+// PHENIX EMCal Sector
+//
+// input   Double_t             - phi angle at EMCal
+//
+// returns sector number
+//
+//               E3   /5   4\   W3
+//               E2  |6     3|  W2
+//               E1  |7     2|  W1
+//               E0   \8   1/   W0
+//
+// based on numbers from mEmcGeometryModule.C 
+// 
+// phi = 0 needs to be understood as pointing downward
+//
+// Axel Drees 10/25/2018
+// 
+Int_t PHENIXDetector::EMCalSector(Double_t phi){
+   
+  sector = 0;
+  for(int i=0;i<8;i++){
+//    cout << (P_centerPhi[i]+fdPhi[i])*pi << " " <<  phi << "  " << (P_centerPhi[i]-fdPhi[i])*pi << endl;
+    if ( phi >= (P_centerPhi[i]-P_fdPhi[i])*pi && 
+         phi <= (P_centerPhi[i]+P_fdPhi[i])*pi) {sector=i+1;} 
+  }
+  return sector; 
+}
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+//
+// PHENIX EMCal Sector Coordinates
+//
+// input   Double_t             - phi angle at EMCal
+//         Double_t             - theta (eqivalent to eta angle at mid rapidity)          
+//
+// return  Double_t             - y is coordinate in phi direction in cm from center
+//         Double_t             - z is coordinate in eta direction in cm from center
+//
+//
+// based on numbers from mEmcGeometryModule.C 
+//
+// Axel Drees 8/20/21
+// 
+Int_t PHENIXDetector::EMCalSectorCoordinates(Double_t phi, Double_t theta, Double_t& y, Double_t& z){
+
+  sector=0;
+  Double_t L = P_R_EMCal; // distance from origin in cm
+
+  for(int i=0;i<8;i++){
+    if ( phi >= (P_centerPhi[i]-P_dPhi[i])*pi && 
+         phi <= (P_centerPhi[i]+P_dPhi[i])*pi) {
+        sector=i+1;
+        z = tan(pi/2.-theta)*L;
+        y = tan(phi-P_centerPhi[i]*pi)*L;
+//        std::cout << " -----------  y=" << y << "    z=" << z << " phi=" << tan(phi-P_centerPhi[i]*pi) << std::endl;
+    } 
+  }
+  return sector; 
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -428,17 +885,19 @@ Double_t PHENIXDetector::SmearDCeta(Double_t pt, Double_t eta0)
 void PHENIXDetector::CharacterizeTrack(TLorentzVector VT, Int_t q, Int_t id){
   
   Double_t y=0,z=0;
-   
-   alpha_EMCal = q*(P_kBfield-P_kEMCal_phi)/VT.Pt(); 
-   alpha_DC    = P_delta*P_kDC / VT.Pt();
-   arm         = InAcceptance(VT,q);
-   phi_DC      = DCPhi(VT,q);
-   phi_RICH    = RICHPhi(VT,q);
-   phi_EMCal   = EMCalPhi(VT,q);
-   sector      = EMCalSectorCoordinates(phi_EMCal, VT.Theta(), y, z);
-   sectorY     = y;
-   sectorZ     = z;
-   sectorSinT  =  EMCalImpactAngle(VT, id);
+  alpha_EMCal = q*(P_kBfield-P_kEMCal_phi)/VT.Pt(); 
+  alpha_DC    = P_delta*P_kDC / VT.Pt();
+  q_charge    = q;
+  phi_DC      = DCPhi(VT,q); 
+  pt_DC       = VT.Pt();
+  eta_DC      = VT.Eta();    
+  phi_RICH    = RICHPhi(VT,q); 
+  phi_EMCal   = EMCalPhi(VT,q);
+  arm         = Acceptance();
+  sector      = EMCalSectorCoordinates(phi_EMCal, VT.Theta(), y, z);
+  sectorY     = y;
+  sectorZ     = z;
+  sectorSinT  =  EMCalImpactAngle(VT, id);
 
 //   std::cout << std::endl;
 //   std::cout << "characterize track " << sector << " " << y << " " << z << std::endl;
@@ -534,8 +993,8 @@ TLorentzVector PHENIXDetector::ReconstructShower(TLorentzVector VT, Int_t id)
         a1 = 0; 
         a2 = 0;
       }
-//      phi = VT.Phi() + a1;
-      phi = EMCalPhi(VT,q);                         
+      phi = VT.Phi() + a1;
+//      phi = EMCalPhi(VT,q);                         
       eta = VT.Eta() + a2;
       theta = pi/2. - 2.* atan(exp(-eta));
  //     theta = eta;
@@ -685,15 +1144,14 @@ Double_t PHENIXDetector::EMCalPhi(TLorentzVector VT, Double_t q){
       }
       test = true;
     } 
-    phi = atan2(Px,Py);
+    phi = atan2(Py,Px);
   }
 
 //  std::cout << std::endl;
 
-
   return phi;
-
 }
+
 Double_t PHENIXDetector::DCPhi(TLorentzVector VT, Double_t q){
 
   Double_t phi; 
@@ -721,43 +1179,3 @@ Double_t PHENIXDetector::RICHPhi(TLorentzVector VT, Double_t q){
 
 }
 
-//////////////////////////////////////////////////////////////////////////////////////
-//
-// intersection of two line segments (x[0],y[0])(x[1],y[1]) and (x[2],y[2])(x[3],y[3])
-// 
-// if lines intersect it will return the coordinates Px,Py of intersection
-
-Bool_t PHENIXDetector::Intersect(Double_t &Px,Double_t &Py,Double_t *x, Double_t *y){
-  Bool_t inter = false;
-
-  Double_t A1,B1,C1;
-  Double_t A2,B2,C2;
-  Px = 0;
-  Py = 0;
-
-  A1 = y[1]-y[0];
-  B1 = x[0]-x[1];
-  C1 = A1*x[0]+B1*y[0];
-
-  A2 = y[3]-y[2];
-  B2 = x[2]-x[3];
-  C2 = A2*x[2]+B2*y[2];
-
-  Double_t d = A1*B2-A2*B1; 
-
-  if (d==0) {
-    return inter;
-  } else {
-    Px = (B2*C1 - B1*C2)/d;
-    Py = (A1*C2 - A2*C1)/d;
-  }
-  inter =    (std::min(x[0],x[1]) <= Px && Px <= std::max(x[0],x[1])) 
-          && (std::min(x[2],x[3]) <= Px && Px <= std::max(x[2],x[3])) 
-          && (std::min(y[0],y[1]) <= Py && Py <= std::max(y[0],y[1])) 
-          && (std::min(y[2],y[3]) <= Py && Py <= std::max(y[2],y[3]));
-  if (!inter) {
-    Px=0;
-    Py=0;
-  }
-  return inter;
-}

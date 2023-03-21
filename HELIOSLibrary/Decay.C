@@ -35,7 +35,7 @@ void Decay::GenerateDecay(){
   if (debug)   std::cout << "Decay name " << DecayName << std::endl; 
   if (DecayType == "TwoBody") {
     if (DecayName == "omega->ee" or DecayName == "omega->mm" or DecayName == "rho0->ee" or DecayName == "rho0->mm"
-        or DecayName == "phi->ee" or DecayName == "phi->mm") {
+        or DecayName == "phi->ee" or DecayName == "phi->mm" ) {
        TF1 *h = (TF1 *)gROOT->FindObject(DecayName);   // get leptonPair mass
        if (debug) std::cout << " root object found" << DecayName << std::endl;
        pairMass = h->GetRandom(); 
@@ -96,6 +96,20 @@ void Decay::TwoBodyDecay(TLorentzVector &parent, TLorentzVector &daughter1, TLor
   Double_t m2 = daughter2.M();                      // mass of decay particle 2
   TVector3 boost = parent.BoostVector();              // boost vector of parent particle
 
+  // std::cout << "-------------------------------------------------- " << std::endl;
+  // float beta = parent.P()/parent.E(); 
+  // float betax = parent.Px()/parent.E(); 
+  // float betay = parent.Py()/parent.E(); 
+  // float betaz = parent.Pz()/parent.E(); 
+  // float gamma = parent.E()/parent.M() ;
+  // std::cout << " parent  beta=" << beta 
+  //           << " gamma=" << gamma
+  //           << " betax=" << betax
+  //           << " betay=" << betay
+  //           << " betaz=" << betaz << std::endl;
+  // parent.Print();
+  // boost.Print();
+ 
 //
 // decay in rest frame 
 //
@@ -116,9 +130,30 @@ void Decay::TwoBodyDecay(TLorentzVector &parent, TLorentzVector &daughter1, TLor
 //
 // boost to parent frame
 //
+  // std::cout << "first daughter" << std::endl;
+  // daughter1.Print();
+  // E = gamma*daughter1.E()+betax*gamma*daughter1.Px()+betay*gamma*daughter1.Py()+betaz*gamma*daughter1.Pz();
+  // px = -gamma*betax*daughter1.E()-(1+(gamma-1)*betax*betax/beta/beta)*daughter1.Px()
+  //      -((gamma-1)*betax*betay/beta/beta)*daughter1.Py()-((gamma-1)*betax*betaz/beta/beta)*daughter1.Pz();
+  // py = -gamma*betay*daughter1.E()-((gamma-1)*betay*betax/beta/beta)*daughter1.Px()
+  //      -(1+(gamma-1)*betay*betay/beta/beta)*daughter1.Py()-((gamma-1)*betay*betaz/beta/beta)*daughter1.Pz();
+  // pz = -gamma*betaz*daughter1.E()-((gamma-1)*betaz*betax/beta/beta)*daughter1.Px()
+  //      -((gamma-1)*betaz*betay/beta/beta)*daughter1.Py()-(1+(gamma-1)*betaz*betaz/beta/beta)*daughter1.Pz();
+  // std::cout << px << "  " << py << "  " << pz << "  " << E << std::endl;
   daughter1.Boost(boost);                           // boost with parent momentum
+  // daughter1.Print();
+  // std::cout << "second daughter" << std::endl;
+  // daughter2.Print();
+  // E = gamma*daughter2.E()+betax*gamma*daughter2.Px()+betay*gamma*daughter2.Py()+betaz*gamma*daughter2.Pz();
+  // px = -gamma*betax*daughter2.E()-(1+(gamma-1)*betax*betax/beta/beta)*daughter2.Px()
+  //      -((gamma-1)*betax*betay/beta/beta)*daughter2.Py()-((gamma-1)*betax*betaz/beta/beta)*daughter2.Pz();
+  // py = -gamma*betay*daughter2.E()-((gamma-1)*betay*betax/beta/beta)*daughter2.Px()
+  //      -(1+(gamma-1)*betay*betay/beta/beta)*daughter2.Py()-((gamma-1)*betay*betaz/beta/beta)*daughter2.Pz();
+  // pz = -gamma*betaz*daughter2.E()-((gamma-1)*betaz*betax/beta/beta)*daughter2.Px()
+  //      -((gamma-1)*betaz*betay/beta/beta)*daughter2.Py()-(1+(gamma-1)*betaz*betaz/beta/beta)*daughter2.Pz();
+  // std::cout << px << "  " << py << "  " << pz << "  " << E << std::endl;
   daughter2.Boost(boost);                           // boost with parent momentum
-//  std::cout << "---------------- " <<Daughter[0].E() << std::endl;
+  // daughter2.Print();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

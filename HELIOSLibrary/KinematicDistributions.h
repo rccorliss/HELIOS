@@ -5,6 +5,7 @@
 // currently implemented:
 //
 //   TF1 Hagedorn (name, mass, upperlim, lowerlim, A=504.5, a=0.5169, b=0.1626, p0=0.7366, n=-8.274)
+//   TF1 HagedornMt (name, mass, upperlim, lowerlim, A=504.5, a=0.5169, b=0.1626, p0=0.7366, n=-8.274)
 //   TF1 HagedornYield (name, mass, upperlim, lowerlim, A=504.5, a=0.5169, b=0.1626, p0=0.7366, n=-8.274)
 //       default parameters for Au+Au 200 (see Alan Dion thesis for details)
 //       pp 200 parameters: 377., 0.356, 0.068, 0.7, -8.25
@@ -100,6 +101,26 @@ Double_t Hagedorn_Yield_Func(Double_t *x, Double_t *p) {
   return value;
 }
 
+Double_t Hagedorn_Func1(const Double_t *x, const Double_t *p) {
+//
+// Hagedorn function in 1/pt dN/pt from ppg088 
+//
+  Double_t pt   = x[0];
+  Double_t mass = p[0];
+  Double_t mt   = TMath::Sqrt(pt * pt + mass * mass - 0.13498*0.13498);
+  Double_t A    = p[1];
+  Double_t a    = p[2];
+  Double_t b    = p[3];
+  Double_t p0   = p[4];
+  Double_t n    = p[5];
+ 
+  Double_t value = A*TMath::Erf(mt)* pow( exp(-a*mt-b*mt*mt)+mt/p0 ,n);
+  return value;
+}
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 TF1 *HagedornYield(const Char_t *name, Double_t mass, Double_t upperlim, Double_t lowerlim, Double_t A=504.5, Double_t a=0.5169, Double_t b=0.1626, Double_t p0=0.7366, Double_t n=-8.274){
 //
@@ -127,6 +148,25 @@ TF1 *Hagedorn(const Char_t *name, Double_t mass, Double_t upperlim, Double_t low
   fHagedorn->SetParNames("mass", "A", "a", "b", "p0", "n");
   return fHagedorn;
     }
+
+
+#include "TMath.h"
+
+//*******************************************************************
+
+TF1 *HagedornErf(const Char_t *name, Double_t mass, Double_t upperlim, Double_t lowerlim, Double_t A=504.5, Double_t a=0.5169, Double_t b=0.1626, Double_t p0=0.7366, Double_t n=-8.274){
+//
+// modified Hagedorn function used in ppg088, default parameters for min bias AuAu as documented in Alan Dion's PhD thesis
+//
+//
+  TF1 *fHagedorn = new TF1(name, Hagedorn_Func1, lowerlim, upperlim, 6);
+  fHagedorn->FixParameter(0,mass); 
+  fHagedorn->SetParameters(mass, A, a, b, p0,n); 
+  fHagedorn->SetParNames("mass", "A", "a", "b", "p0", "n");
+  return fHagedorn;
+    }
+//
+
 
 //*******************************************************************
 //

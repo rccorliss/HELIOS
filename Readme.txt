@@ -5,7 +5,7 @@ HH  HH EE     LL      II   O   O      SS
 HH  HH EEEEEE LLLLLL IIII   OOO   SSSSS         
 
 FAST SIMULATION          Axel Drees 2021
-last updated 3/18/2022
+last updated 11/20/2022
 
 Standalone fast simulation package that run in ROOT framework (version 6). 
 Designed to aid systematic studies of measurements of photons and lepton 

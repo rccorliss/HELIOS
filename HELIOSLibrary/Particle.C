@@ -20,14 +20,7 @@
 //                  mass, ID, name, default weight = 1.
 //                  
 // Known particles:  uses PDG convention for ID
-//                   pi0, pi+, pi-
-//                   eta
-//                   photon
-//                   electron, positron
-//                   omega
-//                   rho0
-//                   eta'
-//                   phi
+//                   see Particle.h for details
 //
 // Axel Drees 11/19/2019
 // updated    6/9/2022 see Partile.h 
@@ -46,7 +39,8 @@
 
   Particle::Particle(TString n){        // sets particle properties for known particles    
     name = n;
-    
+
+    ct     = 0;                             // ct is zero unless explicitly set
     if (name == "pi0"){                     // neutral pion
       id     = pi0ID;
       charge = 0;
@@ -138,7 +132,15 @@
       mass = phiMass;
       stable = false;
       SetPxPyPzE(0.,0.,0.,mass);    
-    } else if ( name == "Delta"){      // this is an "average" Delta baryon 
+    } else if (name == "K0s") {
+      id = K0sID;
+      charge = 0;
+      weight = 1.;
+      mass = K0sMass;
+      ct   = K0s_ct;
+      stable = false;
+      SetPxPyPzE(0.,0.,0.,mass);    
+    } else if ( name == "Delta"){        // this is an "average" Delta baryon 
       id = DeltaID;
       charge = 0;
       weight = 1.;
@@ -150,8 +152,32 @@
       charge = 0;
       weight = 1.;
       mass = NucleonMass;
-      stable = false;
+      stable = true;
       SetPxPyPzE(0.,0.,0.,mass);    
+    } else if ( name == "proton"){      
+      id = protonID;
+      charge = 1;
+      weight = 1.;
+      mass = protonMass;
+      stable = true;
+      SetPxPyPzE(0.,0.,0.,mass);    
+    } else if ( name == "neutron"){      
+      id = neutronID;
+      charge = 0;
+      weight = 1.;
+      mass = neutronMass;
+      stable = true;
+      SetPxPyPzE(0.,0.,0.,mass);    
+    } else if ( name == "Lambda"){      
+      id = LambdaID;
+      charge = 0;
+      weight = 1.;
+      mass = LambdaMass;
+      stable = false;
+      ct   = Lambda_ct;
+      SetPxPyPzE(0.,0.,0.,mass);    
+
+
     } else {
      std::cout << name << " particle is not defined" << std::endl;
     }
@@ -187,6 +213,9 @@
   }                                                            // 
   TLorentzVector Particle::GetDecayDaughter(Int_t index){                // return 4 vector for decay particle index
     return DecayDaughter[index];
+  }
+  TVector3 Particle::GetDecayVtx(){
+    return vtx;
   }
  
   Double_t Particle::Weight(){                                        // returns weight - not part of TLorentzVector
@@ -236,12 +265,13 @@ void Particle::GenerateP(Double_t pt_low, Double_t pt_high, Bool_t rap=true) {
    Double_t pt,phi,rapidity,eta; 
    pt        = randy.Uniform(pt_low,pt_high);
    phi       = randy.Uniform(0.,2*pi);
-   rapidity  = randy.Uniform(-0.5,0.5);
+   rapidity  = randy.Uniform(-.5,.5);
 
    eta       = rapidity;
 //   generate flat in rapidity rather than pseudorapidity
    if (rap) eta = RapidityToEta(rapidity,pt,mass);
    SetPtEtaPhiM(pt,eta,phi,mass);
+   GenerateVtx();
   }
  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -267,6 +297,7 @@ void Particle::GenerateP(Double_t pt_low, Double_t pt_high, TF1*RapiditySpectrum
 //   generate flat in rapidity rather than pseudorapidity
    if (rap) eta = RapidityToEta(rapidity,pt,mass);
    SetPtEtaPhiM(pt,eta,phi,mass);
+   GenerateVtx();
   }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -293,6 +324,7 @@ void Particle::GenerateP(TF1* PtSpectrum, TF1* PhiSpectrum, TF1* RapiditySpectru
 //   generate flat in rapidity rather than pseudorapidity
    if (rap) eta = RapidityToEta(rapidity,pt,mass);
    SetPtEtaPhiM(pt,eta,phi,mass);
+   GenerateVtx();
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -315,7 +347,35 @@ void Particle::GenerateP(TF1* PtSpectrum, Bool_t rap=true) {
 //   generate flat in rapidity rather than pseudorapidity
    if (rap) eta = RapidityToEta(rapidity,pt,mass);
    SetPtEtaPhiM(pt,eta,phi,mass);
+   GenerateVtx();
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Generate decay vertex for weak decays using ct
+// 
+// Axel Drees    11/20/2022 
+//
+  void Particle::GenerateVtx(){
+    Double_t L;
+     
+    if (debug) std::cout << std::endl;
+    if (debug) std::cout << " GenerateVTX ct " << ct << std::endl;
+    if (debug) std::cout << " GenerateVTX theta " << Theta() << " phi " << Phi() << std::endl;
+    if (debug) std::cout << " GenerateVTX energy " << Energy() << " mass " << mass << std::endl;
+
+    if (ct != 0){
+      Double_t ct1   = randy.Exp(ct);
+      Double_t betagamma = Pt()/mass;
+      L = ct1*betagamma;      
+      if (debug) std::cout << " GenerateVTX ct " << ct1 << " beta gamma " << betagamma << std::endl;
+      if (debug) std::cout << " GenerateVTX L " << L << std::endl;
+      vtx.SetMagThetaPhi(L,Theta(),Phi());
+    } else {
+      vtx.SetXYZ(0.,0.,0.);
+    }
+ 
+  }
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -335,15 +395,19 @@ void Particle::DefineDecays(){
 
 // preset lorentz vector of possible decay particles
   TLorentzVector pi0(0.,0.,0.,pi0Mass);                  // define pi0 as possible decay particle
+  TLorentzVector pip(0.,0.,0.,piMass);                  // define pi0 as possible decay particle
+  TLorentzVector pim(0.,0.,0.,piMass);                  // define pi0 as possible decay particle
   TLorentzVector photon(0.,0.,0.,0.);                    // define photon as possible decay particle
   TLorentzVector electron(0.,0.,0.,eMass);               // define electron as possible decay particle
   TLorentzVector positron(0.,0.,0.,eMass);               // define positron as possible decay particle
   TLorentzVector mup(0.,0.,0.,muMass);                   // define mu+ as possible decay particle
   TLorentzVector mum(0.,0.,0.,eMass);                    // define mu- as possible decay particle
   TLorentzVector rho0(0.,0.,0.,rho0Mass);                // define rho0 as possible decay particle
-  TLorentzVector omega(0.,0.,0.,omegaMass);              // define rho0 as possible decay particle
-  TLorentzVector eta(0.,0.,0.,etaMass);                  // define rho0 as possible decay particle
+  TLorentzVector omega(0.,0.,0.,omegaMass);              // define omega as possible decay particle
+  TLorentzVector eta(0.,0.,0.,etaMass);                  // define eta as possible decay particle
   TLorentzVector Nucleon(0.,0.,0.,NucleonMass);
+  TLorentzVector proton(0.,0.,0.,protonMass);            // define eta as possible decay particle
+ 
   if (debug) std::cout << "#### DefineDecay ####################################" << std::endl;
 
   NumberOfBranches = 0;
@@ -428,8 +492,8 @@ void Particle::DefineDecays(){
      daughterID[3][1] = mupID;
      DecayBranch[3].DefineDaughters(daughter[3]);           
      NumberOfBranches++;
-                                                         // eta -> mu+mu- gamma  
-     DecayBranch[4].SetType("ThreeBody");                // this is Dalitz decay 
+                                                         // eta -> pi0 pi0 pi0  
+     DecayBranch[4].SetType("ThreeBody");                // this is a 3 body  decay 
      DecayBranch[4].SetName("eta->3pi0");                // define name of decay
      DecayBranch[4].SetNumberOfDecayParticles(3);        // number of daughters  
      DecayBranch[4].SetBR(BR_eta_3pi0);
@@ -470,7 +534,7 @@ void Particle::DefineDecays(){
      DecayBranch[1].DefineDaughters(daughter[1]);           
      NumberOfBranches++;
 
-     DecayBranch[2].SetType("TwoBody");                   // this is Dalitz decay 
+     DecayBranch[2].SetType("TwoBody");                   // this is two body decay  
      DecayBranch[2].SetName("omega->ee");                // define name of decay
      DecayBranch[2].SetMassDistributions();              // set virtual photon mass distribution for "omega-ee"
      DecayBranch[2].SetNumberOfDecayParticles(2);        // number of daughters  
@@ -496,14 +560,14 @@ void Particle::DefineDecays(){
      DecayBranch[3].DefineDaughters(daughter[3]);           
      NumberOfBranches++;
 
-     DecayBranch[4].SetType("TwoBody");                   // this is Dalitz decay 
-     DecayBranch[4].SetName("omega->mm");             // define name of decay
+     DecayBranch[4].SetType("TwoBody");                  // this is a two body decay 
+     DecayBranch[4].SetName("omega->mm");                // define name of decay
      DecayBranch[4].SetMassDistributions();              // set virtual photon mass distribution for "omega-ee"
      DecayBranch[4].SetNumberOfDecayParticles(2);        // number of daughters  
      DecayBranch[4].SetBR(BR_omega_mm);
      daughter[4][0] = mum;                               // set daughter 1
      daughterID[4][0] = mumID;
-     daughter[4][1] = mup;                          // set daughter 2 
+     daughter[4][1] = mup;                               // set daughter 2 
      daughterID[4][1] = mupID;
      DecayBranch[4].DefineDaughters(daughter[4]);           
      NumberOfBranches++;
@@ -552,7 +616,7 @@ void Particle::DefineDecays(){
      NumberOfBranches++;
   
      DecayBranch[1].SetType("Dalitz");                   // this is Dalitz decay 
-     DecayBranch[1].SetName("etap->gee");             // define name of decay
+     DecayBranch[1].SetName("etap->gee");                // define name of decay
      DecayBranch[1].SetMassDistributions();              // set virtual photon mass distribution for "eta'-Dalitz"
      DecayBranch[1].SetNumberOfDecayParticles(3);        // number of daughters  
      DecayBranch[1].SetBR(BR_etap_Dalitz);
@@ -602,7 +666,7 @@ void Particle::DefineDecays(){
      DecayBranch[4].DefineDaughters(daughter[4]);           
      NumberOfBranches++;
 
-     DecayBranch[5].SetType("ThreeBody");                // this is Dalitz decay 
+     DecayBranch[5].SetType("ThreeBody");                // this is a 3 body decay 
      DecayBranch[5].SetName("etap->2pi0eta");            // define name of decay
      DecayBranch[5].SetNumberOfDecayParticles(3);        // number of daughters  
      DecayBranch[5].SetBR(BR_etap_2pi0eta);
@@ -619,9 +683,9 @@ void Particle::DefineDecays(){
   } else if (name == "phi") {
      if (debug) std::cout << " definging decay of phi" << std::endl;
 
-     DecayBranch[0].SetType("TwoBody");                  // this is Dalitz decay 
+     DecayBranch[0].SetType("TwoBody");                  // this is 2 body decay 
      DecayBranch[0].SetName("phi->ee");                  // define name of decay
-     DecayBranch[0].SetMassDistributions();              // set virtual photon mass distribution for "rho-ee"
+     DecayBranch[0].SetMassDistributions();              // set virtual photon mass distribution for "phi-ee"
      DecayBranch[0].SetNumberOfDecayParticles(2);        // number of daughters  
      DecayBranch[0].SetBR(BR_phi_ee);
      daughter[0][0] = electron;                          // set daughter 1
@@ -631,9 +695,9 @@ void Particle::DefineDecays(){
      DecayBranch[0].DefineDaughters(daughter[0]);           
      NumberOfBranches++;
 
-     DecayBranch[1].SetType("TwoBody");                  // this is Dalitz decay 
+     DecayBranch[1].SetType("TwoBody");                  // this is a 2 body decay 
      DecayBranch[1].SetName("phi->mm");                  // define name of decay
-     DecayBranch[1].SetMassDistributions();              // set virtual photon mass distribution for "rho-ee"
+     DecayBranch[1].SetMassDistributions();              // set virtual photon mass distribution for "phi->mm"
      DecayBranch[1].SetNumberOfDecayParticles(2);        // number of daughters  
      DecayBranch[1].SetBR(BR_phi_mm);
      daughter[1][0] = mup;                               // set daughter 1
@@ -642,6 +706,21 @@ void Particle::DefineDecays(){
      daughterID[1][1] = mumID;
      DecayBranch[1].DefineDaughters(daughter[1]);           
      NumberOfBranches++;
+
+  } else if (name == "K0s") {
+     if (debug) std::cout << " definging decay of K0s" << std::endl;
+
+     DecayBranch[0].SetType("TwoBody");                  // this is two body decay 
+     DecayBranch[0].SetName("K0s->2pi0");                // define name of decay
+     DecayBranch[0].SetNumberOfDecayParticles(2);        // number of daughters  
+     DecayBranch[0].SetBR(BR_K0s_2pi0);
+     daughter[0][0] = pi0;                               // set daughter 1
+     daughterID[0][0] = pi0ID;     
+     daughter[0][1] = pi0;                               // set daughter 2 
+     daughterID[0][1] = pi0ID;
+     DecayBranch[0].DefineDaughters(daughter[0]);           
+     NumberOfBranches++;
+
 
   } else if (name == "Delta") {
      if (debug) std::cout << " definging decay of Delta" << std::endl;
@@ -654,6 +733,20 @@ void Particle::DefineDecays(){
      daughterID[0][0] = NucleonID;
      daughter[0][1] = photon;                            // set daughter 2 
      daughterID[0][1] = photonID;
+     DecayBranch[0].DefineDaughters(daughter[2]);           
+     NumberOfBranches++;
+
+  } else if (name == "Lambda") {
+     if (debug) std::cout << " definging decay of Lambda" << std::endl;
+ 
+     DecayBranch[0].SetType("TwoBody");                  // this is a two body decay 
+     DecayBranch[0].SetName("Lambda->ppi-");
+     DecayBranch[0].SetNumberOfDecayParticles(2);        // number of daughters  
+     DecayBranch[0].SetBR(BR_Lambda_ppim);
+     daughter[0][0] = proton;                            // set daughter 1
+     daughterID[0][0] = protonID;
+     daughter[0][1] = pim;                            // set daughter 2 
+     daughterID[0][1] = pimID;
      DecayBranch[0].DefineDaughters(daughter[2]);           
      NumberOfBranches++;
 
