@@ -22,8 +22,8 @@
 // Known particles:  uses PDG convention for ID
 //                   see Particle.h for details
 //
-// Axel Drees 11/19/2019
-// updated    6/9/2022 see Partile.h 
+// Axel Drees      11/19/2019
+// last updated    3/21/2023 see Partile.h 
 // 
 //
 
@@ -175,6 +175,20 @@
       mass = LambdaMass;
       stable = false;
       ct   = Lambda_ct;
+      SetPxPyPzE(0.,0.,0.,mass);    
+    } else if ( name == "jpsi"){      
+      id = jpsiID;
+      charge = 0;
+      weight = 1.;
+      mass = jpsiMass;
+      stable = false;
+      SetPxPyPzE(0.,0.,0.,mass);    
+    } else if ( name == "psip"){      
+      id = psipID;
+      charge = 0;
+      weight = 1.;
+      mass = psipMass;
+      stable = false;
       SetPxPyPzE(0.,0.,0.,mass);    
 
 
@@ -572,8 +586,6 @@ void Particle::DefineDecays(){
      DecayBranch[4].DefineDaughters(daughter[4]);           
      NumberOfBranches++;
 
-
-
   } else if (name == "rho0") {
      if (debug) std::cout << " definging decay of rho0'" << std::endl;
 
@@ -679,7 +691,6 @@ void Particle::DefineDecays(){
      DecayBranch[5].DefineDaughters(daughter[5]);           
      NumberOfBranches++;
 
-
   } else if (name == "phi") {
      if (debug) std::cout << " definging decay of phi" << std::endl;
 
@@ -707,6 +718,58 @@ void Particle::DefineDecays(){
      DecayBranch[1].DefineDaughters(daughter[1]);           
      NumberOfBranches++;
 
+  } else if (name == "jpsi") {
+     if (debug) std::cout << " definging decay of J/Psi" << std::endl;
+
+
+     DecayBranch[0].SetType("TwoBody");                  // this is 2 body decay 
+     DecayBranch[0].SetName("jpsi->ee");                  // define name of decay
+     DecayBranch[0].SetNumberOfDecayParticles(2);        // number of daughters  
+     DecayBranch[0].SetBR(BR_jpsi_ee);
+     daughter[0][0] = electron;                          // set daughter 1
+     daughterID[0][0] = electronID;
+     daughter[0][1] = positron;                          // set daughter 2 
+     daughterID[0][1] = positronID;
+     DecayBranch[0].DefineDaughters(daughter[0]);           
+     NumberOfBranches++;
+
+     DecayBranch[1].SetType("TwoBody");                  // this is a 2 body decay 
+     DecayBranch[1].SetName("jpsi->mm");                  // define name of decay
+     DecayBranch[1].SetNumberOfDecayParticles(2);        // number of daughters  
+     DecayBranch[1].SetBR(BR_jpsi_mm);
+     daughter[1][0] = mup;                               // set daughter 1
+     daughterID[1][0] = mupID;
+     daughter[1][1] = mum;                               // set daughter 2 
+     daughterID[1][1] = mumID;
+     DecayBranch[1].DefineDaughters(daughter[1]);           
+     NumberOfBranches++;
+
+  } else if (name == "psip") {
+     if (debug) std::cout << " definging decay of psi(2s)" << std::endl;
+
+
+     DecayBranch[0].SetType("TwoBody");                  // this is 2 body decay 
+     DecayBranch[0].SetName("psip->ee");                  // define name of decay
+     DecayBranch[0].SetNumberOfDecayParticles(2);        // number of daughters  
+     DecayBranch[0].SetBR(BR_psip_ee);
+     daughter[0][0] = electron;                          // set daughter 1
+     daughterID[0][0] = electronID;
+     daughter[0][1] = positron;                          // set daughter 2 
+     daughterID[0][1] = positronID;
+     DecayBranch[0].DefineDaughters(daughter[0]);           
+     NumberOfBranches++;
+
+     DecayBranch[1].SetType("TwoBody");                  // this is a 2 body decay 
+     DecayBranch[1].SetName("psip->mm");                  // define name of decay
+     DecayBranch[1].SetNumberOfDecayParticles(2);        // number of daughters  
+     DecayBranch[1].SetBR(BR_psip_mm);
+     daughter[1][0] = mup;                               // set daughter 1
+     daughterID[1][0] = mupID;
+     daughter[1][1] = mum;                               // set daughter 2 
+     daughterID[1][1] = mumID;
+     DecayBranch[1].DefineDaughters(daughter[1]);           
+     NumberOfBranches++;
+
   } else if (name == "K0s") {
      if (debug) std::cout << " definging decay of K0s" << std::endl;
 
@@ -720,7 +783,6 @@ void Particle::DefineDecays(){
      daughterID[0][1] = pi0ID;
      DecayBranch[0].DefineDaughters(daughter[0]);           
      NumberOfBranches++;
-
 
   } else if (name == "Delta") {
      if (debug) std::cout << " definging decay of Delta" << std::endl;

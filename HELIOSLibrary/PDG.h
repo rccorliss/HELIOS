@@ -8,6 +8,7 @@
 //            3/13/2021  muon decays added
 // Roli Esha  5/13/2022  added photonMass = 0
 // Axel Drees 11/18/2022 added several decays 
+// Axel Drees 3/21/2023  added J/psi and psi(2s), and previously Lamda and K0s
 //  
 #ifndef PDG_h
 #define PDG_h
@@ -19,6 +20,7 @@
   Double_t alpha = 1/137.;                            // fine structure constant
 
 // masses of defined particles
+  Double_t photonMass = 0;                             // photon
   Double_t pi0Mass  = 0.134977;                        // pi0
   Double_t piMass   = 0.1395702;                       // pi+/pi-
   Double_t etaMass  = 0.54786;                         // eta
@@ -29,8 +31,11 @@
   Double_t etapMass = 0.95778;                         // eta' meson
   Double_t phiMass  = 1.0195;                          // phi meson
   Double_t K0sMass  = 0.497611;                        // K0 short 
-  Double_t photonMass = 0;                             // photon
+  Double_t jpsiMass = 3.0969;                          // J/Psi
+  Double_t psipMass = 3.6861;                          // psi(2s)
 
+
+// baryons
   Double_t DeltaMass   = 1.232;                          // Delta baryon average
   Double_t NucleonMass = 0.939;                        // Nucleon (p+n)/2
   Double_t protonMass  = 0.93827;
@@ -65,6 +70,8 @@
   Int_t protonID   = 2212;
   Int_t neutronID  = 2112;
   Int_t LambdaID   = 3122;
+  Int_t jpsiID     = 443;
+  Int_t psipID     = 100443;
 
 // PDG decay lengths for weak decays
   Double_t K0s_ct   =  2.6844;                        // ct in cm
@@ -97,6 +104,10 @@
   Double_t BR_K0s_2pi0      = 0.314 ;
   Double_t BR_Delta_Ng      = 0.006;
   Double_t BR_Lambda_ppim   = 0.639;
+  Double_t BR_jpsi_ee       = 0.05971;
+  Double_t BR_jpsi_mm       = 0.05961;
+  Double_t BR_psip_ee       = 0.00793; 
+  Double_t BR_psip_mm       = 0.008; 
 
 // transition formfactor slope values -> NA60 and Lepton G
   Double_t b_pi0_Dalitz = 5.5;

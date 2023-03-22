@@ -33,6 +33,8 @@ void TestDecay(){
   Particle rho0("rho0");
   Particle etap("etap");
   Particle phi_meson("phi");
+  Particle jpsi_meson("jpsi");
+  Particle psip_meson("psip");
 //  pi0.Print();
   Particle gamma1("photon");
   Particle gamma2("photon");
@@ -49,7 +51,7 @@ void TestDecay(){
   Double_t pt_high = 15.;
   Double_t ptcut = 0.2;
   Double_t ecut = 0.5;
-  Int_t nevt = 1000000;
+  Int_t nevt = 10000;
   Bool_t ek  = 1;
   Bool_t out = 0;
   Bool_t elecFound = false;
@@ -63,13 +65,15 @@ void TestDecay(){
   TF1 *omegaHagedorn   = HagedornYield("omegaHagedorn", omegaMass, pt_max, pt_min);
   TF1 *etapHagedorn    = HagedornYield("etapHagedorn", etapMass, pt_max, pt_min);
   TF1 *phiHagedorn     = HagedornYield("phiHagedorn", phiMass, pt_max, pt_min);
+  TF1 *jpsiHagedorn     = HagedornYield("phiHagedorn", phiMass, pt_max, pt_min);
+  TF1 *psipHagedorn     = HagedornYield("phiHagedorn", phiMass, pt_max, pt_min);
 //  TF1 *pi0Phi         = new TF1("pi0Phi","1+[0]*x",-2*pi,2*pi);
 //  TF1 *pi0Rapidity    = new TF1("pi0Rapidity","1+[0]*x",-.5,.5);
 
   TH1D *h_ptpi             = new TH1D("h_ptpi","pt",100,pt_low,pt_high);
   TH1D *h_pt_gpi           = new TH1D("h_pt_gpi","pt_g",100,pt_low,pt_high);
   TH1D *h_pt_epi           = new TH1D("h_pt_epi","pt_e",100,pt_low,pt_high);
-  TH1D *h_masspi           = new TH1D("hmasspi","mass",300,0.,1.5);
+  TH1D *h_masspi           = new TH1D("hmasspi","mass",300,0.,4.);
 
 // oid plot.StyleMe(TH1D *tE, int marker = 20, int color = 1, double msize = 1.2, int lstyle = 1, float lwidth = 2)
   plot.StyleMe(h_ptpi,   20, kBlue, 1., 1, 2); 
@@ -80,7 +84,7 @@ void TestDecay(){
   TH1D *h_pteta             = new TH1D("h_pteta","pt",100,pt_low,pt_high);
   TH1D *h_pt_geta           = new TH1D("h_pt_geta","pt_g",100,pt_low,pt_high);
   TH1D *h_pt_eeta           = new TH1D("h_pt_eeta","pt_e",100,pt_low,pt_high);
-  TH1D *h_masseta           = new TH1D("hmasseta","mass",300,0.,1.5);
+  TH1D *h_masseta           = new TH1D("hmasseta","mass",300,0.,4.0);
 
   plot.StyleMe(h_pteta,   20, kRed, 1., 1, 2); 
   plot.StyleMe(h_pt_geta, 20, kRed, 1., 2, 2); 
@@ -90,7 +94,7 @@ void TestDecay(){
   TH1D *h_ptrho0             = new TH1D("h_ptrho0","pt",100,pt_low,pt_high);
   TH1D *h_pt_grho0           = new TH1D("h_pt_grho0","pt_g",100,pt_low,pt_high);
   TH1D *h_pt_erho0           = new TH1D("h_pt_erho0","pt_e",100,pt_low,pt_high);
-  TH1D *h_massrho0           = new TH1D("hmassrho0","mass",300,0.,1.5);
+  TH1D *h_massrho0           = new TH1D("hmassrho0","mass",300,0.,4.0);
 
   plot.StyleMe(h_ptrho0,   20, kMagenta, 1., 1, 2); 
   plot.StyleMe(h_pt_grho0, 20, kMagenta, 1., 2, 2); 
@@ -100,7 +104,7 @@ void TestDecay(){
   TH1D *h_ptomega             = new TH1D("h_ptomega","pt",100,pt_low,pt_high);
   TH1D *h_pt_gomega           = new TH1D("h_pt_gomega","pt_g",100,pt_low,pt_high);
   TH1D *h_pt_eomega           = new TH1D("h_pt_eomega","pt_e",100,pt_low,pt_high);
-  TH1D *h_massomega           = new TH1D("hmassomega","mass",300,0.,1.5);
+  TH1D *h_massomega           = new TH1D("hmassomega","mass",300,0.,4.0);
 
   plot.StyleMe(h_ptomega,   20, kGreen+2, 1., 1, 2); 
   plot.StyleMe(h_pt_gomega, 20, kGreen+2, 1., 2, 2); 
@@ -110,7 +114,7 @@ void TestDecay(){
   TH1D *h_ptetap             = new TH1D("h_ptetap","pt",100,pt_low,pt_high);
   TH1D *h_pt_getap           = new TH1D("h_pt_getap","pt_g",100,pt_low,pt_high);
   TH1D *h_pt_eetap           = new TH1D("h_pt_eetap","pt_e",100,pt_low,pt_high);
-  TH1D *h_massetap           = new TH1D("hmassetap","mass",300,0.,1.5);
+  TH1D *h_massetap           = new TH1D("hmassetap","mass",300,0.,4.0);
 
   plot.StyleMe(h_ptetap,   20, kOrange+2, 1., 1, 2); 
   plot.StyleMe(h_pt_getap, 20, kOrange+2, 1., 2, 2); 
@@ -120,18 +124,36 @@ void TestDecay(){
   TH1D *h_ptphi             = new TH1D("h_ptphi","pt",100,pt_low,pt_high);
   TH1D *h_pt_gphi           = new TH1D("h_pt_gphi","pt_g",100,pt_low,pt_high);
   TH1D *h_pt_ephi           = new TH1D("h_pt_ephi","pt_e",100,pt_low,pt_high);
-  TH1D *h_massphi           = new TH1D("hmassphi","mass",300,0.,1.5);
+  TH1D *h_massphi           = new TH1D("hmassphi","mass",300,0.,4.0);
 
   plot.StyleMe(h_ptphi,   20, kTeal, 1., 1, 2); 
   plot.StyleMe(h_pt_gphi, 20, kTeal, 1., 2, 2); 
   plot.StyleMe(h_pt_ephi, 20, kTeal, 1., 3, 2); 
   plot.StyleMe(h_massphi, 20, kTeal, 1., 1, 2); 
 
+  TH1D *h_ptjpsi             = new TH1D("h_pthjpsi","pt",100,pt_low,pt_high);
+  TH1D *h_pt_gjpsi           = new TH1D("h_pt_gjpsi","pt_g",100,pt_low,pt_high);
+  TH1D *h_pt_ejpsi           = new TH1D("h_pt_ejpsi","pt_e",100,pt_low,pt_high);
+  TH1D *h_massjpsi           = new TH1D("hmassjpsi","mass",300,0.,4.0);
 
+  plot.StyleMe(h_ptphi,   20, kTeal, 1., 1, 2); 
+  plot.StyleMe(h_pt_gphi, 20, kTeal, 1., 2, 2); 
+  plot.StyleMe(h_pt_ephi, 20, kTeal, 1., 3, 2); 
+  plot.StyleMe(h_massphi, 20, kTeal, 1., 1, 2); 
+
+  TH1D *h_ptpsip             = new TH1D("h_pthpsip","pt",100,pt_low,pt_high);
+  TH1D *h_pt_gpsip           = new TH1D("h_pt_gpsip","pt_g",100,pt_low,pt_high);
+  TH1D *h_pt_epsip           = new TH1D("h_pt_epsip","pt_e",100,pt_low,pt_high);
+  TH1D *h_masspsip           = new TH1D("hmasspsip","mass",300,0.,4.0);
+
+  plot.StyleMe(h_ptphi,   20, kTeal, 1., 1, 2); 
+  plot.StyleMe(h_pt_gphi, 20, kTeal, 1., 2, 2); 
+  plot.StyleMe(h_pt_ephi, 20, kTeal, 1., 3, 2); 
+  plot.StyleMe(h_massphi, 20, kTeal, 1., 1, 2); 
 
   TH1D *h_pt_g           = new TH1D("h_pt_g","pt_g",100,pt_low,pt_high);
   TH1D *h_pt_e           = new TH1D("h_pt_e","pt_e",100,pt_low,pt_high);
-  TH1D *h_mass           = new TH1D("hmass","mass",300,0.,1.5);
+  TH1D *h_mass           = new TH1D("hmass","mass",300,0.,4.0);
 
   plot.StyleMe(h_pt_g,   20, kBlack, 1., 1, 2); 
   plot.StyleMe(h_pt_e,   20, kBlack, 1., 1, 2); 
@@ -429,6 +451,100 @@ void TestDecay(){
     h_massphi->Fill(eepair.M(),ww);     
   }
   
+/////////////////////////////////////////////// jpsi decays ////////////////////////////////////////////////
+    jpsi_meson.ResetP();
+    electron.ResetP();
+    positron.ResetP();
+    jpsi_meson.GenerateP(pt_min,pt_max);                                // generate 4 vector for pi0 with flat distribution
+    jpsi_meson.SetWeight(jpsiHagedorn->Eval(jpsi_meson.Pt())/float(nevt)*0.25);
+    h_ptjpsi->Fill(jpsi_meson.Pt(),jpsi_meson.Weight());                         // histogram pion proprety
+
+    if (i<10) jpsi_meson.Print();        
+    if (iopt == 1) jpsi_meson.Decay();
+    if (iopt == 2) jpsi_meson.DecayFlat();
+    if (iopt == 5) jpsi_meson.DecaySingleBranch("jpsi->ee");
+
+    ndecay = jpsi_meson.GetNumberOfDaughters();
+    if (i<10) cout << "----- jpsiDeacy --------------------------------------------------------" << endl; 
+    if (i<10) cout << " found decay with " << ndecay << " daughters " << endl; 
+     
+    elecFound = false;
+    posiFound = false;    
+
+   for (Int_t j=0; j< ndecay; j++) {
+     temp = jpsi_meson.GetDecayDaughter(j);
+     if (i<10) temp.Print();
+     ww   = jpsi_meson.GetDaughterWeight(j)*jpsi_meson.Weight();
+     id   = jpsi_meson.GetDaughterID(j);
+     if (i<10) cout << " weight " << ww << " id: " << id << endl;
+     if (id == electronID) {
+       electron.UpdateParticle(temp);
+       electron.SetWeight(ww);
+       elecFound = true;
+       h_pt_ejpsi->Fill(electron.Pt(),electron.Weight());          
+          if (i<10) electron.Print();
+     } else if (id == positronID) {
+       positron.UpdateParticle(temp);
+       positron.SetWeight(ww);
+       posiFound = true;
+       h_pt_ejpsi->Fill(positron.Pt(),positron.Weight());         
+          if (i<10) positron.Print();
+     }
+   }
+  if (elecFound && posiFound) {
+    eepair = electron+positron;
+//        eepair.Print();
+    if (i<10) eepair.Print();
+    h_massjpsi->Fill(eepair.M(),ww);     
+  }
+
+  /////////////////////////////////////////////// psip decays ////////////////////////////////////////////////
+    psip_meson.ResetP();
+    electron.ResetP();
+    positron.ResetP();
+    psip_meson.GenerateP(pt_min,pt_max);                                // generate 4 vector for pi0 with flat distribution
+    psip_meson.SetWeight(psipHagedorn->Eval(psip_meson.Pt())/float(nevt)*0.025);
+    h_ptjpsi->Fill(psip_meson.Pt(),psip_meson.Weight());                         // histogram pion proprety
+
+    if (i<10) psip_meson.Print();        
+    if (iopt == 1) psip_meson.Decay();
+    if (iopt == 2) psip_meson.DecayFlat();
+    if (iopt == 5) psip_meson.DecaySingleBranch("psip->ee");
+
+    ndecay = psip_meson.GetNumberOfDaughters();
+    if (i<10) cout << "----- psipDeacy --------------------------------------------------------" << endl; 
+    if (i<10) cout << " found decay with " << ndecay << " daughters " << endl; 
+     
+    elecFound = false;
+    posiFound = false;    
+
+   for (Int_t j=0; j< ndecay; j++) {
+     temp = psip_meson.GetDecayDaughter(j);
+     if (i<10) temp.Print();
+     ww   = psip_meson.GetDaughterWeight(j)*psip_meson.Weight();
+     id   = psip_meson.GetDaughterID(j);
+     if (i<10) cout << " weight " << ww << " id: " << id << endl;
+     if (id == electronID) {
+       electron.UpdateParticle(temp);
+       electron.SetWeight(ww);
+       elecFound = true;
+       h_pt_epsip->Fill(electron.Pt(),electron.Weight());          
+          if (i<10) electron.Print();
+     } else if (id == positronID) {
+       positron.UpdateParticle(temp);
+       positron.SetWeight(ww);
+       posiFound = true;
+       h_pt_epsip->Fill(positron.Pt(),positron.Weight());         
+          if (i<10) positron.Print();
+     }
+   }
+  if (elecFound && posiFound) {
+    eepair = electron+positron;
+//        eepair.Print();
+    if (i<10) eepair.Print();
+    h_masspsip->Fill(eepair.M(),ww);     
+  }
+
 
  ////////////////////////////////////////////////////////////////////////////
   }
@@ -548,17 +664,19 @@ void TestDecay(){
   L21d->Draw("same");
   plot.Reset();
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
   TCanvas *c3 = plot.Canvas ("c3",600,600,810,10,1);
   plot.SetyTitleOffset(1.2);
-  TH1D *mass = plot.Frame("mass","mass [GeV/c^{2}]","dN/dm [a.u.]",0.,1.5,3e-12,3e-3);
+  TH1D *mass = plot.Frame("mass","mass [GeV/c^{2}]","dN/dm [a.u.]",0.,4.0,3e-12,3e-3);
   mass->Draw();
-  h_masspi->Draw("same Chist");
-  h_masseta->Draw("same Chist");
-  h_massetap->Draw("same Chist");
-  h_massomega->Draw("same Chist");
-  h_massrho0->Draw("same Chist");
-  h_massphi->Draw("same Chist");
+ h_masspi->Draw("same Chist");
+ h_masseta->Draw("same Chist");
+ h_massetap->Draw("same Chist");
+ h_massomega->Draw("same Chist");
+ h_massrho0->Draw("same Chist");
+ h_massphi->Draw("same Chist");
+ h_massjpsi->Draw("same Chist");
+  h_masspsip->Draw("same Chist");
 
   h_mass->Draw("same Chist");
 
@@ -569,7 +687,7 @@ void TestDecay(){
   L3a->Draw("same"); 
 
   TLegend *L3 = plot.Legend("e^{+}e^{-} from decays of" ,0.5,.79,.7,.95);
-  L3->AddEntry(h_masspi,"#pi^{0}","l");
+  L3->AddEntry(h_masspi,"#rho^{0}","l");
   L3->AddEntry(h_masseta,"#eta","l");
   L3->AddEntry(h_massetap,"#eta'","l");  
 

@@ -20,6 +20,8 @@
 //     omega         omega->ee, omega->mm  omega->pi0g, omega->pi0ee, omega->pi0mm     
 //     phi           phi->ee, phi->mm
 //     K0s           K0s->2pi0
+//     jpsi          jpsi->ee, jpsi->mm
+//     psip          psip->ee, psip->mm
 //
 //     leptons     
 //     photon        stable
@@ -74,7 +76,8 @@
 // 3/18/2022    muon decay channels added   Axel Drees
 // 5/13/2022    retrieve more decay info    Roli Esha
 // 6/9/2022     generate in y or eta        Axel Drees
-// 11/11/2022   3 body dacys and updates    Axel Drees
+// 11/11/2022   3 body decays and updates   Axel Drees
+// 3/21/2022    add more particles & decays Axel Drees
 //
 #ifndef Particle_h
 #define Particle_h

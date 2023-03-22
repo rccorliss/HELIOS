@@ -10,6 +10,8 @@
 //     "omega->pi0g"   "omega->pi0ee"     "omega->ee"     "omega->pi0mm"     "omega->mm"
 //     "rho0->ee"      "rho0->mm"
 //     "phi->ee"       "phi->mm" 
+//     "jpsi->ee"      "jpsi->mm" 
+//     "psip->ee"      "psip->mm" 
 //     "K0s->2pi0"
 //     "Delta->Ng"
 // 
@@ -98,6 +100,8 @@ class Decay {
         or n == "rho0->ee" or n == "rho0->mm"
         or n == "etap->gg" or n == "etap->gee" or n == "etap->rho0g" or n == "etap->wg" or n == "etap->gmm" or n == "etap->2pieta"
         or n == "phi->ee" or  n == "phi->mm"
+        or n == "jpsi->ee" or  n == "jspi->mm"
+        or n == "psip->ee" or  n == "psip->mm"
         or n == "Delta->Ng") {
       DecayName = n;
     } else {
