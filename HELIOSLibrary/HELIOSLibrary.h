@@ -18,12 +18,12 @@
 #define HELIOSLibrary_h
 
 #include <string>
-#include "/phenix/plhf/mitran/Simul/Dileptons/sim/gen/HELIOS/source/HELIOSLibrary/PDG.h"
-#include "/phenix/plhf/mitran/Simul/Dileptons/sim/gen/HELIOS/source/HELIOSLibrary/InteractionWithMaterial.h"
-#include "/phenix/plhf/mitran/Simul/Dileptons/sim/gen/HELIOS/source/HELIOSLibrary/KinematicDistributions.h"                       
-#include "/phenix/plhf/mitran/Simul/Dileptons/sim/gen/HELIOS/source/HELIOSLibrary/Particle.C"
-#include "/phenix/plhf/mitran/Simul/Dileptons/sim/gen/HELIOS/source/HELIOSLibrary/PHENIXSetup.h"
-#include "/phenix/plhf/mitran/Simul/Dileptons/sim/gen/HELIOS/source/HELIOSLibrary/PHENIXDetector.C"
-#include "/phenix/plhf/mitran/Simul/Dileptons/sim/gen/HELIOS/source/HELIOSLibrary/WriteEvent.h"
+#include "PDG.h"
+#include "InteractionWithMaterial.h"
+#include "KinematicDistributions.h"                       
+#include "Particle.C"
+#include "PHENIXSetup.h"
+#include "PHENIXDetector.C"
+#include "WriteEvent.h"
 
 #endif
