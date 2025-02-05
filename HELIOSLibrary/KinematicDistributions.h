@@ -50,7 +50,7 @@
 #include <TF1.h>
 #include <TRandom3.h>
 
-#include "/phenix/plhf/mitran/Simul/Dileptons/sim/gen/HELIOS/source/HELIOSLibrary/GPRFiles/GPRFileNames.h"
+#include "GPRFiles/GPRFileNames.h"
 
 //*******************************************************************
 //
