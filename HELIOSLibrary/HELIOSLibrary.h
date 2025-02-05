@@ -14,12 +14,12 @@
 #define HELIOSLibrary_h
 
 #include <string>
-#include "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/PDG.h"
-#include "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/InteractionWithMaterial.h"
-#include "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/KinematicDistributions.h"                       
-#include "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/Particle.C"
-#include "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/PHENIXSetup.h"
-#include "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/PHENIXDetector.C"
-#include "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/WriteEvent.C"
+#include "PDG.h"
+#include "InteractionWithMaterial.h"
+#include "KinematicDistributions.h"                       
+#include "Particle.C"
+#include "PHENIXSetup.h"
+#include "PHENIXDetector.C"
+#include "WriteEvent.C"
 
 #endif
