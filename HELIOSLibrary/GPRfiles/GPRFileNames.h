@@ -14,9 +14,9 @@
 #include <string>
 
 const char* GPR_etapi_universal = 
-   "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/GPRfiles/GPR_etapi_universal.txt";
+   "/gpfs/mnt/gpfs02/phenix/plhf/plhf1/mitran/Simul/Dileptons/sim/gen/HELIOS/source/HELIOSLibrary/GPRFiles/GPR_etapi_universal.txt";
 
 const char* GPR_pion_pp200 = 
-   "C:/root_v6.22.06/macros/HELIOS/HELIOSLibrary/GPRfiles/GPR_pion_pp200.txt";
+   "/gpfs/mnt/gpfs02/phenix/plhf/plhf1/mitran/Simul/Dileptons/sim/gen/HELIOS/source/HELIOSLibrary/GPRFiles/GPR_pion_pp200.txt";
 
 #endif

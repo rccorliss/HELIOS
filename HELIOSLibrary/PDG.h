@@ -16,7 +16,7 @@
 
 
 // constants
-  Double_t pi = 3.14159;                              // define pi
+  Double_t Pi = 3.14159;                              // define pi
   Double_t alpha = 1/137.;                            // fine structure constant
 
 // masses of defined particles
@@ -100,6 +100,7 @@
   Double_t BR_rho0_ee       = 0.0000472;
   Double_t BR_rho0_mm       = 0.000045;
   Double_t BR_phi_ee        = 0.000297;
+  Double_t BR_phi_etaee        = 0.000108;
   Double_t BR_phi_mm        = 0.000286;
   Double_t BR_K0s_2pi0      = 0.314 ;
   Double_t BR_Delta_Ng      = 0.006;
@@ -122,10 +123,13 @@
   Double_t Eta_to_Pi0 = 0.487; // 0.487±0.024 from Yuanjee Ren Thesis
   Double_t Etap_to_Pi0 =  0.25; // 0.25±0.075 from Wenqing Fan Thesis table 4.4
   Double_t Omega_to_Pi0 =  0.81; // 0.81+/-0.02(stat)+/-0.09(sys) from ppg118 
-//  Double_t Rho_to_Pi0 = ; 
-//  Double_t Phi_to_Pi0 = ; 
+  Double_t Rho_to_Pi0 = 1.15; 
+  Double_t Phi_to_Pi0 = 0.25;
+  Double_t Jpsi_to_Pi0 = 0.25;
+  Double_t Psip_to_Pi0 = 0.025;
 
-Int_t PDG_Charge(Int_t ID){
+
+  Int_t PDG_Charge(Int_t ID){
 
   Int_t q = 0; 
 

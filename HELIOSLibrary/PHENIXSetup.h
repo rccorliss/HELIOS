@@ -22,6 +22,7 @@ const int arm_east = 2;
 const double P_eta = 0.35;     // rapidity range
 const double P_theta_min = 2*atan(exp(-P_eta));
 const double P_theta_max = 2*atan(exp(P_eta));
+Double_t pi = 3.14159;                              // define pi
 const double P_phi_west_max =  11./16.*pi;
 const double P_phi_west_min =   3./16.*pi;
 const double P_phi_east_max =  -3./16.*pi; 

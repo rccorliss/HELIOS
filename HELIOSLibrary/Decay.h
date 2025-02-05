@@ -99,7 +99,7 @@ class Decay {
         or n == "omega->pi0g"  or n == "omega->pi0ee" or n == "omega->ee" or n == "omega->gmm"
         or n == "rho0->ee" or n == "rho0->mm"
         or n == "etap->gg" or n == "etap->gee" or n == "etap->rho0g" or n == "etap->wg" or n == "etap->gmm" or n == "etap->2pieta"
-        or n == "phi->ee" or  n == "phi->mm"
+        or n == "phi->ee" or  n == "phi->mm" or n == "phi->etaee"
         or n == "jpsi->ee" or  n == "jspi->mm"
         or n == "psip->ee" or  n == "psip->mm"
         or n == "Delta->Ng") {
@@ -148,6 +148,7 @@ class Decay {
    Double_t BR;
    Bool_t debug = false;
 
+  Double_t pi = 3.14159;                              // define pi
 // defined decay member functions
    void TwoBodyDecay(TLorentzVector &parent, TLorentzVector &daughter1, TLorentzVector &daughter2);
    void DalitzDecay (TLorentzVector &parent, TLorentzVector &daughter1, TLorentzVector &daughter2, TLorentzVector &daughter3);

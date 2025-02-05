@@ -101,7 +101,7 @@ Double_t BremsEnergyLoss(Double_t xX0) {
   Double_t BE, BEtot=0; 
 
   BE = 0;
-  BEtot -0;
+  BEtot = 0;
   if (gROOT->FindObject("BremsE") == NULL){
     TF1 *BremsE = new TF1("BremsE",BremsEnergy,kmin,kmax,0.);                                                      // function that gives energy split for conversion
   }
@@ -109,11 +109,11 @@ Double_t BremsEnergyLoss(Double_t xX0) {
 
   Double_t AvgBrems = BremsPhotons(xX0, kmin, kmax);
   Int_t Nbrems = randy.Poisson(AvgBrems);
-//  std::cout << "avg number of brems photons  " << AvgBrems << " number of brems photons " << Nbrems << std::endl;
+  //  std::cout << "avg number of brems photons  " << AvgBrems << " number of brems photons " << Nbrems << std::endl;
 
   for (int i=0; i<Nbrems; i++){
      BE = h->GetRandom();
-//     std::cout << "energy of photon " << i << "  " << BE << std::endl;
+      // std::cout << "energy of photon " << i << "  " << BE << std::endl;
      BEtot = +BE;
   } 
   return BEtot; 

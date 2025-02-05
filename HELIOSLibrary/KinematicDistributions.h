@@ -50,7 +50,7 @@
 #include <TF1.h>
 #include <TRandom3.h>
 
-#include "/GPRfiles/GPRFileNames.h"
+#include "/phenix/plhf/mitran/Simul/Dileptons/sim/gen/HELIOS/source/HELIOSLibrary/GPRFiles/GPRFileNames.h"
 
 //*******************************************************************
 //
@@ -223,6 +223,7 @@ double GPR_etapi_uni_pt[GPR_etapi_uni_n], GPR_etapi_uni[GPR_etapi_uni_n], GPR_et
 
 //////// pp 200 pion pt distribution ////////////////////////////////////////////////////////////////
 // read textfile
+
 void Read_GPR_pion_pp200(){
   std::ifstream infile;
   infile.open(GPR_pion_pp200);
@@ -236,6 +237,7 @@ double Weight_GPR_pion_pp200(double pt, double opt=0){
   
   double gap, value=0, error=0, target_index, alpha;
   int index;
+  Read_GPR_pion_pp200();
 
   if (pt<=GPR_pi_pp200_ptmin or pt>=GPR_pi_pp200_ptmax) return 0;
   gap = GPR_pi_pp200_gap;
@@ -247,7 +249,7 @@ double Weight_GPR_pion_pp200(double pt, double opt=0){
      value = GPR_pi_pp200_yield[index]*(1-alpha) + GPR_pi_pp200_yield[index+1]*alpha; 
      error = GPR_pi_pp200_yield_error[index]*(1-alpha) + GPR_pi_pp200_yield_error[index+1]*alpha;
   }
-//   std::cout << target_index << "\t" << alpha << "\t" << value << "\t" << error << std::endl;
+  
   return value+opt*error;
 }
 ////////// eta to pi0 ration univesal function valid for all pp and pA collisions //////////////////////
@@ -256,19 +258,19 @@ void Read_GPR_etapi_uni(){
   std::ifstream infile;
   infile.open(GPR_etapi_universal);
   getline(infile,trashline); 
-//  std::cout<<"trash: "<<trashline<<std::endl;  
+
   getline(infile,trashline); 
-//  std::cout<<"trash: "<<trashline<<std::endl;  
+
   for(int i = 0; i < GPR_etapi_uni_n; i++){
     infile >> GPR_etapi_uni_pt[i] >> GPR_etapi_uni[i] >> GPR_etapi_uni_error[i];
-//    std::cout<<"i="<<i<<", (x,y,ey)=("<<GPR_etapi_uni_pt[i]<<","<<GPR_etapi_uni[i]<<","<<GPR_etapi_uni_error[i]<<")"<<std::endl;
+
   }
   infile.close();
 }
 double Weight_GPR_etapi_uni(double pt, double opt=0){
   double gap, lpt, value=0, error=0, target_index, alpha;
   int index;
-
+  Read_GPR_etapi_uni();
   lpt = log10(pt);
 
   if (lpt>=GPR_etapi_uni_ptmax) return 0;

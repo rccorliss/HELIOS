@@ -53,7 +53,7 @@ double KrollWada(const double mll, const double mp, const double ml, const doubl
 // mo   = other decay particle mass - default 0 for photon
 {
   Double_t val = 0;
-  Double_t c1 = 2*alpha/3/pi;
+  Double_t c1 = 2*alpha/3/Pi;
 
   Double_t q = pow(mll/mp,2);
   Double_t eps = pow(ml/mp,2);
@@ -183,6 +183,13 @@ double f_phimm(Double_t *x, Double_t *p) {
 double f_etapRho0g(Double_t *x, Double_t *p) {
   Double_t y = 0;
   return y;
+}
+
+double f_phietaee(Double_t *x, Double_t *p) {
+//  std::cout << " ----------- " << x[0] << " " << p[0] << " " << p[1] << " " << p[2] << std::endl;
+  Double_t mll=x[0];
+  Double_t y = KrollWada(mll,phiMass,eMass,etaMass);
+  return y; 
 }
 
 

@@ -275,7 +275,7 @@
 // Axel Drees    10/18/2018 
 // updates       8/28/2020
 //
-void Particle::GenerateP(Double_t pt_low, Double_t pt_high, Bool_t rap=true) {
+void Particle::GenerateP(Double_t pt_low, Double_t pt_high, Bool_t rap) {
    Double_t pt,phi,rapidity,eta; 
    pt        = randy.Uniform(pt_low,pt_high);
    phi       = randy.Uniform(0.,2*pi);
@@ -301,7 +301,7 @@ void Particle::GenerateP(Double_t pt_low, Double_t pt_high, Bool_t rap=true) {
 //
 // Axel Drees    11/17/2022 
 //
-void Particle::GenerateP(Double_t pt_low, Double_t pt_high, TF1*RapiditySpectrum, Bool_t rap=true) {
+void Particle::GenerateP(Double_t pt_low, Double_t pt_high, TF1*RapiditySpectrum, Bool_t rap) {
    Double_t pt,phi,rapidity,eta; 
    pt        = randy.Uniform(pt_low,pt_high);
    phi       = randy.Uniform(0.,2*pi);
@@ -327,7 +327,7 @@ void Particle::GenerateP(Double_t pt_low, Double_t pt_high, TF1*RapiditySpectrum
 // Axel Drees    10/21/2018
 // updated       8/28/2021
 //
-void Particle::GenerateP(TF1* PtSpectrum, TF1* PhiSpectrum, TF1* RapiditySpectrum, Bool_t rap=true) {
+void Particle::GenerateP(TF1* PtSpectrum, TF1* PhiSpectrum, TF1* RapiditySpectrum, Bool_t rap) {
    Double_t pt,phi,rapidity,eta;
 
    pt        = PtSpectrum->GetRandom(); 
@@ -351,7 +351,7 @@ void Particle::GenerateP(TF1* PtSpectrum, TF1* PhiSpectrum, TF1* RapiditySpectru
 // Axel Drees    10/18/2018
 // updated       8/28/2021
 //
-void Particle::GenerateP(TF1* PtSpectrum, Bool_t rap=true) {
+void Particle::GenerateP(TF1* PtSpectrum, Bool_t rap) {
    Double_t pt,phi,rapidity,eta;
    
    pt        = PtSpectrum->GetRandom(); 
@@ -716,6 +716,20 @@ void Particle::DefineDecays(){
      daughter[1][1] = mum;                               // set daughter 2 
      daughterID[1][1] = mumID;
      DecayBranch[1].DefineDaughters(daughter[1]);           
+     NumberOfBranches++;
+
+     DecayBranch[2].SetType("Dalitz");                  // this is a 2 body decay 
+     DecayBranch[2].SetName("phi->etaee");                  // define name of decay
+     DecayBranch[2].SetMassDistributions();              // set virtual photon mass distribution for "phi->mm"
+     DecayBranch[2].SetNumberOfDecayParticles(3);        // number of daughters  
+     DecayBranch[2].SetBR(BR_phi_etaee);
+     daughter[2][0] = electron;                               // set daughter 1
+     daughterID[2][0] = electronID;
+     daughter[2][1] = positron;                               // set daughter 2 
+     daughterID[2][1] = positronID;
+     daughter[2][2] = eta;                               // set daughter 2 
+     daughterID[2][2] = etaID;
+     DecayBranch[2].DefineDaughters(daughter[2]);           
      NumberOfBranches++;
 
   } else if (name == "jpsi") {

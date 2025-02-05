@@ -51,7 +51,7 @@ void TestDecay(){
   Double_t pt_high = 15.;
   Double_t ptcut = 0.2;
   Double_t ecut = 0.5;
-  Int_t nevt = 10000;
+  Int_t nevt = 1000000;
   Bool_t ek  = 1;
   Bool_t out = 0;
   Bool_t elecFound = false;

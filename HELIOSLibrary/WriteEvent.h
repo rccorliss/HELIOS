@@ -55,9 +55,9 @@ class WriteTrack : public TObject{
       	float   xpos;
       	float   ypos;
       	float 	zpos;
-      	int 	br;
+      	double 	br;
       	int 	ParentIndex;
-      	float 	weight;
+      	double 	weight;
 
    	public:
 
@@ -80,23 +80,23 @@ class WriteTrack : public TObject{
 	        weight = -999;
       	};
 
-    	virtual ~WriteTrack();
+    	//virtual ~WriteTrack();
 
     	int  	 GetFinal() {return isFinal; };
-	int    	 GetNum() { return num; };
-	int      GetID() { return id; };
-	int      GetIst() { return ist; };
-	float    GetPx() { return px; };
-	float    GetPy() { return py; };
-	float    GetPz() { return pz; };
-	float    GetEnergy() { return en; };
-	float    GetMass() { return mass; };
-	float    GetXpos() { return xpos; };
-	float    GetYpos() { return ypos; };
-	float    GetZpos() { return zpos; };
-	int      GetBranch() { return br; };
-	int      GetParentIndex() { return ParentIndex; };
-	int      GetWeight() { return weight; };
+		int    	 GetNum() { return num; };
+		int      GetID() { return id; };
+		int      GetIst() { return ist; };
+		float    GetPx() { return px; };
+		float    GetPy() { return py; };
+		float    GetPz() { return pz; };
+		float    GetEnergy() { return en; };
+		float    GetMass() { return mass; };
+		float    GetXpos() { return xpos; };
+		float    GetYpos() { return ypos; };
+		float    GetZpos() { return zpos; };
+		double      GetBranch() { return br; };
+		int      GetParentIndex() { return ParentIndex; };
+		double      GetWeight() { return weight; };
 	    
         void     SetFinal(int sisFinal) { isFinal = sisFinal;};
         void   	 SetNum(int snum)  	{ num = snum; };
@@ -110,9 +110,9 @@ class WriteTrack : public TObject{
         void     SetXpos(float sxpos)  { xpos = sxpos; };
         void     SetYpos(float sypos)  { ypos = sypos; };
         void     SetZpos(float szpos)  { zpos = szpos; };
-        void     SetBranch(int sbr)  { br = sbr; };
+        void     SetBranch(double sbr)  { br = sbr; };
         void     SetParentIndex(int sParentIndex)  	{ ParentIndex = sParentIndex; };
-        void     SetWeight(float sweight)  	{ weight = sweight; };
+        void     SetWeight(double sweight)  	{ weight = sweight; };
     
     ClassDef(WriteTrack,1)  
 };
@@ -128,7 +128,7 @@ class WriteEvent : public TObject {
 
    	public:	
         WriteEvent(){ stable_particles = 0;}
-   		virtual ~WriteEvent();
+   		//virtual ~WriteEvent();
 
       	void    SetNStable(int sstable_particles) { stable_particles = sstable_particles; };
       	int     GetNStable() { return stable_particles; }

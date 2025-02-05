@@ -200,6 +200,8 @@ private:
   Double_t  sectorSinT;
   Int_t     sector;
   Int_t     arm; 
+  
+  Double_t pi = 3.14159;                              // define pi
 
 };
 

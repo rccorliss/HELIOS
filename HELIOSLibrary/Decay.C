@@ -174,7 +174,6 @@ void Decay::DalitzDecay(TLorentzVector &parent, TLorentzVector &decay1, TLorentz
 //
 // Axel Drees 11/16/2019 - 
 //
-  Double_t pi = 3.14159;                              // define pi
   Double_t px,py,pz,E;                                // define generic 4 vector component 
   Double_t pairMass=0;
   Double_t mass = parent.M();                         // mass of parent particle
@@ -331,6 +330,9 @@ void Decay::SetMassDistributions(){
       TF1 *h_Mass = new TF1(DecayName,f_phiee,2.*pi0Mass,2*phiMass); 
   } else if (DecayName == "phi->mm") {
       TF1 *h_Mass = new TF1(DecayName,f_phimm,2.*pi0Mass,2*phiMass); 
+  }
+  else if (DecayName == "phi->etaee") {
+      TF1 *h_Mass = new TF1(DecayName,f_phietaee,2.*eMass,phiMass-etaMass); 
   }
 }
 

@@ -194,6 +194,8 @@ void operator = ( TLorentzVector const &otherParticle)
   TLorentzVector DecayDaughter[100];                           // 4 vector for daughters [branch][index], max 10 per branch
   Int_t DecayDaughterID[100];                                  // PDG particle ID of daughter 
   Double_t DecayDaughterWeight[100];                           // weigth of decay branch that produced daughter 
+  
+  Double_t pi = 3.14159;                              // define pi
 
 }; // end of Particle class
 //

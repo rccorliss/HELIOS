@@ -8,6 +8,9 @@
 //
 
 #include "WriteEvent.h"
+#include <fstream>
+#include <iostream>
+
 
 void WriteEvent::ClearEvent(){
 
@@ -56,4 +59,6 @@ void WriteOscarEvent(std::ofstream* file, WriteEvent Event){
 	*file << "0" << "\t" << "0" << std::endl;
 
 }
+
+
 
